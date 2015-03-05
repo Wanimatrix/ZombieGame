@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.net.URI;
 import java.nio.Buffer;
 import java.nio.IntBuffer;
+import java.util.ArrayList;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
+import javax.xml.ws.Response;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -14,6 +16,15 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import com.android.volley.RequestQueue;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.JsonArrayRequest;
+import com.android.volley.toolbox.Volley;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -69,7 +80,8 @@ public class ArRenderer implements Renderer, PreviewCallback, OnFrameAvailableLi
     private MediaPlayer mp;
     private boolean updateSurface = false;
     
-    private String url = "http://192.168.137.183:8081";
+    private ArrayList<String> urls;
+    private int currentCamIndex = 0;
 	
     // CAMERA SHADERS
 	private final String vssCamera =
@@ -199,11 +211,21 @@ public class ArRenderer implements Renderer, PreviewCallback, OnFrameAvailableLi
         }
 
         public void run() {
+        	long start = System.currentTimeMillis();
+        	
             Log.d("MJPEG","Reading begins ... ");
             Paint p = new Paint();
             while(true) {
             	Log.d("MJPEG", "Running: "+mRun);
 	            while (mRun) {
+	            	if((System.currentTimeMillis() - start)/1000.0 > 20) {
+	            		start = System.currentTimeMillis();
+	            		currentCamIndex = currentCamIndex+1 % urls.size();
+	            		new DoRead().execute(urls.get(currentCamIndex));
+            			mRun = false;
+            			break;
+	            	}
+	            	
 	                Canvas c = null;
 	
 	                if(surfaceDone) {   
@@ -216,7 +238,7 @@ public class ArRenderer implements Renderer, PreviewCallback, OnFrameAvailableLi
 	                		if(ret == -1)
 	                		{
 	                			Log.d("MJPEG", "Error while reading frame");
-	                			new DoRead().execute(url);
+	                			new DoRead().execute(urls.get(currentCamIndex));
 	                			mRun = false;
 	                			break;
 	                		}
@@ -271,7 +293,7 @@ public class ArRenderer implements Renderer, PreviewCallback, OnFrameAvailableLi
         	Log.d("CONN", "Source was set to: "+source);
         	if(result == null) {
         		Log.d("CONNECTION", "Trying to connect");
-        		new DoRead().execute(url);
+        		new DoRead().execute(urls.get(currentCamIndex));
         		return;
         	}
         	
@@ -306,6 +328,62 @@ public class ArRenderer implements Renderer, PreviewCallback, OnFrameAvailableLi
 		setupRenderHandlers();
 		
 		
+		// Instantiate the RequestQueue.
+		RequestQueue queue = Volley.newRequestQueue(this.context);
+		String urlJsonArry = "http://192.168.137.1:8082/getcams";
+
+		JsonArrayRequest req = new JsonArrayRequest(urlJsonArry,
+	            new com.android.volley.Response.Listener<JSONArray>() {
+	                @Override
+	                public void onResponse(JSONArray response) {
+	                    Log.d(TAG, response.toString());
+	 
+	                    try {
+	                        // Parsing json array response
+	                        // loop through each json object
+//	                        jsonResponse = "";
+	                        for (int i = 0; i < response.length(); i++) {
+	 
+	                            JSONObject cams = (JSONObject) response.get(i);
+	 
+	                            String name = cams.getString("name");
+	                            String address = cams.getString("address");
+	                            
+	                            Log.d("JSON", "Name: "+name+", Address: "+address);
+	                            
+	                            urls.add("http://"+address);
+	                        }
+	                        currentCamIndex = 0;
+	                        
+	                        s = new Surface(st);
+	                        new DoRead().execute(urls.get(currentCamIndex));
+	 
+//	                        txtResponse.setText(jsonResponse);
+	 
+	                    } catch (JSONException e) {
+	                    	Log.d("JSON", "JSON ERROR!");
+	                        e.printStackTrace();
+//	                        Toast.makeText(getApplicationContext(),
+//	                                "Error: " + e.getMessage(),
+//	                                Toast.LENGTH_LONG).show();
+	                    }
+	 
+//	                    hidepDialog();
+	                }
+	            }, new com.android.volley.Response.ErrorListener() {
+	                @Override
+	                public void onErrorResponse(VolleyError error) {
+	                    VolleyLog.d(TAG, "Error: " + error.getMessage());
+//	                    Toast.makeText(getApplicationContext(),
+//	                            error.getMessage(), Toast.LENGTH_SHORT).show();
+//	                    hidepDialog();
+	                }
+	            });
+		
+		// Add the request to the RequestQueue.
+		queue.add(req);
+		
+		
 		/*
          * Create the SurfaceTexture that will feed this textureID,
          * and pass it to the MediaPlayer
@@ -313,9 +391,7 @@ public class ArRenderer implements Renderer, PreviewCallback, OnFrameAvailableLi
 
 		Log.d(TAG, "Attach mediaplayer to surface!");
 		
-        s = new Surface(st);
         
-        new DoRead().execute(url);
     }
 	
 	public void onPrepared(MediaPlayer player) {
