@@ -1,0 +1,4 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<session version="1.0">
+<refactoring comment="Rename local variable &apos;person&apos; in &apos;be.csmmi.zombiegame.rendering.ArRenderer.onSurfaceCreated(...).new Listener() {...}.onResponse(...)&apos; to &apos;cams&apos;&#x0A;- Original project: &apos;ZombieGame&apos;&#x0A;- Original element: &apos;be.csmmi.zombiegame.rendering.ArRenderer.onSurfaceCreated(...).new Listener() {...}.onResponse(JSONArray).person&apos;&#x0A;- Renamed element: &apos;person&apos;&#x0A;- Update references to refactored element" description="Rename local variable &apos;person&apos;" id="org.eclipse.jdt.ui.rename.local.variable" input="/src&lt;be.csmmi.zombiegame.rendering{ArRenderer.java[ArRenderer~onSurfaceCreated~QGL10;~QEGLConfig;[~onResponse~QJSONArray;@person!10365!10413!10376!10381!QJSONObject;!0!false" name="cams" references="true" stamp="1425570209408" version="1.0"/>
+</session>

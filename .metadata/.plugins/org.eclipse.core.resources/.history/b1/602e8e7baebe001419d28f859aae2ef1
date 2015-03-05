@@ -1,0 +1,12 @@
+
+public class Server {
+
+	public static void main(String[] args) {
+		new WebcamStreamer(8081, Webcam.getDefault(), 20, true);
+		  do {
+		    Thread.sleep(1000);
+		  } while (true);
+	}
+	}
+
+}
