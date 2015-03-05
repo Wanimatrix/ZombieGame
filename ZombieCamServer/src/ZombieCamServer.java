@@ -20,7 +20,7 @@ public class ZombieCamServer {
 	public void start() throws UnknownHostException, UnsupportedEncodingException, IOException{
 		webcam.setViewSize(new Dimension(640, 480));
 		new WebcamStreamer(CONFIG.localport, webcam, 100, true);
-		sendData("connectcam", CONFIG.cameraname + "$$$" + CONFIG.localip+":"+CONFIG.localport);
+		sendData("connectcam", CONFIG.room + "$$$" + CONFIG.cameraname + "$$$" + CONFIG.localip+":"+CONFIG.localport);
 		do {
 			try {
 				Thread.sleep(1000);
