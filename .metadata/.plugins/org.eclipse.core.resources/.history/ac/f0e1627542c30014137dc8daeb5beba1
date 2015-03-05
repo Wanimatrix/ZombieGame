@@ -1,0 +1,53 @@
+import java.awt.Dimension;
+import java.io.BufferedWriter;
+import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
+import java.net.ServerSocket;
+import java.net.Socket;
+import java.net.SocketAddress;
+import java.net.UnknownHostException;
+
+import com.github.sarxos.webcam.Webcam;
+import com.github.sarxos.webcam.WebcamStreamer;
+
+
+public class ZombieCamServer {
+
+	private static void sendData(String endpoint, String data)	throws UnknownHostException, IOException, UnsupportedEncodingException {
+
+		Socket socket = new Socket("127.0.0.1", 9002);
+
+		BufferedWriter wr = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream(), "UTF-8"));
+		wr.write("POST " + "/" + endpoint + " HTTP/1.0\r\n");
+		wr.write("Content-Length: " + data.length() + "\r\n");
+		wr.write("Content-Type: text/html");
+		wr.write("\r\n");
+		wr.write("\r\n");
+		wr.write(data);
+		wr.write("\r\n");
+		wr.write("\r\n");
+
+		wr.flush();
+		wr.close();
+
+		socket.close();
+
+	}
+
+	public static void main(String[] args) {
+		Webcam webcam = Webcam.getWebcams().get(0);
+		ServerSocket sock;
+		webcam.setViewSize(new Dimension(640, 480));
+		new WebcamStreamer(CONFIG.port, webcam, 100, true);
+
+		do {
+			try {
+				Thread.sleep(1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+		} while (true);
+	}
+
+}

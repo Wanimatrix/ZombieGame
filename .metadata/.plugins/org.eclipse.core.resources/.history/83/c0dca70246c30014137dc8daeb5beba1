@@ -1,0 +1,17 @@
+import java.util.HashMap;
+
+
+public class ZombieCamList {
+
+	private HashMap<String, String> camlist = new HashMap<String, String>();
+	
+	public ZombieCamList(){
+		
+	}
+	
+	public void addCam(String name, String address){
+		camlist.put(name, address);
+	}
+	
+
+}
