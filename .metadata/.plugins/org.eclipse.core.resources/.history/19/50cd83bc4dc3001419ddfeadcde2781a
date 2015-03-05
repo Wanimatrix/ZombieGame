@@ -9,7 +9,7 @@ public class ZombieCamList {
 		
 	}
 	
-	public synchronized void addCam(String name, String address){
+	public void addCam(String name, String address){
 		camlist.put(name, address);
 	}
 	
