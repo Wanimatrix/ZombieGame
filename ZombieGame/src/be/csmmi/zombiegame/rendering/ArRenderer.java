@@ -1,6 +1,5 @@
 package be.csmmi.zombiegame.rendering;
 
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.URI;
 import java.nio.Buffer;
@@ -19,11 +18,8 @@ import org.apache.http.params.HttpParams;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.ImageFormat;
 import android.graphics.Paint;
-import android.graphics.PorterDuff.Mode;
-import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
 import android.graphics.SurfaceTexture.OnFrameAvailableListener;
@@ -31,7 +27,6 @@ import android.hardware.Camera;
 import android.hardware.Camera.PreviewCallback;
 import android.media.MediaPlayer;
 import android.media.MediaPlayer.OnPreparedListener;
-import android.media.MediaPlayer.OnErrorListener;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
@@ -73,6 +68,8 @@ public class ArRenderer implements Renderer, PreviewCallback, OnFrameAvailableLi
     
     private MediaPlayer mp;
     private boolean updateSurface = false;
+    
+    private String url = "http://192.168.137.183:8081";
 	
     // CAMERA SHADERS
 	private final String vssCamera =
@@ -186,11 +183,6 @@ public class ArRenderer implements Renderer, PreviewCallback, OnFrameAvailableLi
 	public final static int SIZE_STANDARD   = 1; 
     public final static int SIZE_BEST_FIT   = 4;
     public final static int SIZE_FULLSCREEN = 8;
-    private int dispWidth;
-    private int dispHeight;
-    private int overlayTextColor;
-    private int overlayBackgroundColor;
-    private int displayMode;
     public int IMG_WIDTH=640;
 	public int IMG_HEIGHT=480;
 	private boolean mRun = false;
@@ -200,189 +192,75 @@ public class ArRenderer implements Renderer, PreviewCallback, OnFrameAvailableLi
 	
 	public class MjpegViewThread extends Thread {
         private Surface surface;
-//        private int frameCounter = 0;
-        private long start;
-//        private String fps = "";
 
          
         public MjpegViewThread(Surface surface, Context context) { 
             this.surface = surface; 
         }
 
-        private Rect destRect(int bmw, int bmh) {
-            int tempx;
-            int tempy;
-//            if (displayMode == SIZE_STANDARD) {
-//                tempx = (dispWidth / 2) - (bmw / 2);
-//                tempy = (dispHeight / 2) - (bmh / 2);
-//                return new Rect(tempx, tempy, bmw + tempx, bmh + tempy);
-//            }
-//            if (displayMode == SIZE_BEST_FIT) {
-//                float bmasp = (float) bmw / (float) bmh;
-//                bmw = dispWidth;
-//                bmh = (int) (dispWidth / bmasp);
-//                if (bmh > dispHeight) {
-//                    bmh = dispHeight;
-//                    bmw = (int) (dispHeight * bmasp);
-//                }
-//                tempx = (dispWidth / 2) - (bmw / 2);
-//                tempy = (dispHeight / 2) - (bmh / 2);
-//                return new Rect(tempx, tempy, bmw + tempx, bmh + tempy);
-//            }
-//            if (displayMode == SIZE_FULLSCREEN)
-                return new Rect(0, 0, dispWidth, dispHeight);
-//            return null;
-        }
-         
-        public void setSurfaceSize(int width, int height) {
-            synchronized(surface) {
-                dispWidth = width;
-                dispHeight = height;
-            }
-        }
-         
-//        private Bitmap makeFpsOverlay(Paint p) {
-//            Rect b = new Rect();
-//            p.getTextBounds(fps, 0, fps.length(), b);
-//
-//            // false indentation to fix forum layout             
-//            Bitmap bm = Bitmap.createBitmap(b.width(), b.height(), Bitmap.Config.ARGB_8888);
-//
-//            Canvas c = new Canvas(bm);
-//            p.setColor(overlayBackgroundColor);
-//            c.drawRect(0, 0, b.width(), b.height(), p);
-//            p.setColor(overlayTextColor);
-//            c.drawText(fps, -b.left, b.bottom-b.top-p.descent(), p);
-//            return bm;        	 
-//        }
-
         public void run() {
-            start = System.currentTimeMillis();
-            
             Log.d("MJPEG","Reading begins ... ");
-            
-//            PorterDuffXfermode mode = new PorterDuffXfermode(Mode.DST_OVER);
-
-//            int width;
-//            int height;
             Paint p = new Paint();
-//            Bitmap ovl=null;
-            
-            while (mRun) {
-
-                Rect destRect=null;
-                Canvas c = null;
-
-                if(surfaceDone) {   
-                	try {
-                		if(bmp==null){
-                			bmp = Bitmap.createBitmap(IMG_WIDTH, IMG_HEIGHT, Bitmap.Config.ARGB_8888);
-                		}
-                		int ret = source.readMjpegFrame(bmp);
-                		
-//                		FileOutputStream out = null;
-//                		try {
-//                		    out = new FileOutputStream("/sdcard/arbg/webcamFrame.png");
-//                		    bmp.compress(Bitmap.CompressFormat.PNG, 100, out); // bmp is your Bitmap instance
-//                		    // PNG is a lossless format, the compression factor (100) is ignored
-//                		} catch (Exception e) {
-//                		    e.printStackTrace();
-//                		} finally {
-//                		    try {
-//                		        if (out != null) {
-//                		            out.close();
-//                		        }
-//                		    } catch (IOException e) {
-//                		        e.printStackTrace();
-//                		    }
-//                		}
-
-                		if(ret == -1)
-                		{
-//                			((MjpegActivity)saved_context).setImageError();
-                			Log.d("MJPEG", "Error while reading frame");
-                			return;
-                		}
-                		
-                        destRect = destRect(bmp.getWidth(),bmp.getHeight());
-//                        Log.d("MJPEG", "Destination Rect: "+destRect.left+","+destRect.bottom+","+destRect.right+","+destRect.top+".");
-                        
-//                        surface.
-                        
-                        c = surface.lockCanvas(null);
-                        
-//                        Log.d("MJPEG", "Canvas size: "+c.getWidth()+","+c.getHeight());
-                        synchronized (surface) {
-
-                               	c.drawBitmap(bmp, new Rect(0, 0, bmp.getWidth(), bmp.getHeight()), new Rect(0, 0, c.getWidth(), c.getHeight()), p);
-
-//                                if(showFps) {
-//                                    p.setXfermode(mode);
-//                                    if(ovl != null) {
-//
-//                                    	// false indentation to fix forum layout 	                                	 
-//                                    	height = ((ovlPos & 1) == 1) ? destRect.top : destRect.bottom-ovl.getHeight();
-//                                    	width  = ((ovlPos & 8) == 8) ? destRect.left : destRect.right -ovl.getWidth();
-//
-//                                        c.drawBitmap(ovl, width, height, null);
-//                                    }
-//                                    p.setXfermode(null);
-//                                    frameCounter++;
-//                                    if((System.currentTimeMillis() - start) >= 1000) {
-//                                        fps = String.valueOf(frameCounter)+"fps";
-//                                        frameCounter = 0; 
-//                                        start = System.currentTimeMillis();
-//                                        if(ovl!=null) ovl.recycle();
-//                                    	
-//                                        ovl = makeFpsOverlay(overlayPaint);
-//                                    }
-//                                }
-                                
-
-                        }
-
-                    }catch (IOException e){ 
-                	
-                }finally { 
-                    	if (c != null) {
-                    		surface.unlockCanvasAndPost(c); 
-                    		Log.d("MJPEG", "Canvas unlocked!");
-                    		view.requestRender();
-                    	}
-                    }
-                }
+            while(true) {
+            	Log.d("MJPEG", "Running: "+mRun);
+	            while (mRun) {
+	                Canvas c = null;
+	
+	                if(surfaceDone) {   
+	                	try {
+	                		if(bmp==null){
+	                			bmp = Bitmap.createBitmap(IMG_WIDTH, IMG_HEIGHT, Bitmap.Config.ARGB_8888);
+	                		}
+	                		int ret = source.readMjpegFrame(bmp);
+	
+	                		if(ret == -1)
+	                		{
+	                			Log.d("MJPEG", "Error while reading frame");
+	                			new DoRead().execute(url);
+	                			mRun = false;
+	                			break;
+	                		}
+	                        
+	                        c = surface.lockCanvas(null);
+	                        synchronized (surface) {
+	                               	c.drawBitmap(bmp, new Rect(0, 0, bmp.getWidth(), bmp.getHeight()), new Rect(0, 0, c.getWidth(), c.getHeight()), p);
+	                        }
+	
+	                    }catch (IOException e){ 
+	                }finally { 
+	                    	if (c != null) {
+	                    		surface.unlockCanvasAndPost(c); 
+	                    		Log.d("MJPEG", "Canvas unlocked!");
+	                    		view.requestRender();
+	                    	}
+	                    }
+	                }
+	            }
             }
         }
     }
 	
 	public class DoRead extends AsyncTask<String, Void, MjpegInputStream> {
         protected MjpegInputStream doInBackground(String... url) {
-            //TODO: if camera has authentication deal with it and don't just not work
             HttpResponse res = null;         
             DefaultHttpClient httpclient = new DefaultHttpClient(); 
             HttpParams httpParams = httpclient.getParams();
             HttpConnectionParams.setConnectionTimeout(httpParams, 5*1000);
             HttpConnectionParams.setSoTimeout(httpParams, 5*1000);
-//            if(DEBUG) Log.d(TAG, "1. Sending http request");
             try {
                 res = httpclient.execute(new HttpGet(URI.create(url[0])));
-//                if(DEBUG) Log.d(TAG, "2. Request finished, status = " + res.getStatusLine().getStatusCode());
                 if(res.getStatusLine().getStatusCode()==401){
                     //You must turn off camera User Access Control before this will work
                     return null;
                 }
                 return new MjpegInputStream(res.getEntity().getContent());  
             } catch (ClientProtocolException e) {
-//            	if(DEBUG){
 	                e.printStackTrace();
 	                Log.d(TAG, "Request failed-ClientProtocolException", e);
-//            	}
                 //Error connecting to camera
             } catch (IOException e) {
-//            	if(DEBUG){
 	                e.printStackTrace();
 	                Log.d(TAG, "Request failed-IOException", e);
-//            	}
                 //Error connecting to camera
             }
             return null;
@@ -391,11 +269,15 @@ public class ArRenderer implements Renderer, PreviewCallback, OnFrameAvailableLi
         protected void onPostExecute(MjpegInputStream result) {
         	
         	Log.d("CONN", "Source was set to: "+source);
+        	if(result == null) {
+        		Log.d("CONNECTION", "Trying to connect");
+        		new DoRead().execute(url);
+        		return;
+        	}
         	
             source = result;
             if(result!=null){
             	result.setSkip(1);
-//            	setTitle(R.string.app_name);
             }
             
             if(thread==null){
@@ -406,17 +288,11 @@ public class ArRenderer implements Renderer, PreviewCallback, OnFrameAvailableLi
             mRun = true;  
             surfaceDone = true;
             
-            thread.start(); 
-            
-//            else{
-//            	setTitle(R.string.title_disconnected);
-//            }
-//            mv.setDisplayMode(MjpegView.SIZE_BEST_FIT);
-//            mv.showFps(false);
+            if(!thread.isAlive()) {
+            	thread.start(); 
+            }
         }
     }
-	
-//	boolean surfaceDone = false;
 	
 	@Override
 	public void onSurfaceCreated(GL10 unused, EGLConfig config) {
@@ -439,65 +315,8 @@ public class ArRenderer implements Renderer, PreviewCallback, OnFrameAvailableLi
 		
         s = new Surface(st);
         
-        new DoRead().execute("http://192.168.137.230:8081");
-        
-//        thread = new MjpegViewThread(s, context);
-//        setFocusable(true);
-//        overlayPaint = new Paint();
-//        overlayPaint.setTextAlign(Paint.Align.LEFT);
-//        overlayPaint.setTextSize(12);
-//        overlayPaint.setTypeface(Typeface.DEFAULT);
-        overlayTextColor = Color.WHITE;
-        overlayBackgroundColor = Color.BLACK;
-//        ovlPos = MjpegView.POSITION_LOWER_RIGHT;
-        displayMode = SIZE_BEST_FIT;
-        dispWidth = 640;
-        dispHeight = 480;
+        new DoRead().execute(url);
     }
-        
-//        mp = new MediaPlayer();
-//        
-//        mp.setOnErrorListener(new OnErrorListener() {
-//
-//            @Override
-//            public boolean onError(MediaPlayer mp, int what, int extra) {
-//                Log.d("SimpleVideoPlayer", "error with code: " + what + ", " + extra);
-//                return false;
-//            }
-//        });
-//        
-//        try {
-//			mp.setDataSource("rtsp://192.168.1.254:5544");
-////			mp.setDataSource(Environment.getExternalStorageDirectory().getPath() + "/DCIM/100ANDRO/MOV_0042.mp4");
-//		} catch (IllegalArgumentException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (SecurityException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IllegalStateException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			// TODO Auto-generated catch block
-//			e.printStackTrace();
-//		}
-////        mp.setDisplay(mSurfaceView.getHolder());
-//        
-//        mp.setSurface(s);
-//        s.release();
-//
-//        mp.setOnPreparedListener(this);
-//        try {
-//        	mp.prepareAsync();
-//        } catch (Exception t) {
-//            Log.e(TAG, "media player prepare failed");
-//        }
-        
-//        synchronized(this) {
-//            updateSurface = false;
-//        }
-//	}
 	
 	public void onPrepared(MediaPlayer player) {
 		mp.start();
