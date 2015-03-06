@@ -1,9 +1,9 @@
-16:41:31 **** Incremental Build of configuration Default for project ZombieGame ****
+20:42:04 **** Build of configuration Default for project ZombieGame ****
 /Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
 [armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
 [armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
 [mips] Install        : libImageProc.so => libs/mips/libImageProc.so
 [x86] Install        : libImageProc.so => libs/x86/libImageProc.so
 
-16:41:32 Build Finished (took 692ms)
+20:42:07 Build Finished (took 3s.755ms)
 

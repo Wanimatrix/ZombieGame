@@ -80,7 +80,7 @@ public class ArRenderer implements Renderer, PreviewCallback, OnFrameAvailableLi
     private MediaPlayer mp;
     private boolean updateSurface = false;
     
-    private ArrayList<String> urls;
+    private ArrayList<String> urls = new ArrayList<String>();
     private int currentCamIndex = 0;
 	
     // CAMERA SHADERS
@@ -218,13 +218,15 @@ public class ArRenderer implements Renderer, PreviewCallback, OnFrameAvailableLi
             while(true) {
             	Log.d("MJPEG", "Running: "+mRun);
 	            while (mRun) {
-	            	if((System.currentTimeMillis() - start)/1000.0 > 20) {
+	            	if((System.currentTimeMillis() - start)/1000.0 > 10) {
 	            		start = System.currentTimeMillis();
-	            		currentCamIndex = currentCamIndex+1 % urls.size();
+	            		currentCamIndex = (currentCamIndex+1) % urls.size();
+	            		Log.d("CamIDX", "Camidx: "+currentCamIndex);
 	            		new DoRead().execute(urls.get(currentCamIndex));
             			mRun = false;
             			break;
 	            	}
+	            	Log.d("CamIDX", "CAM: "+currentCamIndex);
 	            	
 	                Canvas c = null;
 	

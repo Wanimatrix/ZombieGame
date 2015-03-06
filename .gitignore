@@ -1,3 +1,4 @@
-.metadata
-bin
-*.class
+.metadata/*
+*/bin
+*/*.class
+ZombieCamServer/src/CONFIG.java

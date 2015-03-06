@@ -1392,3 +1392,23 @@
 2015-03-05 15:58:02,779 [Worker-5] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (Cp1252 actually) to copy filtered resources, i.e. build is platform dependent!
 2015-03-05 15:58:02,779 [Worker-5] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory D:\KUL\master\2e_Ma\CSMMI\HI BRIT\ZombieGame\ZombieServer\src\test\resources
 >>>>>>> 0de92cac0fe0b4b44d2f45414bcc03d9c1cabe6d
+2015-03-06 20:42:11,876 [Worker-1] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2015-03-06 20:42:11,920 [Worker-1] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2015-03-06 20:42:11,926 [Worker-1] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2015-03-06 20:42:11,927 [Worker-1] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Volumes/MacintoshHD/Users/wouterfranken/Documents/KUL/2de Master/CSMMI/NaziZombieGame/ZombieGame/src/test/resources
+2015-03-06 20:42:39,213 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2015-03-06 20:42:39,229 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Volumes/MacintoshHD/Users/wouterfranken/Documents/KUL/2de Master/CSMMI/NaziZombieGame/ZombieCamServer/src/main/resources
+2015-03-06 20:42:39,232 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2015-03-06 20:42:39,236 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Volumes/MacintoshHD/Users/wouterfranken/Documents/KUL/2de Master/CSMMI/NaziZombieGame/ZombieCamServer/src/test/resources
+2015-03-06 20:42:39,571 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2015-03-06 20:42:39,580 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2015-03-06 20:42:39,583 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2015-03-06 20:42:39,584 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Volumes/MacintoshHD/Users/wouterfranken/Documents/KUL/2de Master/CSMMI/NaziZombieGame/ZombieGame/src/test/resources
+2015-03-06 20:42:39,778 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2015-03-06 20:42:39,779 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Volumes/MacintoshHD/Users/wouterfranken/Documents/KUL/2de Master/CSMMI/NaziZombieGame/ZombieServer/src/main/resources
+2015-03-06 20:42:39,781 [Worker-6] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2015-03-06 20:42:39,782 [Worker-6] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Volumes/MacintoshHD/Users/wouterfranken/Documents/KUL/2de Master/CSMMI/NaziZombieGame/ZombieServer/src/test/resources
+2015-03-06 20:42:42,215 [Worker-4] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2015-03-06 20:42:42,216 [Worker-4] INFO  o.e.m.c.i.embedder.EclipseLogger - Copying 0 resource
+2015-03-06 20:42:42,217 [Worker-4] WARN  o.e.m.c.i.embedder.EclipseLogger - Using platform encoding (UTF-8 actually) to copy filtered resources, i.e. build is platform dependent!
+2015-03-06 20:42:42,218 [Worker-4] INFO  o.e.m.c.i.embedder.EclipseLogger - skip non existing resourceDirectory /Volumes/MacintoshHD/Users/wouterfranken/Documents/KUL/2de Master/CSMMI/NaziZombieGame/ZombieGame/src/test/resources

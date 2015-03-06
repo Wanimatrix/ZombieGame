@@ -5,17 +5,12 @@
 		<item value="false" key="WizardProjectsImportPage.STORE_COPY_PROJECT_ID"/>
 		<item value="false" key="WizardProjectsImportPage.STORE_ARCHIVE_SELECTED"/>
 		<list key="WizardProjectsImportPage.STORE_DIRECTORIES">
-<<<<<<< HEAD
 			<item value="/Volumes/MacintoshHD/Users/wouterfranken/Documents/KUL/2de Master/CSMMI/NaziZombieGame"/>
-=======
-			<item value="D:\KUL\master\2e_Ma\CSMMI\HI BRIT\ZombieGame\ZombieServer"/>
->>>>>>> 0de92cac0fe0b4b44d2f45414bcc03d9c1cabe6d
 		</list>
 		<list key="WizardProjectsImportPage.STORE_ARCHIVES">
 			<item value=""/>
 		</list>
 	</section>
-<<<<<<< HEAD
 	<section name="NewWizardAction">
 		<item value="com.android.ide.eclipse.adt.project.ImportProjectWizard.NewPrj" key="NewWizardSelectionPage.STORE_SELECTED_ID"/>
 		<list key="NewWizardSelectionPage.STORE_EXPANDED_CATEGORIES_ID">
@@ -23,6 +18,4 @@
 			<item value="com.android.ide.eclipse.wizards.category"/>
 		</list>
 	</section>
-=======
->>>>>>> 0de92cac0fe0b4b44d2f45414bcc03d9c1cabe6d
 </section>
