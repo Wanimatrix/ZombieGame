@@ -796,3 +796,33 @@ jni/ImageProc/ImageProc.c:12:1: note: expected 'void *' but argument is of type 
 [armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
 [mips] Install        : libImageProc.so => libs/mips/libImageProc.so
 [x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+20:52:39 **** Clean-only build of configuration Default for project ZombieGame ****
+ndk-build clean 
+Cannot run program "ndk-build": Unknown reason
+
+Error: Program "ndk-build" not found in PATH
+PATH=[/usr/bin:/bin:/usr/sbin:/sbin]
+20:52:52 **** Build of configuration Default for project ZombieGame ****
+ndk-build all 
+Cannot run program "ndk-build": Unknown reason
+
+Error: Program "ndk-build" not found in PATH
+PATH=[/usr/bin:/bin:/usr/sbin:/sbin]
+20:55:35 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+20:56:56 **** Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+21:01:41 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so

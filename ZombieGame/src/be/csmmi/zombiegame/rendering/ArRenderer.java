@@ -332,7 +332,7 @@ public class ArRenderer implements Renderer, PreviewCallback, OnFrameAvailableLi
 		
 		// Instantiate the RequestQueue.
 		RequestQueue queue = Volley.newRequestQueue(this.context);
-		String urlJsonArry = "http://192.168.137.1:8082/getcams";
+		String urlJsonArry = "http://192.168.1.254:8082/getcams";
 
 		JsonArrayRequest req = new JsonArrayRequest(urlJsonArry,
 	            new com.android.volley.Response.Listener<JSONArray>() {

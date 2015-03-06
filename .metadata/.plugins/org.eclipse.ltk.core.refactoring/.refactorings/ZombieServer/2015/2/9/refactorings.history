@@ -1,4 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<session version="1.0">
-<refactoring comment="Rename local variable &apos;robot&apos; in &apos;Server.main(...)&apos; to &apos;webcam&apos;&#x0A;- Original project: &apos;ZombieServer&apos;&#x0A;- Original element: &apos;Server.main(String[]).robot&apos;&#x0A;- Renamed element: &apos;robot&apos;&#x0A;- Update references to refactored element" description="Rename local variable &apos;robot&apos;" id="org.eclipse.jdt.ui.rename.local.variable" input="/src&lt;{Server.java[Server~main~\[QString;@robot!3289!3323!3296!3300!QWebcam;!0!false" name="webcam" references="true" stamp="1425065124190" version="1.0"/>
-</session>

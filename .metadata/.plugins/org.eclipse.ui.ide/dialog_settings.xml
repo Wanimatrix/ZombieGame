@@ -5,6 +5,7 @@
 		<item value="false" key="WizardProjectsImportPage.STORE_COPY_PROJECT_ID"/>
 		<item value="false" key="WizardProjectsImportPage.STORE_ARCHIVE_SELECTED"/>
 		<list key="WizardProjectsImportPage.STORE_DIRECTORIES">
+			<item value="/Volumes/MacintoshHD/Users/wouterfranken/Development/volleyLib/volley/src"/>
 			<item value="/Volumes/MacintoshHD/Users/wouterfranken/Documents/KUL/2de Master/CSMMI/NaziZombieGame"/>
 		</list>
 		<list key="WizardProjectsImportPage.STORE_ARCHIVES">
