@@ -7,6 +7,7 @@ import java.net.Socket;
 import java.net.UnknownHostException;
 
 import com.github.sarxos.webcam.Webcam;
+import com.github.sarxos.webcam.WebcamException;
 import com.github.sarxos.webcam.WebcamStreamer;
 
 
@@ -14,7 +15,8 @@ public class ZombieCamServer {
 	Webcam webcam;
 	
 	public ZombieCamServer(){
-		webcam = Webcam.getWebcams().get(0);		
+		System.out.println("Amount wbcams: "+Webcam.getWebcams().size());
+		webcam = Webcam.getWebcams().get(CONFIG.webcamId);
 	}
 	
 	public void start() throws UnknownHostException, UnsupportedEncodingException, IOException{

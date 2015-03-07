@@ -826,3 +826,675 @@ PATH=[/usr/bin:/bin:/usr/sbin:/sbin]
 [armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
 [mips] Install        : libImageProc.so => libs/mips/libImageProc.so
 [x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+21:15:12 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+22:28:25 **** Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+22:28:41 **** Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+22:29:23 **** Clean-only build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build clean 
+[armeabi] Clean          : ImageProc [armeabi]
+[armeabi] Clean          : cocos_jpeg_static [armeabi]
+[armeabi] Clean          : stdc++ [armeabi]
+[armeabi-v7a] Clean          : ImageProc [armeabi-v7a]
+[armeabi-v7a] Clean          : cocos_jpeg_static [armeabi-v7a]
+[armeabi-v7a] Clean          : stdc++ [armeabi-v7a]
+[mips] Clean          : ImageProc [mips]
+[mips] Clean          : cocos_jpeg_static [mips]
+[mips] Clean          : stdc++ [mips]
+[x86] Clean          : ImageProc [x86]
+[x86] Clean          : cocos_jpeg_static [x86]
+[x86] Clean          : stdc++ [x86]
+22:31:23 **** Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Compile thumb  : ImageProc <= ImageProc.c
+jni/ImageProc/ImageProc.c: In function 'processimage':
+jni/ImageProc/ImageProc.c:199:2: warning: passing argument 2 of 'jpeg_memory_src' discards 'const' qualifier from pointer target type [enabled by default]
+jni/ImageProc/ImageProc.c:12:1: note: expected 'void *' but argument is of type 'void const *'
+[armeabi] Compile thumb  : cocos_jpeg_static <= jcapimin.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jcapistd.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jccoefct.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jccolor.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jcdctmgr.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jchuff.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jcinit.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jcmainct.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jcmarker.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jcmaster.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jcomapi.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jcparam.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jcprepct.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jcsample.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jctrans.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jdapimin.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jdapistd.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jdatadst.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jdatasrc.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jdcoefct.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jdcolor.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jddctmgr.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jdhuff.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jdinput.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jdmainct.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jdmarker.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jdmaster.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jdmerge.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jdpostct.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jdsample.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jdtrans.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jerror.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jfdctflt.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jfdctfst.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jfdctint.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jidctflt.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jidctfst.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jidctint.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jquant1.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jquant2.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jutils.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jmemmgr.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jcarith.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jdarith.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jaricom.c
+[armeabi] Compile thumb  : cocos_jpeg_static <= jmemnobs.c
+[armeabi] StaticLibrary  : libjpeg.a
+[armeabi] SharedLibrary  : libImageProc.so
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Compile thumb  : ImageProc <= ImageProc.c
+jni/ImageProc/ImageProc.c: In function 'processimage':
+jni/ImageProc/ImageProc.c:199:2: warning: passing argument 2 of 'jpeg_memory_src' discards 'const' qualifier from pointer target type [enabled by default]
+jni/ImageProc/ImageProc.c:12:1: note: expected 'void *' but argument is of type 'void const *'
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jcapimin.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jcapistd.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jccoefct.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jccolor.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jcdctmgr.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jchuff.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jcinit.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jcmainct.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jcmarker.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jcmaster.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jcomapi.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jcparam.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jcprepct.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jcsample.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jctrans.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jdapimin.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jdapistd.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jdatadst.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jdatasrc.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jdcoefct.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jdcolor.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jddctmgr.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jdhuff.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jdinput.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jdmainct.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jdmarker.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jdmaster.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jdmerge.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jdpostct.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jdsample.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jdtrans.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jerror.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jfdctflt.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jfdctfst.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jfdctint.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jidctflt.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jidctfst.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jidctint.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jquant1.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jquant2.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jutils.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jmemmgr.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jcarith.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jdarith.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jaricom.c
+[armeabi-v7a] Compile thumb  : cocos_jpeg_static <= jmemnobs.c
+[armeabi-v7a] StaticLibrary  : libjpeg.a
+[armeabi-v7a] SharedLibrary  : libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Compile        : ImageProc <= ImageProc.c
+jni/ImageProc/ImageProc.c: In function 'processimage':
+jni/ImageProc/ImageProc.c:199:2: warning: passing argument 2 of 'jpeg_memory_src' discards 'const' qualifier from pointer target type [enabled by default]
+jni/ImageProc/ImageProc.c:12:1: note: expected 'void *' but argument is of type 'void const *'
+[mips] Compile        : cocos_jpeg_static <= jcapimin.c
+[mips] Compile        : cocos_jpeg_static <= jcapistd.c
+[mips] Compile        : cocos_jpeg_static <= jccoefct.c
+[mips] Compile        : cocos_jpeg_static <= jccolor.c
+[mips] Compile        : cocos_jpeg_static <= jcdctmgr.c
+[mips] Compile        : cocos_jpeg_static <= jchuff.c
+[mips] Compile        : cocos_jpeg_static <= jcinit.c
+[mips] Compile        : cocos_jpeg_static <= jcmainct.c
+[mips] Compile        : cocos_jpeg_static <= jcmarker.c
+[mips] Compile        : cocos_jpeg_static <= jcmaster.c
+[mips] Compile        : cocos_jpeg_static <= jcomapi.c
+[mips] Compile        : cocos_jpeg_static <= jcparam.c
+[mips] Compile        : cocos_jpeg_static <= jcprepct.c
+[mips] Compile        : cocos_jpeg_static <= jcsample.c
+[mips] Compile        : cocos_jpeg_static <= jctrans.c
+[mips] Compile        : cocos_jpeg_static <= jdapimin.c
+[mips] Compile        : cocos_jpeg_static <= jdapistd.c
+[mips] Compile        : cocos_jpeg_static <= jdatadst.c
+[mips] Compile        : cocos_jpeg_static <= jdatasrc.c
+[mips] Compile        : cocos_jpeg_static <= jdcoefct.c
+[mips] Compile        : cocos_jpeg_static <= jdcolor.c
+[mips] Compile        : cocos_jpeg_static <= jddctmgr.c
+[mips] Compile        : cocos_jpeg_static <= jdhuff.c
+[mips] Compile        : cocos_jpeg_static <= jdinput.c
+[mips] Compile        : cocos_jpeg_static <= jdmainct.c
+[mips] Compile        : cocos_jpeg_static <= jdmarker.c
+[mips] Compile        : cocos_jpeg_static <= jdmaster.c
+[mips] Compile        : cocos_jpeg_static <= jdmerge.c
+[mips] Compile        : cocos_jpeg_static <= jdpostct.c
+[mips] Compile        : cocos_jpeg_static <= jdsample.c
+[mips] Compile        : cocos_jpeg_static <= jdtrans.c
+[mips] Compile        : cocos_jpeg_static <= jerror.c
+[mips] Compile        : cocos_jpeg_static <= jfdctflt.c
+[mips] Compile        : cocos_jpeg_static <= jfdctfst.c
+[mips] Compile        : cocos_jpeg_static <= jfdctint.c
+[mips] Compile        : cocos_jpeg_static <= jidctflt.c
+[mips] Compile        : cocos_jpeg_static <= jidctfst.c
+[mips] Compile        : cocos_jpeg_static <= jidctint.c
+[mips] Compile        : cocos_jpeg_static <= jquant1.c
+[mips] Compile        : cocos_jpeg_static <= jquant2.c
+[mips] Compile        : cocos_jpeg_static <= jutils.c
+[mips] Compile        : cocos_jpeg_static <= jmemmgr.c
+[mips] Compile        : cocos_jpeg_static <= jcarith.c
+[mips] Compile        : cocos_jpeg_static <= jdarith.c
+[mips] Compile        : cocos_jpeg_static <= jaricom.c
+[mips] Compile        : cocos_jpeg_static <= jmemnobs.c
+[mips] StaticLibrary  : libjpeg.a
+[mips] SharedLibrary  : libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Compile        : ImageProc <= ImageProc.c
+jni/ImageProc/ImageProc.c: In function 'processimage':
+jni/ImageProc/ImageProc.c:199:2: warning: passing argument 2 of 'jpeg_memory_src' discards 'const' qualifier from pointer target type [enabled by default]
+jni/ImageProc/ImageProc.c:12:1: note: expected 'void *' but argument is of type 'void const *'
+[x86] Compile        : cocos_jpeg_static <= jcapimin.c
+[x86] Compile        : cocos_jpeg_static <= jcapistd.c
+[x86] Compile        : cocos_jpeg_static <= jccoefct.c
+[x86] Compile        : cocos_jpeg_static <= jccolor.c
+[x86] Compile        : cocos_jpeg_static <= jcdctmgr.c
+[x86] Compile        : cocos_jpeg_static <= jchuff.c
+[x86] Compile        : cocos_jpeg_static <= jcinit.c
+[x86] Compile        : cocos_jpeg_static <= jcmainct.c
+[x86] Compile        : cocos_jpeg_static <= jcmarker.c
+[x86] Compile        : cocos_jpeg_static <= jcmaster.c
+[x86] Compile        : cocos_jpeg_static <= jcomapi.c
+[x86] Compile        : cocos_jpeg_static <= jcparam.c
+[x86] Compile        : cocos_jpeg_static <= jcprepct.c
+[x86] Compile        : cocos_jpeg_static <= jcsample.c
+[x86] Compile        : cocos_jpeg_static <= jctrans.c
+[x86] Compile        : cocos_jpeg_static <= jdapimin.c
+[x86] Compile        : cocos_jpeg_static <= jdapistd.c
+[x86] Compile        : cocos_jpeg_static <= jdatadst.c
+[x86] Compile        : cocos_jpeg_static <= jdatasrc.c
+[x86] Compile        : cocos_jpeg_static <= jdcoefct.c
+[x86] Compile        : cocos_jpeg_static <= jdcolor.c
+[x86] Compile        : cocos_jpeg_static <= jddctmgr.c
+[x86] Compile        : cocos_jpeg_static <= jdhuff.c
+[x86] Compile        : cocos_jpeg_static <= jdinput.c
+[x86] Compile        : cocos_jpeg_static <= jdmainct.c
+[x86] Compile        : cocos_jpeg_static <= jdmarker.c
+[x86] Compile        : cocos_jpeg_static <= jdmaster.c
+[x86] Compile        : cocos_jpeg_static <= jdmerge.c
+[x86] Compile        : cocos_jpeg_static <= jdpostct.c
+[x86] Compile        : cocos_jpeg_static <= jdsample.c
+[x86] Compile        : cocos_jpeg_static <= jdtrans.c
+[x86] Compile        : cocos_jpeg_static <= jerror.c
+[x86] Compile        : cocos_jpeg_static <= jfdctflt.c
+[x86] Compile        : cocos_jpeg_static <= jfdctfst.c
+[x86] Compile        : cocos_jpeg_static <= jfdctint.c
+[x86] Compile        : cocos_jpeg_static <= jidctflt.c
+[x86] Compile        : cocos_jpeg_static <= jidctfst.c
+[x86] Compile        : cocos_jpeg_static <= jidctint.c
+[x86] Compile        : cocos_jpeg_static <= jquant1.c
+[x86] Compile        : cocos_jpeg_static <= jquant2.c
+[x86] Compile        : cocos_jpeg_static <= jutils.c
+[x86] Compile        : cocos_jpeg_static <= jmemmgr.c
+[x86] Compile        : cocos_jpeg_static <= jcarith.c
+[x86] Compile        : cocos_jpeg_static <= jdarith.c
+[x86] Compile        : cocos_jpeg_static <= jaricom.c
+[x86] Compile        : cocos_jpeg_static <= jmemnobs.c
+[x86] StaticLibrary  : libjpeg.a
+[x86] SharedLibrary  : libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+22:33:49 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+22:34:01 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+22:37:58 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+22:40:16 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+22:46:57 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+22:48:14 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+22:49:47 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+22:49:53 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+22:51:00 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+22:54:34 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+23:08:18 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+23:10:49 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+23:13:49 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+23:17:16 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+23:21:07 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+23:24:45 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+23:26:38 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+23:27:18 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+23:33:04 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+23:34:37 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+23:35:25 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+23:39:01 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+23:39:17 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+23:40:13 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+23:41:21 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+23:42:52 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+23:46:25 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+23:49:40 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+00:05:21 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+00:07:36 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+00:13:53 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+00:38:00 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+00:38:40 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+00:40:19 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+00:43:59 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+00:48:18 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+00:50:38 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+00:52:24 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+00:54:49 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+01:10:26 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+01:13:05 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+01:13:55 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+01:14:50 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+01:15:56 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+01:20:57 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+01:23:10 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+01:24:39 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+01:27:49 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+01:28:59 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+01:30:10 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+01:30:58 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+01:33:55 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+01:35:22 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+01:37:34 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+01:38:52 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+01:39:58 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+01:41:07 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+01:41:39 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+01:44:22 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+01:47:27 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+01:50:03 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+01:54:37 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+02:02:39 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+02:05:06 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+02:07:08 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+02:09:03 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+02:09:43 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+02:11:45 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+02:12:28 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+02:20:04 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+02:21:26 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so

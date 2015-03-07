@@ -50,7 +50,7 @@ import be.csmmi.zombiegame.app.AppConfig;
 import be.csmmi.zombiegame.rendering.meshes.FullSquadMesh;
 import be.csmmi.zombiegame.utilities.RenderingUtils;
 
-public class ArRenderer implements Renderer, PreviewCallback, OnFrameAvailableListener, OnPreparedListener {
+public class ArRenderer implements Renderer, OnCamerasReadyListener {
 	
 	private final static String TAG = ArRenderer.class.getSimpleName();
 	private GLSurfaceView view;
@@ -58,6 +58,7 @@ public class ArRenderer implements Renderer, PreviewCallback, OnFrameAvailableLi
 	private Camera camera;
 	private int[] tex;
 	private SurfaceTexture st;
+	private SurfaceTexture st2;
 	private Buffer pTexCoordVBG;
 	private Buffer pVertexVBG;
 	private Context context;
@@ -77,11 +78,8 @@ public class ArRenderer implements Renderer, PreviewCallback, OnFrameAvailableLi
 	private int[] vPositionHandler;
     private int[] mvpHandler;
     
-    private MediaPlayer mp;
-    private boolean updateSurface = false;
     
-    private ArrayList<String> urls = new ArrayList<String>();
-    private int currentCamIndex = 0;
+    private CameraManager camManager;
 	
     // CAMERA SHADERS
 	private final String vssCamera =
@@ -106,6 +104,7 @@ public class ArRenderer implements Renderer, PreviewCallback, OnFrameAvailableLi
 	public ArRenderer(GLSurfaceView view, Context context) {
 		this.view = view;
 		this.context = context;
+		camManager = new CameraManager(context, view);
 	}
 	
 	/**
@@ -122,201 +121,15 @@ public class ArRenderer implements Renderer, PreviewCallback, OnFrameAvailableLi
 		return renderTex[0];
 	}
 
-	/**
-	 ****************************
-	 * CAMERA CONTROL FUNCTIONS *
-	 ****************************
-	 */
 	
-	public void startCamera() {
-		if(AppConfig.DEBUG_LOGGING) Log.d(TAG, "Starting camera...");
-		
-		if(camera == null) {
-			camera = Camera.open();
-		}
-//		try {
-////			camera.setPreviewTexture(st);
-//		} catch (IOException e) {
-//		}
-		
-//		try {
-//	        MediaPlayer player = new MediaPlayer(this.context);
-//	        Surface surface = new Surface(st);
-//
-//	        player.setSurface(surface);
-//
-//	        player.setDataSource(this.context, Uri.parse("http://10.43.99.13:8080/ms"));
-//
-//	        player.prepare();
-//
-//	        player.setOnPreparedListener(new OnPreparedListener() {
-//
-//	            @Override
-//	            public void onPrepared(MediaPlayer mp) {
-//	                Log.d("SimpleVideoPlayer", "Starting player");
-//	                mp.start();
-//	            }
-//	        });
-//	        
-//	        player.setOnErrorListener(new OnErrorListener() {
-//				
-//				@Override
-//				public boolean onError(MediaPlayer mp, int what, int extra) {
-//					Log.d("SimpleVideoPlayer", "error with code: " + what);
-//					return false;
-//				}
-//			});
-//	        
-//	        player.start();
-//
-//	    }catch(Exception e) {
-//	        e.printStackTrace();
-//	    }
-	}
-
-	public void stopCamera() {
-		if(AppConfig.DEBUG_LOGGING) Log.d(TAG, "Stopping camera...");
-		
-		if (camera != null) {
-			camera.stopPreview();
-			camera.setPreviewCallback(null);
-			camera.release();
-			camera = null;
-		}
-	}
 
 	/**
 	 **************************
 	 * SURFACE INIT FUNCTIONS *
 	 **************************
 	 */
-	private MjpegInputStream source = null;
-	private MjpegViewThread thread;
-	public final static int SIZE_STANDARD   = 1; 
-    public final static int SIZE_BEST_FIT   = 4;
-    public final static int SIZE_FULLSCREEN = 8;
-    public int IMG_WIDTH=640;
-	public int IMG_HEIGHT=480;
-	private boolean mRun = false;
-    private boolean surfaceDone = false;  
-    private Bitmap bmp = null;
-    private Surface s;
 	
-	public class MjpegViewThread extends Thread {
-        private Surface surface;
-
-         
-        public MjpegViewThread(Surface surface, Context context) { 
-            this.surface = surface; 
-        }
-
-        public void run() {
-        	long start = System.currentTimeMillis();
-        	
-            Log.d("MJPEG","Reading begins ... ");
-            Paint p = new Paint();
-            while(true) {
-            	Log.d("MJPEG", "Running: "+mRun);
-	            while (mRun) {
-	            	if((System.currentTimeMillis() - start)/1000.0 > 10) {
-	            		start = System.currentTimeMillis();
-	            		currentCamIndex = (currentCamIndex+1) % urls.size();
-	            		Log.d("CamIDX", "Camidx: "+currentCamIndex);
-	            		new DoRead().execute(urls.get(currentCamIndex));
-            			mRun = false;
-            			break;
-	            	}
-	            	Log.d("CamIDX", "CAM: "+currentCamIndex);
-	            	
-	                Canvas c = null;
-	
-	                if(surfaceDone) {   
-	                	try {
-	                		if(bmp==null){
-	                			bmp = Bitmap.createBitmap(IMG_WIDTH, IMG_HEIGHT, Bitmap.Config.ARGB_8888);
-	                		}
-	                		int ret = source.readMjpegFrame(bmp);
-	
-	                		if(ret == -1)
-	                		{
-	                			Log.d("MJPEG", "Error while reading frame");
-	                			new DoRead().execute(urls.get(currentCamIndex));
-	                			mRun = false;
-	                			break;
-	                		}
-	                        
-	                        c = surface.lockCanvas(null);
-	                        synchronized (surface) {
-	                               	c.drawBitmap(bmp, new Rect(0, 0, bmp.getWidth(), bmp.getHeight()), new Rect(0, 0, c.getWidth(), c.getHeight()), p);
-	                        }
-	
-	                    }catch (IOException e){ 
-	                }finally { 
-	                    	if (c != null) {
-	                    		surface.unlockCanvasAndPost(c); 
-	                    		Log.d("MJPEG", "Canvas unlocked!");
-	                    		view.requestRender();
-	                    	}
-	                    }
-	                }
-	            }
-            }
-        }
-    }
-	
-	public class DoRead extends AsyncTask<String, Void, MjpegInputStream> {
-        protected MjpegInputStream doInBackground(String... url) {
-            HttpResponse res = null;         
-            DefaultHttpClient httpclient = new DefaultHttpClient(); 
-            HttpParams httpParams = httpclient.getParams();
-            HttpConnectionParams.setConnectionTimeout(httpParams, 5*1000);
-            HttpConnectionParams.setSoTimeout(httpParams, 5*1000);
-            try {
-                res = httpclient.execute(new HttpGet(URI.create(url[0])));
-                if(res.getStatusLine().getStatusCode()==401){
-                    //You must turn off camera User Access Control before this will work
-                    return null;
-                }
-                return new MjpegInputStream(res.getEntity().getContent());  
-            } catch (ClientProtocolException e) {
-	                e.printStackTrace();
-	                Log.d(TAG, "Request failed-ClientProtocolException", e);
-                //Error connecting to camera
-            } catch (IOException e) {
-	                e.printStackTrace();
-	                Log.d(TAG, "Request failed-IOException", e);
-                //Error connecting to camera
-            }
-            return null;
-        }
-
-        protected void onPostExecute(MjpegInputStream result) {
-        	
-        	Log.d("CONN", "Source was set to: "+source);
-        	if(result == null) {
-        		Log.d("CONNECTION", "Trying to connect");
-        		new DoRead().execute(urls.get(currentCamIndex));
-        		return;
-        	}
-        	
-            source = result;
-            if(result!=null){
-            	result.setSkip(1);
-            }
-            
-            if(thread==null){
-            	thread = new MjpegViewThread(s, context);
-            }
-            Log.d("CONN", "Tread starts ... ");
-            
-            mRun = true;  
-            surfaceDone = true;
-            
-            if(!thread.isAlive()) {
-            	thread.start(); 
-            }
-        }
-    }
+	private Surface s;
 	
 	@Override
 	public void onSurfaceCreated(GL10 unused, EGLConfig config) {
@@ -329,75 +142,7 @@ public class ArRenderer implements Renderer, PreviewCallback, OnFrameAvailableLi
 		
 		setupRenderHandlers();
 		
-		
-		// Instantiate the RequestQueue.
-		RequestQueue queue = Volley.newRequestQueue(this.context);
-		String urlJsonArry = "http://192.168.1.254:8082/getcams";
-
-		JsonArrayRequest req = new JsonArrayRequest(urlJsonArry,
-	            new com.android.volley.Response.Listener<JSONArray>() {
-	                @Override
-	                public void onResponse(JSONArray response) {
-	                    Log.d(TAG, response.toString());
-	 
-	                    try {
-	                        // Parsing json array response
-	                        // loop through each json object
-//	                        jsonResponse = "";
-	                        for (int i = 0; i < response.length(); i++) {
-	 
-	                            JSONObject cams = (JSONObject) response.get(i);
-	 
-	                            String name = cams.getString("name");
-	                            String address = cams.getString("address");
-	                            
-	                            Log.d("JSON", "Name: "+name+", Address: "+address);
-	                            
-	                            urls.add("http://"+address);
-	                        }
-	                        currentCamIndex = 0;
-	                        
-	                        s = new Surface(st);
-	                        new DoRead().execute(urls.get(currentCamIndex));
-	 
-//	                        txtResponse.setText(jsonResponse);
-	 
-	                    } catch (JSONException e) {
-	                    	Log.d("JSON", "JSON ERROR!");
-	                        e.printStackTrace();
-//	                        Toast.makeText(getApplicationContext(),
-//	                                "Error: " + e.getMessage(),
-//	                                Toast.LENGTH_LONG).show();
-	                    }
-	 
-//	                    hidepDialog();
-	                }
-	            }, new com.android.volley.Response.ErrorListener() {
-	                @Override
-	                public void onErrorResponse(VolleyError error) {
-	                    VolleyLog.d(TAG, "Error: " + error.getMessage());
-//	                    Toast.makeText(getApplicationContext(),
-//	                            error.getMessage(), Toast.LENGTH_SHORT).show();
-//	                    hidepDialog();
-	                }
-	            });
-		
-		// Add the request to the RequestQueue.
-		queue.add(req);
-		
-		
-		/*
-         * Create the SurfaceTexture that will feed this textureID,
-         * and pass it to the MediaPlayer
-         */
-
-		Log.d(TAG, "Attach mediaplayer to surface!");
-		
-        
-    }
-	
-	public void onPrepared(MediaPlayer player) {
-		mp.start();
+		camManager.initCameras(this);
     }
 
 	@Override
@@ -416,6 +161,12 @@ public class ArRenderer implements Renderer, PreviewCallback, OnFrameAvailableLi
 //	    setupCamera();
 		
 	    if(AppConfig.DEBUG_LOGGING) Log.d(TAG, "Camera setup done...");
+	}
+	
+	@Override
+	public void onCamerasReady() {
+		s = new Surface(st);
+		camManager.setSurface(s);
 	}
 
 	/**
@@ -436,6 +187,7 @@ public class ArRenderer implements Renderer, PreviewCallback, OnFrameAvailableLi
 		Log.d("MJPEG", "Drawing...");
 		
 		st.updateTexImage();
+		st2.updateTexImage();
 		
 		GLES20.glViewport(0, 0, this.texW, this.texH);
 		
@@ -479,44 +231,13 @@ public class ArRenderer implements Renderer, PreviewCallback, OnFrameAvailableLi
 	    if(AppConfig.DEBUG_LOGGING) Log.d(TAG, "Rendering camera to FrameBuffer done...");
 	}
 
-	/**
-	 **************************
-	 *     OnPreviewFrame     *
-	 **************************
-	 */
 	
-	@Override
-	public void onPreviewFrame(byte[] frameData, Camera camera) {
-		
-	}
 	
 	/**
 	 **************************
 	 * SETUP HELPER FUNCTIONS *
 	 **************************
 	 */
-
-	private void setupCamera() {
-		// Setup Camera Parameters
-	    Camera.Parameters params = camera.getParameters();
-	    params.setPreviewFormat(ImageFormat.NV21);
-		params.setPreviewFpsRange(AppConfig.FPS_RANGE[0], AppConfig.FPS_RANGE[1]);
-		params.setPreviewSize(AppConfig.PREVIEW_RESOLUTION[0], AppConfig.PREVIEW_RESOLUTION[1]);
-		params.set("orientation", "landscape");
-//		params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
-		camera.setParameters(params);
-		camera.startPreview();
-		
-		// Add callback buffers to camera for frame handling
-		float bytesPerPix = ImageFormat.getBitsPerPixel(params.getPreviewFormat()) / 8.0f;
-		int frame_byteSize = (int) ((AppConfig.PREVIEW_RESOLUTION[0] * AppConfig.PREVIEW_RESOLUTION[1]) * bytesPerPix);
-		
-		for(int i = 0; i< AppConfig.AMOUNT_PREVIEW_BUFFERS ; i++) {
-			camera.addCallbackBuffer(new byte[frame_byteSize]);
-		}
-		
-		camera.setPreviewCallbackWithBuffer(this);
-	}
 
 	private void setupRenderHandlers() {
 		if(AppConfig.DEBUG_LOGGING) Log.d(TAG, "Starting renderhandlers init...");
@@ -546,11 +267,14 @@ public class ArRenderer implements Renderer, PreviewCallback, OnFrameAvailableLi
 	    GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_WRAP_T, GLES20.GL_CLAMP_TO_EDGE);
 	    GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MIN_FILTER, GLES20.GL_NEAREST);
 	    GLES20.glTexParameteri(GLES11Ext.GL_TEXTURE_EXTERNAL_OES, GLES20.GL_TEXTURE_MAG_FILTER, GLES20.GL_NEAREST);
+		
+		st2 = new SurfaceTexture(tex[0]);
+		st2.setDefaultBufferSize(1920, 1080);
+//		st.setOnFrameAvailableListener(camManager);
 		st = new SurfaceTexture(tex[0]);
 		st.setDefaultBufferSize(1920, 1080);
-		st.setOnFrameAvailableListener(this);
 		
-//		startCamera();
+		camManager.startCamera(st2);
 		
 		if(AppConfig.DEBUG_LOGGING) Log.d(TAG, "Camera texture setup done...");
 	}
@@ -612,11 +336,8 @@ public class ArRenderer implements Renderer, PreviewCallback, OnFrameAvailableLi
 		
 		if(AppConfig.DEBUG_LOGGING) Log.d(TAG, "FrameBuffer init successful...");
 	}
-
-	@Override
-	public void onFrameAvailable(SurfaceTexture surfaceTexture) {
-//		updateSurface = true;
-//		st.updateTexImage();
-//		Log.d("MJPEG", "NEW FRAME AVAILABLE!");
+	
+	public CameraManager getCameraManager() {
+		return camManager;
 	}
 }

@@ -33,7 +33,6 @@ public class CameraView extends CardboardView implements Callback{
 
 	@Override
 	public void surfaceDestroyed(SurfaceHolder holder) {
-		renderer.getArRenderer().stopCamera();
 		super.surfaceDestroyed(holder);
 	}
 	
@@ -44,6 +43,10 @@ public class CameraView extends CardboardView implements Callback{
 	public void surfaceCreated(SurfaceHolder holder) {
 //		renderer.getArRenderer().startCamera();
 		super.surfaceCreated(holder);
+	}
+	
+	public CameraViewRenderer getRenderer() {
+		return renderer;
 	}
 	
 	/**

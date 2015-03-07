@@ -1,7 +1,9 @@
 package be.csmmi.zombiegame.app;
 
 public class AppConfig {
-	public final static boolean FORCE_TARGET_DESC_RELOAD = true;
+	
+	public final static String SERVER_ADDRESS = "http://192.168.1.254:8082";
+	
 	public final static int AMOUNT_PREVIEW_BUFFERS = 1;
 	public static boolean TOUCH_EVENT = false;
 	
