@@ -10,6 +10,7 @@ public class ZombieServer {
 	
 	public ZombieServer(int port) throws IOException{
 		server = HttpServer.create(new InetSocketAddress(8082), 300);
+		server.createContext("/", new ZombieFileHandler());
 		server.createContext("/connectcam", new ZombieCamConnectHandler(camlist));
 		server.createContext("/getcams", new ZombieCamListRequestHandler(camlist));
 
