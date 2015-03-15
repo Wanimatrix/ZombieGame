@@ -1498,3 +1498,29 @@ jni/ImageProc/ImageProc.c:12:1: note: expected 'void *' but argument is of type 
 [armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
 [mips] Install        : libImageProc.so => libs/mips/libImageProc.so
 [x86] Install        : libImageProc.so => libs/x86/libImageProc.so
+15:11:40 **** Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+install: ./libs/armeabi/libImageProc.so: No space left on device
+make: *** [libs/armeabi/libImageProc.so] Error 71
+15:20:45 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/toolchains/arm-linux-androideabi-4.6/prebuilt/darwin-x86_64/bin/arm-linux-androideabi-strip:./libs/armeabi-v7a/st2ywRXZ[.text]: No space left on device
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/toolchains/arm-linux-androideabi-4.6/prebuilt/darwin-x86_64/bin/arm-linux-androideabi-strip:./libs/armeabi-v7a/st2ywRXZ: No space left on device
+make: *** [libs/armeabi-v7a/libImageProc.so] Error 1
+make: *** Deleting file `libs/armeabi-v7a/libImageProc.so'
+15:21:20 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+install: ./libs/mips/libImageProc.so: No space left on device
+make: *** [libs/mips/libImageProc.so] Error 71
+15:28:15 **** Incremental Build of configuration Default for project ZombieGame ****
+/Volumes/MacintoshHD/Users/wouterfranken/Development/android-ndk-r10c/ndk-build all 
+[armeabi] Install        : libImageProc.so => libs/armeabi/libImageProc.so
+[armeabi-v7a] Install        : libImageProc.so => libs/armeabi-v7a/libImageProc.so
+[mips] Install        : libImageProc.so => libs/mips/libImageProc.so
+[x86] Install        : libImageProc.so => libs/x86/libImageProc.so
