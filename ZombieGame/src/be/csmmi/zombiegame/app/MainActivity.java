@@ -1,6 +1,10 @@
 package be.csmmi.zombiegame.app;
 
 
+import org.opencv.android.BaseLoaderCallback;
+import org.opencv.android.LoaderCallbackInterface;
+import org.opencv.android.OpenCVLoader;
+
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.OnSharedPreferenceChangeListener;
@@ -17,23 +21,32 @@ import com.google.vrtoolkit.cardboard.CardboardView;
 
 public class MainActivity extends CardboardActivity implements OnSharedPreferenceChangeListener {
 	
+	private BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
+        @Override
+        public void onManagerConnected(int status) {
+            switch (status) {
+                case LoaderCallbackInterface.SUCCESS:
+                {
+                    Log.i(TAG, "OpenCV loaded successfully");
+                } break;
+                default:
+                {
+                    super.onManagerConnected(status);
+                } break;
+            }
+        }
+    };
+	
 	private static final String TAG = MainActivity.class.getSimpleName();
 	private Vibrator v;
 	/**
-	 * Setup app:
-	 * 	- Set defined layout in content view;
-	 * 	- Get the Surface holder from the Surface View;
-	 *  - Add the Surface Callback to the Surface Holder;
-	 *  - Register sensorManager
-	 *  - Get default Accelerometer and Magnetometer
+	 * Setup app
 	 */
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
 		v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-//		if (!io.vov.vitamio.LibsChecker.checkVitamioLibs(this))
-//	        return;
 	}
 	
 	@Override
@@ -51,6 +64,7 @@ public class MainActivity extends CardboardActivity implements OnSharedPreferenc
 	@Override
 	protected void onResume() {
 		super.onResume();
+		OpenCVLoader.initAsync(OpenCVLoader.OPENCV_VERSION_2_4_6, this, mLoaderCallback);
 	}
 	
 	/**

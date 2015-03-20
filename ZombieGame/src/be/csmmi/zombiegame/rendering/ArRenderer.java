@@ -1,49 +1,19 @@
 package be.csmmi.zombiegame.rendering;
 
-import java.io.IOException;
-import java.net.URI;
 import java.nio.Buffer;
 import java.nio.IntBuffer;
-import java.util.ArrayList;
 
 import javax.microedition.khronos.egl.EGLConfig;
 import javax.microedition.khronos.opengles.GL10;
-import javax.xml.ws.Response;
-
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.HttpConnectionParams;
-import org.apache.http.params.HttpParams;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import com.android.volley.RequestQueue;
-import com.android.volley.VolleyError;
-import com.android.volley.VolleyLog;
-import com.android.volley.toolbox.JsonArrayRequest;
-import com.android.volley.toolbox.Volley;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.ImageFormat;
-import android.graphics.Paint;
-import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
-import android.graphics.SurfaceTexture.OnFrameAvailableListener;
 import android.hardware.Camera;
-import android.hardware.Camera.PreviewCallback;
-import android.media.MediaPlayer;
-import android.media.MediaPlayer.OnPreparedListener;
 import android.opengl.GLES11Ext;
 import android.opengl.GLES20;
 import android.opengl.GLSurfaceView;
 import android.opengl.GLSurfaceView.Renderer;
 import android.opengl.Matrix;
-import android.os.AsyncTask;
 import android.util.Log;
 import android.view.Surface;
 import be.csmmi.zombiegame.app.AppConfig;

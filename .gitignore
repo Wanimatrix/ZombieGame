@@ -1,5 +1,5 @@
 .metadata/
 .recommenders/
-*/bin
+*/bin/
 */*.class
 ZombieCamServer/src/CONFIG.java

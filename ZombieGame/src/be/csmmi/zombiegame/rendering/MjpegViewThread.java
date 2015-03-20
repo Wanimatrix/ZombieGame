@@ -2,6 +2,7 @@ package be.csmmi.zombiegame.rendering;
 
 import java.io.IOException;
 
+import be.csmmi.zombiegame.app.AppConfig;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -17,8 +18,6 @@ public class MjpegViewThread extends Thread {
     private boolean mRun = false;
     private boolean surfaceDone = false;  
     private Bitmap bmp = null;
-    public int IMG_WIDTH=640;
-	public int IMG_HEIGHT=480;
 	private GLSurfaceView view;
 	private MjpegInputStream source;
 	private CameraManager camManager;
@@ -60,7 +59,7 @@ public class MjpegViewThread extends Thread {
                 if(surfaceDone) {   
                 	try {
                 		if(bmp==null){
-                			bmp = Bitmap.createBitmap(IMG_WIDTH, IMG_HEIGHT, Bitmap.Config.ARGB_8888);
+                			bmp = Bitmap.createBitmap(AppConfig.PREVIEW_RESOLUTION[0], AppConfig.PREVIEW_RESOLUTION[1], Bitmap.Config.ARGB_8888);
                 		}
                 		int ret = source.readMjpegFrame(bmp);
 
