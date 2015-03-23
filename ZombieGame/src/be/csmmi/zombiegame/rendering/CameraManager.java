@@ -262,7 +262,7 @@ public class CameraManager implements PreviewCallback {
 	 */
 	boolean beat = false;
 	
-	Thread heartBeat = new Thread(new Runnable() {
+	Runnable heartBeatRunnable = new Runnable() {
 		
 		@Override
 		public void run() {
@@ -278,7 +278,8 @@ public class CameraManager implements PreviewCallback {
 				}
 			}
 		}
-	});
+	};
+	Thread heartBeat;
 	
 	private void setupCamera() {
 		stopCamSwitcher = true;
@@ -294,6 +295,9 @@ public class CameraManager implements PreviewCallback {
 //		params.setFocusMode(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO);
 		camera.setParameters(params);
 		camera.startPreview();
+		
+		heartBeat = new Thread(heartBeatRunnable);
+		heartBeat.start();
 		
 		// Add callback buffers to camera for frame handling
 		float bytesPerPix = ImageFormat.getBitsPerPixel(params.getPreviewFormat()) / 8.0f;
@@ -313,7 +317,6 @@ public class CameraManager implements PreviewCallback {
 			camera = Camera.open();
 		}
 		frontCamSurface = new Surface(st);
-		heartBeat.start();
 //		try {
 //			camera.setPreviewTexture(st);
 //		} catch (IOException e) {
@@ -350,6 +353,7 @@ public class CameraManager implements PreviewCallback {
 	 */
 	
 	Bitmap bmp = null;
+	Bitmap bmpZombie = null;
 	Mat torchMask = null;
 	List<Mat> torchMasks = null;
 	double torchRadius = 240;
@@ -368,7 +372,14 @@ public class CameraManager implements PreviewCallback {
 		Mat colFrameImg = new Mat();
 		Mat yuv = new Mat( (int)(size.height*1.5), size.width, CvType.CV_8UC1 );
 		yuv.put( 0, 0, frameData );
-		Imgproc.cvtColor( yuv, colFrameImg, Imgproc.COLOR_YUV2GRAY_NV21, 1);
+		Imgproc.cvtColor( yuv, colFrameImg, Imgproc.COLOR_YUV2BGRA_NV21, 4);
+//		Mat zombie = Highgui.imread("/sdcard/zbg/zombie.png",-1);
+//		Mat zombieGray = new Mat();
+//		Imgproc.cvtColor(zombie, zombieGray, Imgproc.COLOR_BGR2GRAY);
+		
+//		overlayImage(colFrameImg, zombie, colFrameImg);
+		Mat grayFrameImg = new Mat();
+		Imgproc.cvtColor(colFrameImg, grayFrameImg, Imgproc.COLOR_BGRA2GRAY);
 		
 		// Edit frame!
 		if(torchMasks == null) {
@@ -405,7 +416,7 @@ public class CameraManager implements PreviewCallback {
 //		
 //		colFrameImg = colFrameImg.mul(saltpepper_img, 1.0/255);
 		
-		Mat noised = colFrameImg.clone();
+		Mat noised = grayFrameImg.clone();
 		Core.randn(noised,128,30);
 		
 //		int amount1= (int) (colFrameImg.rows()*colFrameImg.cols()*0.05);
@@ -421,14 +432,14 @@ public class CameraManager implements PreviewCallback {
 ////	     srcArr.at<uchar>(rng.uniform(0,srcArr.rows), rng.uniform(0,srcArr.cols)) = 255;
 //	    }
 	    
-	    Core.addWeighted(colFrameImg, 0.8, noised, 0.2, 0, colFrameImg);
+	    Core.addWeighted(grayFrameImg, 0.8, noised, 0.2, 0, grayFrameImg);
 	    
 	    if(beat) {
 //	    	Mat cropped = colFrameImg.submat(new org.opencv.core.Rect(50, 50, 640-100, 480-100)).clone();
 //	    	Imgproc.resize(cropped, colFrameImg, colFrameImg.size());
-	    	colFrameImg = colFrameImg.mul(torchMasks.get(9), 1.0/255);
+	    	grayFrameImg = grayFrameImg.mul(torchMasks.get(9), 1.0/255);
 	    } else {
-	    	colFrameImg = colFrameImg.mul(torchMasks.get(0), 1.0/255);
+	    	grayFrameImg = grayFrameImg.mul(torchMasks.get(0), 1.0/255);
 	    }
 		
 		Paint p = new Paint();
@@ -438,7 +449,7 @@ public class CameraManager implements PreviewCallback {
 			bmp = Bitmap.createBitmap(size.width, size.height, Bitmap.Config.ARGB_8888);
 		}
 		
-		Utils.matToBitmap(colFrameImg, bmp);
+		Utils.matToBitmap(grayFrameImg, bmp);
 		
 		c = frontCamSurface.lockCanvas(null);
 		c.drawBitmap(bmp, new Rect(0, 0, bmp.getWidth(), bmp.getHeight()), new Rect(0, 0, c.getWidth(), c.getHeight()), p);
