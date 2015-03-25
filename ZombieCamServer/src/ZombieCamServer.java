@@ -68,9 +68,8 @@ public class ZombieCamServer implements WebcamImageTransformer {
 	@Override
 	public BufferedImage transform(BufferedImage old) {
 		old = apply(old, OP_GRAYSCALE);
-		int w = old.getWidth();
-		int h = old.getHeight();
-//		BufferedImage img = new BufferedImage(
+
+		//		BufferedImage img = new BufferedImage(
 //                w, h, BufferedImage.TYPE_INT_ARGB);
 		
 		Graphics2D g2d = old.createGraphics();
