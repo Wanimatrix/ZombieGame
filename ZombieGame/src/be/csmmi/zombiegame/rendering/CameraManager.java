@@ -27,8 +27,11 @@ import org.opencv.imgproc.Imgproc;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.BitmapFactory.Options;
 import android.graphics.Canvas;
 import android.graphics.ImageFormat;
+import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.SurfaceTexture;
@@ -58,6 +61,7 @@ public class CameraManager implements PreviewCallback {
 	private GLSurfaceView view;
 	
 	private MjpegViewThread thread;
+	private Thread roomStatusThread;
 	private Surface surface;
 	private Surface frontCamSurface;
 	private RequestQueue queue;
@@ -65,14 +69,78 @@ public class CameraManager implements PreviewCallback {
 	public CameraManager(Context context, GLSurfaceView view) {
 		this.view = view;
 		
-		rooms.add(new Room("Room0"));
-		
 		// Instantiate the RequestQueue.
 		queue = Volley.newRequestQueue(view.getContext());
 	}
 	
 	public void setSurface(Surface surface) {
 		this.surface = surface;
+	}
+	
+	public void initRoomStatus() {
+		final JsonArrayRequest req = new JsonArrayRequest(AppConfig.SERVER_ADDRESS+"/roomstatus",
+	            new com.android.volley.Response.Listener<JSONArray>() {
+	                @Override
+	                public void onResponse(JSONArray response) {
+	                	try {
+	                        // Parsing json array response
+	                        // loop through each json object
+	                        for (int i = 0; i < response.length(); i++) {
+	                            JSONObject roomObj = (JSONObject) response.get(i);
+	                            String roomName = (String)roomObj.get("room");
+	                            String status = (String)roomObj.get("status");
+	                            for (int j = 0; j < rooms.size(); j++) {
+									if(rooms.get(j).getName().equals(roomName)) {
+										Log.d("LOCKER", "Room "+roomName+": "+status);
+										
+										if(status.equals("locked")) {
+											if(!rooms.get(j).isLocked()) {
+												cameraSwitcher.interrupt();
+												setupCamera();
+											}
+											rooms.get(j).setLocked(true);
+											Log.d("LOCKER", "LOCKED!");
+										}
+										else {
+											if(rooms.get(j).isLocked()) {
+												pauseCamera();
+												readCameraStream();
+											}
+											rooms.get(j).setLocked(false);
+											Log.d("LOCKER", "UNLOCKED!");
+										}
+										
+										
+										
+										break;
+									}
+								}
+	                        }
+	                	} catch(Exception e) {};
+	                }
+	            }, new com.android.volley.Response.ErrorListener() {
+	                @Override
+	                public void onErrorResponse(VolleyError error) {
+	                	
+	                }
+	            });
+		
+		roomStatusThread = new Thread(new Runnable() {
+			
+			@Override
+			public void run() {
+				while(true) {
+					try {
+						Thread.sleep(3000);
+						Log.d("LOCKER", "Added request");
+						queue.add(req);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+			}
+		});
+		roomStatusThread.start();
 	}
 	
 	public void initCameras(final OnCamerasReadyListener listener) {
@@ -137,7 +205,7 @@ public class CameraManager implements PreviewCallback {
 	                        currentCameraIdx = 0;
 	                        
 	                        listener.onCamerasReady();
-	                        if(rooms.get( currentRoomIdx).getCameras().size() == 0) {
+	                        if(rooms.get( currentRoomIdx).isLocked()) {
 	                			setupCamera();
 	                		} else {
 	                			readCameraStream();
@@ -163,17 +231,19 @@ public class CameraManager implements PreviewCallback {
 		
 		// Add the request to the RequestQueue.
 		queue.add(req);
+		
+		initRoomStatus();
 	}
 	
 	private boolean stopCamSwitcher = false;
 	
 	public void switchRoom() {
-		if(rooms.get( (currentRoomIdx + 1) % rooms.size()).getCameras().size() == 0) {
+		if(rooms.get( (currentRoomIdx + 1) % rooms.size()).isLocked()) {
 			Log.d(TAG, "Front view camera...");
 			setupCamera();
 			currentRoomIdx = (currentRoomIdx + 1) % rooms.size();
 			return;
-		} else if(rooms.get( currentRoomIdx).getCameras().size() == 0) {
+		} else {
 			pauseCamera();
 		}
 		currentRoomIdx = (currentRoomIdx + 1) % rooms.size();
@@ -356,6 +426,7 @@ public class CameraManager implements PreviewCallback {
 	Bitmap bmpZombie = null;
 	Mat torchMask = null;
 	List<Mat> torchMasks = null;
+	int torchCounter = 0;
 	double torchRadius = 240;
 	Random rand = new Random();
 	
@@ -377,6 +448,7 @@ public class CameraManager implements PreviewCallback {
 //		Mat zombieGray = new Mat();
 //		Imgproc.cvtColor(zombie, zombieGray, Imgproc.COLOR_BGR2GRAY);
 		
+		
 //		overlayImage(colFrameImg, zombie, colFrameImg);
 		Mat grayFrameImg = new Mat();
 		Imgproc.cvtColor(colFrameImg, grayFrameImg, Imgproc.COLOR_BGRA2GRAY);
@@ -387,7 +459,7 @@ public class CameraManager implements PreviewCallback {
 //			Mat mask;
 			
 			torchMasks = new ArrayList<Mat>();
-			for (int i = 0; i < 10; i++) {
+			for (int i = 0; i < 15; i++) {
 //				Mat tmp = ;
 				torchMasks.add(Highgui.imread("/sdcard/masks/torchMask_"+i+".png",Highgui.CV_LOAD_IMAGE_GRAYSCALE));
 			}
@@ -434,13 +506,32 @@ public class CameraManager implements PreviewCallback {
 	    
 	    Core.addWeighted(grayFrameImg, 0.8, noised, 0.2, 0, grayFrameImg);
 	    
-	    if(beat) {
-//	    	Mat cropped = colFrameImg.submat(new org.opencv.core.Rect(50, 50, 640-100, 480-100)).clone();
-//	    	Imgproc.resize(cropped, colFrameImg, colFrameImg.size());
-	    	grayFrameImg = grayFrameImg.mul(torchMasks.get(9), 1.0/255);
-	    } else {
-	    	grayFrameImg = grayFrameImg.mul(torchMasks.get(0), 1.0/255);
-	    }
+//	    if(beat) {
+////	    	Mat cropped = colFrameImg.submat(new org.opencv.core.Rect(50, 50, 640-100, 480-100)).clone();
+////	    	Imgproc.resize(cropped, colFrameImg, colFrameImg.size());
+//	    	grayFrameImg = grayFrameImg.mul(torchMasks.get(9), 1.0/255);
+//	    } else {
+//	    	grayFrameImg = grayFrameImg.mul(torchMasks.get(0), 1.0/255);
+//	    }
+	    
+	    
+	    Bitmap tmp = Bitmap.createBitmap(grayFrameImg.width(), grayFrameImg.height(), Bitmap.Config.ARGB_8888);
+		Utils.matToBitmap(grayFrameImg, tmp);
+		Bitmap overlay = BitmapFactory.decodeFile("/sdcard/zbg/zombie.png");
+		Log.d(TAG, "overlay size: "+overlay.getWidth()+","+overlay.getHeight());
+		Utils.bitmapToMat(overlay(tmp, overlay),grayFrameImg);
+		Log.d(TAG, "overlay size: "+grayFrameImg.width()+","+grayFrameImg.height());
+		
+		
+		Mat torchMask = new Mat(grayFrameImg.size(),grayFrameImg.type());
+		Core.merge(Arrays.asList(torchMasks.get(torchCounter),torchMasks.get(torchCounter),torchMasks.get(torchCounter),new Mat()),torchMask);
+	    
+		Log.d(TAG, "GRAYFRAME Sizes/Channels: "+grayFrameImg.size()+"; "+grayFrameImg.channels());
+		Log.d(TAG, "TORCHMASKS Sizes/Channels: "+torchMask.size()+"; "+torchMask.channels());
+		
+	    grayFrameImg = grayFrameImg.mul(torchMasks.get(torchCounter), 1.0/255);
+	    
+	    torchCounter = (torchCounter + 1) % 15;
 		
 		Paint p = new Paint();
         Canvas c = null;
@@ -471,25 +562,11 @@ public class CameraManager implements PreviewCallback {
 		return;
 	}
 	
-	/**
-	 * @function update_map
-	 * @brief Fill the map_x and map_y matrices with 4 types of mappings
-	 */
-	 private void update_pixels(Mat src, float borderWidth, float radius) {
-
-		 for( int j = 0; j < src.rows(); j++ ){ 
-			 for( int i = 0; i < src.cols(); i++ ) {
-	         
-				 float distance = (float) Math.sqrt((i-320)*(i-320)+(j-240)*(j-240));
-				 if(distance < radius) {
-					 if(distance > radius - borderWidth)
-						 src.put(j, i, (int) ((1.0f-(distance - (radius - borderWidth))/borderWidth)*255));
-					 else
-						 src.put(j, i, 255);
-				 }
-			 }
-		 }
-		 
-//		 Highgui.imwrite("/sdcard/zbg/src.png", src);
-	}
+	private Bitmap overlay(Bitmap bmp1, Bitmap bmp2) {
+        Bitmap bmOverlay = Bitmap.createBitmap(bmp1.getWidth(), bmp1.getHeight(), bmp1.getConfig());
+        Canvas canvas = new Canvas(bmOverlay);
+        canvas.drawBitmap(bmp1, new Matrix(), null);
+        canvas.drawBitmap(bmp2, new Matrix(), null);
+        return bmOverlay;
+    }
 }
