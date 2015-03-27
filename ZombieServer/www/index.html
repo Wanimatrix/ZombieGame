@@ -7,30 +7,62 @@
     </script>
     <script>
 		$(window).load(function() {
+			$('#consoleoutput').val('');
+			$('#clicker').click(function(){ 
+   				alert("hi");
+   				$('#consoleoutput').val($('#consoleoutput').val()+'$~Welcome to Die Hölle der Dr. Hÿnkell.\n$Good luck with surviving.'); 
+			})
       		$.getJSON( "roomcount", function( json ) {
       			roomcount = json.roomcount;
   				console.log( "Room count: " + json.roomcount );
  			});
 		});
-    </script>   
+    </script>  
+    <script language="javascript" type="text/javascript">
+
+</script> 
     <style>
     	.pageheader {
 		 	font-size: xx-large;
-		 	width:100%;
+		 	border: 2px solid;
+   			border-radius: 2px;
+		 	width:50%;
+		 	margin: 0 auto;
 		 	height: 50px;
 		 	text-align: center;
 			vertical-align: middle;
 			line-height: 50px; 
-			background-color: #53FF00;
+			background-color: #32cd32;
+   			border-color: #32cd32 #32cd32;
    			color: black;
-   			background-image: url(design/img-noise-50x50_1.png);
+   			background-image: url(design/img-noise-lime.png);
+  			background-repeat:repeat;
+		}
+		.spacerlvl1 {
+		 	width:50%;
+		 	margin: 0 auto;
+    		margin-left: auto;
+   	 		margin-right: auto;
+		 	height: 5px;
+			vertical-align: middle;
+   			background-image: url(design/img-noise-500x500.png);
+  			background-repeat:repeat;
+		}
+		.screenwrapper {
+			color:black;
+			width: 50%; 
+			text-align: center;
+    		margin: 0 auto;
+    		margin-left: auto;
+   	 		margin-right: auto;
+			height:74%;
+			background-image: url(design/img-noise-lime.png);
   			background-repeat:repeat;
   			border: 2px solid;
    			border-radius: 2px;
-		}
-		.screenwrapper {
-			width:100%;
-			height:75%;
+   			border-color: #32cd32 #32cd32;
+   			margin:0 auto;
+   			
 		}
     	.roomindicatorpane {
     		float:left;
@@ -45,10 +77,10 @@
     		margin: 0 auto;
     		margin-left: auto;
    	 		margin-right: auto;
-   	 		background-color: #53FF00;
+   	 		background-color: #32cd32;
     		height: 15%;
     		border-style: solid;
-   			background-image: url(design/img-noise-50x50_1.png);
+   			background-image: url(design/img-noise-lime.png);
   			background-repeat:repeat;
   			border: 2px solid;
    			border-radius: 2px;
@@ -58,7 +90,7 @@
     	
     	body {
    			font-family: Consolas, monospace;
-   			color: #53FF00;
+   			color: #32cd32;
    			background-color: black;
    			background-image: url(design/img-noise-500x500.png);
   			background-repeat:repeat;
@@ -76,23 +108,35 @@
 			vertical-align: middle;
 			line-height: 20px;
 		}
-		
+		.consoletext {
+			background-color: black;	
+   			width: 100%;
+   			height: 90%;
+   			color: lime;
+   			border: 2px solid;
+   			border-radius: 5px;
+   			border-color: #32cd32 #32cd32;
+   			resize: none;
+   			outline: none;
+		    margin: 0 auto;
+		    font-size: big;
+		}
+		textarea:focus{outline:none}
     </style>
      
   </head>
   <body>
-	<div class="pageheader">
+	<div class="pageheader" id="clicker">
 		Die Hölle der Dr. Hÿnkell
 	</div>
+	<div class="spacerlvl1"></div>
  	<div class="screenwrapper">
-
-    <p>Get gamestate info through following links:
-    <ul>
-      <li>do <a href="getcams">getcams</a>.
-      <li>do <a href="roomstatus">roomstatus</a>.
-      <li>do <a href="roomcount">roomcount</a>.
-    </ul>
+	    <textarea id="consoleoutput" type="text" class="consoletext" name="telnum" cols="40" rows="5" value="" readonly="readonly" />
+	    </textarea>
+	    <p>Get gamestate info through following links:
+	    
 	</div>
+	<div class="spacerlvl1"></div>
 	<div class="roomindicatorwrapper">
 		<div style="width:100%; height:5px;"></div>
 		<div class="roomindicatorpane">
