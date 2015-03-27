@@ -19,7 +19,7 @@ public class ZombieCamListRequestHandler implements HttpHandler {
 	
 	@Override
 	public void handle(HttpExchange t) throws IOException {
-		String response = camlist.camListJSON();
+		String response = camlist.getCamListJSON();
 		Headers responseHeaders= t.getResponseHeaders();
 		responseHeaders.set("Content-Type","application/json");
         t.sendResponseHeaders(200, response.length());

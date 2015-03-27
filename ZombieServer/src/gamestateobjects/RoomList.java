@@ -6,20 +6,27 @@ import java.util.HashMap;
 public class RoomList {
 
 	private HashMap<String, Room> roomlist = new HashMap<String, Room>();
+	private String camListJSON = "[]";
+	private int roomCount = 0;
 	
-	public int getRoomCount(){
-		return roomlist.values().size();
-	}
+	
 	
 	public void addRoom(String name){
-		if(roomlist.get(name) == null)
+		if(roomlist.get(name) == null){
 			roomlist.put(name, new Room(name));
+			updateCamListJSON();
+			roomCount++;
+		}
 	}
 	
 	public Room getRoom(String name){
 		return roomlist.get(name);
 	}
-
+	
+	public int getRoomCount(){
+		return roomCount;
+	}
+	
 	public synchronized void addCamToRoom(String room, String name, String address){
 		Room r = getRoom(room);
 		if(r == null){
@@ -27,32 +34,17 @@ public class RoomList {
 			r = getRoom(room);
 		}
 		r.addCam(name, address);
+		updateCamListJSON();
 	}
+	
 	public Collection<Room> getAllRooms(){
 		return roomlist.values();
 	}
 	
-	public String camListJSON() {
-		
-		String json = "[";
-		for (String roomname : roomlist.keySet()) {
-			Room r = getRoom(roomname);
-			json += "{\"roomname\": \"" + roomname + "\", \"camcluster\":[";
-			
-			for (ZombieCam cam : r.getAllCams()){
-				json += "{\"name\" : \"" + cam.getName() + "\", \"address\" : \""+cam.getAddress()+"\"},";
-			}
-			json = json.substring(0, json.length() - 1);
-			json += "]},";
-		}
-				
-		json = json.substring(0, json.length() - 1);
-		json += "]";
-		
-		return json;
+	public String getCamListJSON() {
+		return camListJSON;
 	}
-	
-	public String roomStatusJSON() {
+	public String getRoomStatusJSON() {
 		
 		String json = "[";
 		for (String roomname : roomlist.keySet()) {
@@ -69,6 +61,27 @@ public class RoomList {
 		return json;
 	}
 	
+	private void updateCamListJSON() {
+		
+		String json = "[";
+		for (String roomname : roomlist.keySet()) {
+			Room r = getRoom(roomname);
+			json += "{\"roomname\": \"" + roomname + "\", \"camcluster\":[";
+			
+			for (ZombieCam cam : r.getAllCams()){
+				json += "{\"name\" : \"" + cam.getName() + "\", \"address\" : \""+cam.getAddress()+"\"},";
+			}
+			json = json.substring(0, json.length() - 1);
+			json += "]},";
+		}
+		
+		if(json.length() > 1)		
+			json = json.substring(0, json.length() - 1);
+		json += "]";
+		
+		this.camListJSON = json;
+	}
+
 	public static void main(String[] args) {
 		//TEST
 		RoomList c = new RoomList();
@@ -78,8 +91,8 @@ public class RoomList {
 		c.addCamToRoom("room2", "cam4", "::4");
 		Room r = c.getRoom("room1");
 		r.unlock();
-		System.out.println(c.camListJSON());
-		System.out.println(c.roomStatusJSON());
+		System.out.println(c.getCamListJSON());
+		System.out.println(c.getRoomStatusJSON());
 	}
 
 }
