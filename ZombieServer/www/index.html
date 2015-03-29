@@ -1,16 +1,68 @@
 <html>
   <head>
-    <title>Sample "Hello, World" Application</title>
+    <title>Die Hölle der Dr. Hÿnkell.</title>
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="js/typed.js"></script>
+    <script src="js/grained.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/frontpage.css">
     <script>
     	var roomcount = 0;
+    	var options = {
+		  "animate": true,
+		  "patternWidth": 482.42,
+		  "patternHeight": 500,
+		  "grainOpacity": 0.04,
+		  "grainDensity": 1,
+		  "grainWidth": 1,
+		  "grainHeight": 1
+		}
+    </script>
+    <script>
+   		function doCommand(input){
+   			addLine("ctrl_room/" + input);
+    		if(input.indexOf("clear") > -1){
+    			$('#consoleoutput').val("");
+    		}
+    		else if(input.indexOf("help") > -1){
+    			addLine("");
+    			addLine("    help:  get a list of available functions.");
+    			addLine("    clear: remove all output from the console.");
+    			addLine("");
+    		}
+    		else{
+    			addLine("    error: command unknown.");    			
+    		}
+    			
+    	}
+    	function addLine(input){
+    		$('#consoleoutput').val($('#consoleoutput').val()+"\n" + input);
+    	}
     </script>
     <script>
 		$(window).load(function() {
-			$('#consoleoutput').val('');
+			$('#console').keypress(function(e){
+		    	if(e.keyCode==13){
+		    		var input = $('#console').val();
+		    		doCommand(input);
+		    		$('#console').val("$: ");
+		    	}
+		    });
+			//$('#consoleoutput').val('room/controle/~$');
+			
+			grained('#noiseoverlay', options)
+			grained('#noiseoverlay2', options)
+			$('#consoleoutput').typed({
+        		strings: ["Welcome to Die Hölle der Dr. Hÿnkell.\nFor an overview of available commands enter 'help'.\nGood luck.\n"],
+        		typeSpeed: 0
+     		 });
 			$('#clicker').click(function(){ 
-   				alert("hi");
-   				$('#consoleoutput').val($('#consoleoutput').val()+'$~Welcome to Die Hölle der Dr. Hÿnkell.\n$Good luck with surviving.'); 
+   				$(function(){
+     				 $('#consoleoutput').typed({
+        				strings: ["First sentence.", "Second sentence."],
+       					typeSpeed: 0
+     				});
+  				});
+   				$('#consoleoutput').val($('#consoleoutput').val()+'\nroom/controle/~$ Welcome to Die Hölle der Dr. Hÿnkell.\nroom/controle/~$ Good luck with surviving.'); 
 			})
       		$.getJSON( "roomcount", function( json ) {
       			roomcount = json.roomcount;
@@ -20,110 +72,8 @@
     </script>  
     <script language="javascript" type="text/javascript">
 
-</script> 
-    <style>
-    	.pageheader {
-		 	font-size: xx-large;
-		 	border: 2px solid;
-   			border-radius: 2px;
-		 	width:50%;
-		 	margin: 0 auto;
-		 	height: 50px;
-		 	text-align: center;
-			vertical-align: middle;
-			line-height: 50px; 
-			background-color: #32cd32;
-   			border-color: #32cd32 #32cd32;
-   			color: black;
-   			background-image: url(design/img-noise-lime.png);
-  			background-repeat:repeat;
-		}
-		.spacerlvl1 {
-		 	width:50%;
-		 	margin: 0 auto;
-    		margin-left: auto;
-   	 		margin-right: auto;
-		 	height: 5px;
-			vertical-align: middle;
-   			background-image: url(design/img-noise-500x500.png);
-  			background-repeat:repeat;
-		}
-		.screenwrapper {
-			color:black;
-			width: 50%; 
-			text-align: center;
-    		margin: 0 auto;
-    		margin-left: auto;
-   	 		margin-right: auto;
-			height:74%;
-			background-image: url(design/img-noise-lime.png);
-  			background-repeat:repeat;
-  			border: 2px solid;
-   			border-radius: 2px;
-   			border-color: #32cd32 #32cd32;
-   			margin:0 auto;
-   			
-		}
-    	.roomindicatorpane {
-    		float:left;
-    		width:150px;
-    		height: 50px;
-    		text-align: center;
-			vertical-align: middle;
-			line-height: 40px;
-    	}    	
-    	.roomindicatorwrapper{
-    		width: 50%; 
-    		margin: 0 auto;
-    		margin-left: auto;
-   	 		margin-right: auto;
-   	 		background-color: #32cd32;
-    		height: 15%;
-    		border-style: solid;
-   			background-image: url(design/img-noise-lime.png);
-  			background-repeat:repeat;
-  			border: 2px solid;
-   			border-radius: 2px;
-   			box-shadow: 1px 1px 2px black;
-   			
-    	}
-    	
-    	body {
-   			font-family: Consolas, monospace;
-   			color: #32cd32;
-   			background-color: black;
-   			background-image: url(design/img-noise-500x500.png);
-  			background-repeat:repeat;
-		}
-		p.roomname {
-			height: 20px;
-			width: 70px;
-			background-image: url(design/img-noise-500x500.png);
-  			background-repeat:repeat;
-			font-size: large;
-			color:  white;
-			float: right;
-			box-shadow: 1px 1px 2px black;
-			text-align: center;
-			vertical-align: middle;
-			line-height: 20px;
-		}
-		.consoletext {
-			background-color: black;	
-   			width: 100%;
-   			height: 90%;
-   			color: lime;
-   			border: 2px solid;
-   			border-radius: 5px;
-   			border-color: #32cd32 #32cd32;
-   			resize: none;
-   			outline: none;
-		    margin: 0 auto;
-		    font-size: big;
-		}
-		textarea:focus{outline:none}
-    </style>
-     
+	</script> 
+
   </head>
   <body>
 	<div class="pageheader" id="clicker">
@@ -131,10 +81,17 @@
 	</div>
 	<div class="spacerlvl1"></div>
  	<div class="screenwrapper">
-	    <textarea id="consoleoutput" type="text" class="consoletext" name="telnum" cols="40" rows="5" value="" readonly="readonly" />
+ 		<div class="screencontainer">
+ 		<textarea id="consoleoutput" type="text" class="consoletext" name="telnum" cols="40" rows="5" value="" readonly="readonly" />
+	    	
 	    </textarea>
-	    <p>Get gamestate info through following links:
-	    
+ 		<div id="noiseoverlay" style="width:100%; height:100%; position: absolute; top: 0; left: 0;  background-color: #020501; border: 0px solid;border-radius: 15px; border-color: #32cd32 #32cd32;">	    </div>
+	    </div>	 
+	    <div class="commandlinewrap">
+	    <input type="text" name="firstname" class="consoleinput" id="console" value="$: ">	
+	    <div id="noiseoverlay2" style="width:100%; height:100%; position: absolute; top: 0; left: 0;  background-color: #020501; border: 0px solid;border-radius: 15px; border-color: #32cd32 #32cd32;">	    </div>
+	    </div>		
+	    </div>  
 	</div>
 	<div class="spacerlvl1"></div>
 	<div class="roomindicatorwrapper">

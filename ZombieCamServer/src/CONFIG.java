@@ -5,8 +5,8 @@ public class CONFIG {
 
 	//public static final String localip = "192.168.173.1";
 	//public static final String zombieserverip = "192.168.173.1";
-	public static final String localip = "10.92.34.79";
-	public static final String zombieserverip = "10.92.34.79";
+	public static final String localip = "localhost";
+	public static final String zombieserverip = "localhost";
 	
 	public static final int zombieserverport = 8082;
 	
