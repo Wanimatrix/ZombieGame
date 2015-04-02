@@ -37,6 +37,20 @@
     	function addLine(input){
     		$('#consoleoutput').val($('#consoleoutput').val()+"\n" + input);
     	}
+    	function addIndicator(roomname){
+    		//var e = $('div class="roomindicatorpane"> <img src="design/indicator_light/indicator_off.png"  id="'+roomname+'indicator" alt="Lights on" height="40" width="40"> <p class="roomname" id="'+roomname+'label">' + roomname +'</p> </div>');
+    		var el =  "<div class='roomindicatorpane'>";
+    		    el += "<img src='design/indicator_light/indicator_off.png'  id='"+roomname+"indicator' alt='Lights on' height='40' width='40'>";
+    			el += "<p class='roomname' id='"+roomname+"label'>" + roomname +"</p>";
+    			el += "</div>";
+    		$( '#roomindicatorwrapperid' ).append( el );
+    	}
+    	function lock(roomname){
+    		$("#"+roomname+"indicator").attr('src',"design/indicator_light/indicator_off.png");
+    	}
+    	function unlock(roomname){
+    		$("#"+roomname+"indicator").attr('src',"design/indicator_light/indicator_on.png");
+    	}
     </script>
     <script>
 		$(window).load(function() {
@@ -68,6 +82,25 @@
       			roomcount = json.roomcount;
   				console.log( "Room count: " + json.roomcount );
  			});
+ 			$.getJSON( "roomstatus", function( roomlist ) {
+	 				for (i = 0; i < roomlist.length; i++) { 
+	 					var r = roomlist[i].room;
+	 					addIndicator(r);
+	 				}
+	 		});
+ 			setInterval(function () {
+	 			$.getJSON( "roomstatus", function( roomlist ) {
+	 				for (i = 0; i < roomlist.length; i++) { 
+	 					var r = roomlist[i].room;
+	 					if(roomlist[i].status === "locked"){
+	 						lock(r);
+	 					}
+	 					else{
+	 						unlock(r);
+	 					}
+	 				}
+	 			});
+	 		},2000);
 		});
     </script>  
     <script language="javascript" type="text/javascript">
@@ -94,9 +127,10 @@
 	    </div>  
 	</div>
 	<div class="spacerlvl1"></div>
-	<div class="roomindicatorwrapper">
+	<div class="roomindicatorwrapper" id="roomindicatorwrapperid">
 		<div style="width:100%; height:5px;"></div>
-		<div class="roomindicatorpane">
+		
+		<div class="roomindicatorpane" >
     		<img src="design/indicator_light/indicator_off.png" onmouseover="this.src='design/indicator_light/indicator_on.png'" onmouseout="this.src='design/indicator_light/indicator_off.png'"  alt="Lights on" height="40" width="40">
     		<p class="roomname">Room 1</p>
     	</div>
@@ -124,6 +158,7 @@
     		<img src="design/indicator_light/indicator_off.png" onmouseover="this.src='design/indicator_light/indicator_on.png'" onmouseout="this.src='design/indicator_light/indicator_off.png'"  alt="Lights on" height="40" width="40">
     		<p class="roomname">Room 7</p>
     	</div>
+    	
 	</div>
   </body>
 </html>
