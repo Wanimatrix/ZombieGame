@@ -20,15 +20,21 @@ import org.opencv.android.Utils;
 import org.opencv.core.Core;
 import org.opencv.core.CvType;
 import org.opencv.core.Mat;
+import org.opencv.core.MatOfByte;
+import org.opencv.core.MatOfInt;
 import org.opencv.core.Point;
 import org.opencv.core.Scalar;
 import org.opencv.highgui.Highgui;
 import org.opencv.imgproc.Imgproc;
 
+import project.android.imageprocessing.FastImageProcessingPipeline;
+import project.android.imageprocessing.FastImageProcessingView;
+import project.android.imageprocessing.filter.GenericFilter;
+import project.android.imageprocessing.input.ImageResourceInput;
+import project.android.imageprocessing.output.ScreenEndpoint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.BitmapFactory.Options;
 import android.graphics.Canvas;
 import android.graphics.ImageFormat;
 import android.graphics.Matrix;
@@ -38,11 +44,17 @@ import android.graphics.SurfaceTexture;
 import android.hardware.Camera;
 import android.hardware.Camera.PreviewCallback;
 import android.hardware.Camera.Size;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
 import android.opengl.GLSurfaceView;
 import android.os.AsyncTask;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Surface;
 import be.csmmi.zombiegame.app.AppConfig;
+import be.csmmi.zombiegame.app.GameManager;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.VolleyError;
@@ -66,15 +78,70 @@ public class CameraManager implements PreviewCallback {
 	private Surface frontCamSurface;
 	private RequestQueue queue;
 	
+	private GameManager gm;
+	
+//	private Mat zombiePrep;
+//	private Mat alphaInv;
+	private List<List<Pair<Mat, Mat>>> overlays = new ArrayList<List<Pair<Mat,Mat>>>();
+	
+//	private FastImageProcessingView imgProcView;
+//    private FastImageProcessingPipeline pipeline;
+//    private ImageResourceInput imageIn;
+//    private GenericFilter generic;
+//    private ScreenEndpoint screen;
+	
+	
 	public CameraManager(Context context, GLSurfaceView view) {
 		this.view = view;
-		
+	    
 		// Instantiate the RequestQueue.
 		queue = Volley.newRequestQueue(view.getContext());
 	}
 	
 	public void setSurface(Surface surface) {
 		this.surface = surface;
+		
+//		overlays.add(prepOverlay("/sdcard/zbg/pureSmoke.png"));
+//		List<Pair<Mat,Mat>> smokeOverlays = new ArrayList<Pair<Mat,Mat>>();
+		List<Pair<Mat,Mat>> zombieOverlays = new ArrayList<Pair<Mat,Mat>>();
+//		List<Pair<Mat,Mat>> zombieEyesOverlays = new ArrayList<Pair<Mat,Mat>>();
+		for(int i = 0; i < 8; i++) {
+//			Log.d(TAG, "ZombieAlpha: "+a);
+			zombieOverlays.add(prepOverlay("/sdcard/zbg/zombieScaled-"+i+".png"));
+		}
+//		zombieOverlays.add(prepOverlay("/sdcard/zbg/lost.png"));
+//		overlays.add(smokeOverlays);
+		overlays.add(zombieOverlays);
+		
+		this.gm = new GameManager(this.view.getContext(), overlays.get(0).size());
+//		overlays.add(zombieEyesOverlays);
+		
+//		overlays.add(prepOverlay("/sdcard/zbg/zombieNewOnlyEyes.png"));
+	}
+	
+	private Pair<Mat,Mat> prepOverlay(String overlayFilename) {
+		Mat overlay = Highgui.imread(overlayFilename, -1);
+		
+		Log.d(TAG, "OVERLAY CHANNELS: "+overlay.channels()+" for "+overlayFilename);
+		
+		Mat alphaMat = new Mat(overlay.size(), CvType.CV_8UC(3));
+//		Core.multiply(alphaMat, new Scalar(alpha), alphaMat);
+		Core.mixChannels(Arrays.asList(overlay), Arrays.asList(alphaMat), new MatOfInt(3,0,3,1,3,2));
+		Mat noAlphaFg = new Mat(overlay.size(), CvType.CV_8UC(3));
+		Core.mixChannels(Arrays.asList(overlay), Arrays.asList(noAlphaFg), new MatOfInt(0,0,1,1,2,2));
+		
+		Mat one = new Mat(alphaMat.size(), alphaMat.type());
+		Log.d(TAG, "ONES size: 1 "+Mat.ones(alphaMat.size(), alphaMat.type()).channels());
+		Mat alphaInv = new Mat();
+		Mat tmp = new Mat();
+		Core.multiply(Mat.ones(alphaMat.size(), CvType.CV_8UC1), new Scalar(255), tmp);
+		Core.mixChannels(Arrays.asList(tmp), Arrays.asList(one), new MatOfInt(0,0,0,1,0,2));
+		Core.subtract(one, alphaMat, alphaInv);
+		
+		Mat prep = noAlphaFg.mul(alphaMat, 1.0/255.0);
+		Imgproc.cvtColor(prep, prep, Imgproc.COLOR_BGR2RGB);
+		
+		return new Pair<Mat, Mat>(prep, alphaInv);
 	}
 	
 	public void initRoomStatus() {
@@ -305,7 +372,7 @@ public class CameraManager implements PreviewCallback {
             }
             
             if(thread==null){
-            	thread = new MjpegViewThread(surface, view, inStream, CameraManager.this);
+            	thread = new MjpegViewThread(surface, view, inStream, CameraManager.this, gm);
             } else {
             	thread.stopDrawing();
             	thread.setSource(inStream);
@@ -435,103 +502,129 @@ public class CameraManager implements PreviewCallback {
 	
 	long time = -1;
 	
+	boolean flickerEnabled = false;
+	boolean flicker = false;
+	Random flickerRand = new Random();
+	
+	
 	@Override
 	public void onPreviewFrame(byte[] frameData, Camera camera) {
 		Log.d(TAG, "Request render!");
 		
 		Size size = camera.getParameters().getPreviewSize();
-		Mat colFrameImg = new Mat();
-		Mat yuv = new Mat( (int)(size.height*1.5), size.width, CvType.CV_8UC1 );
-		yuv.put( 0, 0, frameData );
-		Imgproc.cvtColor( yuv, colFrameImg, Imgproc.COLOR_YUV2BGRA_NV21, 4);
-//		Mat zombie = Highgui.imread("/sdcard/zbg/zombie.png",-1);
-//		Mat zombieGray = new Mat();
-//		Imgproc.cvtColor(zombie, zombieGray, Imgproc.COLOR_BGR2GRAY);
 		
+		Mat result = new Mat();
+		int status = gm.getGameStatus(result);
 		
-//		overlayImage(colFrameImg, zombie, colFrameImg);
-		Mat grayFrameImg = new Mat();
-		Imgproc.cvtColor(colFrameImg, grayFrameImg, Imgproc.COLOR_BGRA2GRAY);
-		
-		// Edit frame!
-		if(torchMasks == null) {
-//			torchMask = new Mat();
-//			Mat mask;
+		if(status == 0) {
+			Mat colFrameImg = new Mat();
+			Mat yuv = new Mat( (int)(size.height*1.5), size.width, CvType.CV_8UC1 );
+			yuv.put( 0, 0, frameData );
+			Imgproc.cvtColor( yuv, colFrameImg, Imgproc.COLOR_YUV2BGRA_NV21, 4);
 			
-			torchMasks = new ArrayList<Mat>();
-			for (int i = 0; i < 15; i++) {
-//				Mat tmp = ;
-				torchMasks.add(Highgui.imread("/sdcard/masks/torchMask_"+i+".png",Highgui.CV_LOAD_IMAGE_GRAYSCALE));
+			
+			if(!flicker && flickerEnabled) {
+				if(flickerRand.nextFloat() > 0.6) flicker = true;
+			} else if(flicker) {
+				flicker = false;
 			}
 			
-//			torchMask = Mat.zeros(colFrameImg.size(), CvType.CV_8UC1);
-//			update_pixels(torchMask, 100, 300);
 			
+			Mat grayFrameImg = new Mat();
+			if(!flicker) 
+				Imgproc.cvtColor(colFrameImg, grayFrameImg, Imgproc.COLOR_BGRA2GRAY);
+			else {
+				Mat white = Mat.ones(colFrameImg.size(), CvType.CV_8UC1);
+				Core.multiply(white, new Scalar(255), grayFrameImg);
+			}
 			
-//			List<Mat> marr = Arrays.asList(new Mat[]{mask, mask, mask});
-//			Core.merge(marr, torchMask);
+			// Edit frame!
+			if(torchMasks == null) {
+				
+				torchMasks = new ArrayList<Mat>();
+				for (int i = 0; i < 15; i++) {
+					torchMasks.add(Highgui.imread("/sdcard/masks/torchMask_"+i+".png",Highgui.CV_LOAD_IMAGE_GRAYSCALE));
+				}
+				
+			}
+			
+			if(!flicker) {
+				Mat noised = grayFrameImg.clone();
+				Core.randn(noised,128,30);
+				Core.addWeighted(grayFrameImg, 0.8, noised, 0.2, 0, grayFrameImg);
+			}
+		    
+		    
+		    Mat torchMask = new Mat();
+		    
+		    Mat tmp = new Mat(grayFrameImg.size(), 3);
+		    Core.merge(Arrays.asList(grayFrameImg,grayFrameImg,grayFrameImg),tmp);
+		    	
+		    
+		    if(!flicker && gm.getZombie().isInSight()) {
+		    	
+		    	
+		    	
+	//	    	imgProcView = new FastImageProcessingView(this.view.getContext());
+	//	        pipeline = new FastImageProcessingPipeline();
+	//	        imgProcView.setPipeline(pipeline);
+	//	        view.setContentView(imgProcView);
+	//	        imageIn = new ImageResourceInput(imgProcView, this, R.drawable.wakeboard);
+	//	        generic = new GenericFilter();
+	//	        screen = new ScreenEndpoint(pipeline);
+	//	        imageIn.addTarget(generic);
+	//	        generic.addTarget(screen);
+	//	        pipeline.addRootRenderer(imageIn);
+	//	        pipeline.startRendering();
+		    	
+		    	
+	//		    Bitmap tmp = Bitmap.createBitmap(grayFrameImg.width(), grayFrameImg.height(), Bitmap.Config.ARGB_8888);
+	//			Utils.matToBitmap(grayFrameImg, tmp);
+	//			Bitmap overlay = BitmapFactory.decodeFile("/sdcard/zbg/zombie.png");
+	//			Log.d(TAG, "overlay size: "+overlay.getWidth()+","+overlay.getHeight());
+	//			Utils.bitmapToMat(overlay(tmp, overlay),grayFrameImg);
+	//			Log.d(TAG, "overlay size: "+grayFrameImg.width()+","+grayFrameImg.height());
+		    	
+		    	
+		    	Log.d(TAG, "TMP Sizes/Channels/Type: "+tmp.size()+"; "+tmp.channels()+"; "+tmp.type());
+	//	    	Log.d(TAG, "OverlayAlpha: "+zombieFgAlpha);
+		    	tmp = overlayImage(overlays.get(0).get(gm.getZombie().getZombieScale()), tmp, 1);
+	//	    	zombieFgAlpha = zombieFgAlpha == 1.0f ? 1.0f : zombieFgAlpha+1.0f/5;
+	//	    	if(zombieAlphaCounter < overlays.get(0).size()-1) {
+	//	    		zombieAlphaCounter++;
+	//	    	}
+				
+				
+	//	    } else if(zombieFgAlpha > 0) {
+	//    		tmp = overlayImage(overlays.get(0), tmp, zombieFgAlpha);
+	//    		zombieFgAlpha = zombieFgAlpha == 0.0f ? 0.0f : zombieFgAlpha-1.0f/5;
+		    }
+		    
+		    Log.d(TAG, "TMP Sizes/Channels/Type: "+tmp.size()+"; "+tmp.channels()+"; "+tmp.type());
+	//	    tmp = overlayImage(overlays.get(0), tmp);
+		    Log.d(TAG, "TMP Sizes/Channels/Type: "+tmp.size()+"; "+tmp.channels()+"; "+tmp.type());
+		    
+		    grayFrameImg = tmp;
+		    
+		    Mat white = Mat.ones(torchMasks.get(torchCounter).size(), torchMasks.get(torchCounter).type())
+					.mul(Mat.ones(torchMasks.get(torchCounter).size(), torchMasks.get(torchCounter).type()), 255);
+			Core.merge(Arrays.asList(torchMasks.get(torchCounter),torchMasks.get(torchCounter),torchMasks.get(torchCounter)),torchMask);
+		    
+			Log.d(TAG, "GRAYFRAME Sizes/Channels/Type: "+grayFrameImg.size()+"; "+grayFrameImg.channels()+"; "+grayFrameImg.type());
+			Log.d(TAG, "TORCHMASKS Sizes/Channels/Type: "+torchMask.size()+"; "+torchMask.channels()+"; "+torchMask.type());
+			
+			if(torchMask.total() == 0)
+				grayFrameImg = grayFrameImg.mul(torchMasks.get(torchCounter), 1.0/255);
+			else
+				grayFrameImg = grayFrameImg.mul(torchMask, 1.0/255);
+			
+			Imgproc.cvtColor(grayFrameImg, grayFrameImg, Imgproc.COLOR_BGR2GRAY);
+			Log.d(TAG, "Channels: "+grayFrameImg.channels());
+			Mat black = Mat.zeros(grayFrameImg.size(), grayFrameImg.type());
+			Core.merge(Arrays.asList(black,grayFrameImg,black), result);
+		    
+		    torchCounter = (torchCounter + 1) % 15;
 		}
-		
-		
-//		Mat saltpepper_noise = Mat.zeros(colFrameImg.rows(), colFrameImg.cols(), CvType.CV_8U);
-////		(int) (rand.nextFloat()*255)
-//		Core.randu(saltpepper_noise, 0, 255);
-//
-//		Mat black = new Mat();
-//		Mat white = new Mat();
-//		Core.inRange(saltpepper_noise, new Scalar(0), new Scalar(30), black);
-//		Core.inRange(saltpepper_noise, new Scalar(225), new Scalar(255), black);
-//
-//		Mat saltpepper_img = colFrameImg.clone();
-//		saltpepper_img.setTo(new Scalar(255),white);
-//		saltpepper_img.setTo(new Scalar(0),black);
-//		
-//		colFrameImg = colFrameImg.mul(saltpepper_img, 1.0/255);
-		
-		Mat noised = grayFrameImg.clone();
-		Core.randn(noised,128,30);
-		
-//		int amount1= (int) (colFrameImg.rows()*colFrameImg.cols()*0.05);
-//	    int amount2= (int) (colFrameImg.rows()*colFrameImg.cols()*0.02);
-//	    for(int counter = 0; counter < amount1; ++counter) {
-//	    	noised.put(rand.nextInt(colFrameImg.rows()), rand.nextInt(colFrameImg.cols()), 0);
-////	     srcArr.at<uchar>(rng.uniform( 0,srcArr.rows), rng.uniform(0, srcArr.cols)) =0;
-//
-//	    }
-//	    
-//	    for (int counter=0; counter<amount2; ++counter) {
-//	    	noised.put(rand.nextInt(colFrameImg.rows()), rand.nextInt(colFrameImg.cols()), 255);
-////	     srcArr.at<uchar>(rng.uniform(0,srcArr.rows), rng.uniform(0,srcArr.cols)) = 255;
-//	    }
-	    
-	    Core.addWeighted(grayFrameImg, 0.8, noised, 0.2, 0, grayFrameImg);
-	    
-//	    if(beat) {
-////	    	Mat cropped = colFrameImg.submat(new org.opencv.core.Rect(50, 50, 640-100, 480-100)).clone();
-////	    	Imgproc.resize(cropped, colFrameImg, colFrameImg.size());
-//	    	grayFrameImg = grayFrameImg.mul(torchMasks.get(9), 1.0/255);
-//	    } else {
-//	    	grayFrameImg = grayFrameImg.mul(torchMasks.get(0), 1.0/255);
-//	    }
-	    
-	    
-	    Bitmap tmp = Bitmap.createBitmap(grayFrameImg.width(), grayFrameImg.height(), Bitmap.Config.ARGB_8888);
-		Utils.matToBitmap(grayFrameImg, tmp);
-		Bitmap overlay = BitmapFactory.decodeFile("/sdcard/zbg/zombie.png");
-		Log.d(TAG, "overlay size: "+overlay.getWidth()+","+overlay.getHeight());
-		Utils.bitmapToMat(overlay(tmp, overlay),grayFrameImg);
-		Log.d(TAG, "overlay size: "+grayFrameImg.width()+","+grayFrameImg.height());
-		
-		
-		Mat torchMask = new Mat(grayFrameImg.size(),grayFrameImg.type());
-		Core.merge(Arrays.asList(torchMasks.get(torchCounter),torchMasks.get(torchCounter),torchMasks.get(torchCounter),new Mat()),torchMask);
-	    
-		Log.d(TAG, "GRAYFRAME Sizes/Channels: "+grayFrameImg.size()+"; "+grayFrameImg.channels());
-		Log.d(TAG, "TORCHMASKS Sizes/Channels: "+torchMask.size()+"; "+torchMask.channels());
-		
-	    grayFrameImg = grayFrameImg.mul(torchMasks.get(torchCounter), 1.0/255);
-	    
-	    torchCounter = (torchCounter + 1) % 15;
 		
 		Paint p = new Paint();
         Canvas c = null;
@@ -540,7 +633,7 @@ public class CameraManager implements PreviewCallback {
 			bmp = Bitmap.createBitmap(size.width, size.height, Bitmap.Config.ARGB_8888);
 		}
 		
-		Utils.matToBitmap(grayFrameImg, bmp);
+		Utils.matToBitmap(result, bmp);
 		
 		c = frontCamSurface.lockCanvas(null);
 		c.drawBitmap(bmp, new Rect(0, 0, bmp.getWidth(), bmp.getHeight()), new Rect(0, 0, c.getWidth(), c.getHeight()), p);
@@ -569,4 +662,20 @@ public class CameraManager implements PreviewCallback {
         canvas.drawBitmap(bmp2, new Matrix(), null);
         return bmOverlay;
     }
+	
+	private Mat overlayImage(Pair<Mat, Mat> overlayPair, Mat background, float alphaFg){
+		Mat output = new Mat(background.size(), CvType.CV_8UC(3));
+		Log.d(TAG, "BG Sizes/Channels/Type: "+background.size()+"; "+background.channels()+"; "+background.type());
+		Log.d(TAG, "alphaInv Sizes/Channels/Type: "+overlayPair.second.size()+"; "+overlayPair.second.channels()+"; "+overlayPair.second.type());
+		Mat fg = overlayPair.first.clone();
+//		Core.multiply(fg, new Scalar(alphaFg,alphaFg,alphaFg), fg);
+//		Mat alhpaInv = overlayPair.second.clone();
+//		Core.multiply(alhpaInv, new Scalar(1-alphaFg,1-alphaFg,1-alphaFg), alhpaInv);
+		Mat bg = background.mul(overlayPair.second, 1.0/255.0);
+//		Core.multiply(bg, new Scalar(1.0f-alphaFg,1.0f-alphaFg,1.0f-alphaFg), bg);
+		Core.add(fg,bg, output);
+		
+		
+		return output;
+	}
 }

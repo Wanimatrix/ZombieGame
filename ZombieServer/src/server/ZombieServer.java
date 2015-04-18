@@ -22,7 +22,7 @@ public class ZombieServer {
 		server.createContext("/connectcam", new ZombieCamConnectHandler(roomlist));
 		server.createContext("/getcams", new ZombieCamListRequestHandler(roomlist));
 		server.createContext("/roomstatus", new RoomStatusUpdateHandler(roomlist));
-		server.createContext("/roomstatus", new RoomCountRequestHandler(roomlist));
+		server.createContext("/roomcount", new RoomCountRequestHandler(roomlist));
 
 		server.setExecutor(null);
 		server.start();
