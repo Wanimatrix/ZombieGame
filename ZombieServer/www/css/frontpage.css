@@ -1,0 +1,153 @@
+.pageheader {
+		 	font-size: xx-large;
+		 	border: 2px solid;
+   			border-radius: 2px;
+		 	width:50%;
+		 	margin: 0 auto;
+		 	height: 50px;
+		 	text-align: center;
+			vertical-align: middle;
+			line-height: 50px; 
+			background-color: #32cd32;
+   			border-color: #32cd32 #32cd32;
+   			color: black;
+   			background-image: url(../design/img-noise-lime.png);
+  			background-repeat:repeat;
+		}
+		.spacerlvl1 {
+		 	width:50%;
+		 	margin: 0 auto;
+    		margin-left: auto;
+   	 		margin-right: auto;
+		 	height: 5px;
+			vertical-align: middle;
+   			background-image: url(../design/img-noise-500x500.png);
+  			background-repeat:repeat;
+		}
+		.screenwrapper {
+			color:black;
+			width: 50%; 
+			text-align: center;
+    		margin: 0 auto;
+    		margin-left: auto;
+   	 		margin-right: auto;
+			height:74%;
+			background-image: url(../design/img-noise-lime.png);
+  			background-repeat:repeat;
+  			border: 2px solid;
+   			border-radius: 2px;
+   			border-color: #32cd32 #32cd32;
+   			margin:0 auto;
+   			
+		}
+    	.roomindicatorpane {
+    		float:left;
+    		width:150px;
+    		height: 50px;
+    		text-align: center;
+			vertical-align: middle;
+			line-height: 40px;
+    	}    	
+    	.roomindicatorwrapper{
+    		width: 50%; 
+    		margin: 0 auto;
+    		margin-left: auto;
+   	 		margin-right: auto;
+   	 		background-color: #32cd32;
+    		height: 15%;
+    		border-style: solid;
+   			background-image: url(../design/img-noise-lime.png);
+  			background-repeat:repeat;
+  			border: 2px solid;
+   			border-radius: 2px;
+   			box-shadow: 1px 1px 2px black;
+   			
+    	}
+    	
+    	body {
+   			font-family: Consolas, monospace;
+   			color: #32cd32;
+   			background-color: black;
+   			background-image: url(../design/img-noise-500x500.png);
+  			background-repeat:repeat;
+		}
+		p.roomname {
+			height: 20px;
+			width: 70px;
+			background-image: url(../design/img-noise-500x500.png);
+  			background-repeat:repeat;
+			font-size: large;
+			color:  white;
+			float: right;
+			box-shadow: 1px 1px 2px black;
+			text-align: center;
+			vertical-align: middle;
+			line-height: 20px;
+		}
+		.commandline,.consoletext{
+			text-shadow: 0 0 2px #26BF00;
+			background-color:transparent;	   			
+   			color: #25BA00;
+   			border: 2px solid;
+   			border-color: #32cd32 #32cd32;
+   			resize: none;
+		    margin: 0 auto;
+		    font-size: big;
+    		background-repeat: no-repeat;
+    		background-attachment: fixed;
+    		background-size: 48% 75%;
+    		background-position: top+40px center; 
+    		z-index: 11;
+    		padding-left: 10px;
+    		
+		}
+		.consoletext {
+		   	width: 100%;
+			height: 100%;
+			position: absolute;
+			border-radius: 15px;
+			top: 0;
+    		left: 0;
+			padding-top: 10px;
+			outline: none;
+			
+		}
+		.commandlinewrap{
+			width: 100%;
+			height: 8%;
+			border-radius: 15px;
+			position: relative;
+		}
+		.consoleinput {
+		   	width: 100%;
+			height: 100%;
+			border-radius: 15px;
+			background-color: transparent;
+			resize: none;
+			border: 2px solid;
+   			border-color: #32cd32 #32cd32;
+   			color: #25BA00;
+   			text-shadow: 0 0 2px #26BF00;
+   			line-height: 100%; 
+   			padding-left: 10px;
+   			text-align: left;
+   			outline:none;
+   			position: absolute; 
+   			top: 0; 
+   			left: 0;
+   			z-index: 11;
+		}
+		textarea:focus{outline:none}
+		.screencontainer{
+			width: 100%;
+	    	height: 90%;
+			position: relative;
+		}
+		@keyframes type{
+		    from { width: 0; }
+		}
+		
+		@-webkit-keyframes type{
+		    from { width: 0; }
+		}
+		

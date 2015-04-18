@@ -21,9 +21,12 @@ class ZombieCamConnectHandler implements HttpHandler {
 
 		BufferedReader input = new BufferedReader(new InputStreamReader(t.getRequestBody()));
 		String[] cam = input.readLine().split(Pattern.quote("$$$"));
+		System.out.println("----------------------");
+		System.out.println("Incoming ZombieCam:");
 		System.out.println("room: "+cam[0]);
 		System.out.println("cam: "+cam[0]);
 		System.out.println("address: "+ cam[1]);
+		System.out.println("----------------------");
 		rooms.addCamToRoom(cam[0], cam[1], cam[2]);
 		
 		t.sendResponseHeaders(200, 0);

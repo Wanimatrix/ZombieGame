@@ -1,26 +1,164 @@
 <html>
   <head>
-    <title>Sample "Hello, World" Application</title>
+    <title>Die Hölle der Dr. Hÿnkell.</title>
+    <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+    <script src="js/typed.js"></script>
+    <script src="js/grained.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="css/frontpage.css">
+    <script>
+    	var roomcount = 0;
+    	var options = {
+		  "animate": true,
+		  "patternWidth": 482.42,
+		  "patternHeight": 500,
+		  "grainOpacity": 0.04,
+		  "grainDensity": 1,
+		  "grainWidth": 1,
+		  "grainHeight": 1
+		}
+    </script>
+    <script>
+   		function doCommand(input){
+   			addLine("ctrl_room/" + input);
+    		if(input.indexOf("clear") > -1){
+    			$('#consoleoutput').val("");
+    		}
+    		else if(input.indexOf("help") > -1){
+    			addLine("");
+    			addLine("    help:  get a list of available functions.");
+    			addLine("    clear: remove all output from the console.");
+    			addLine("");
+    		}
+    		else{
+    			addLine("    error: command unknown.");    			
+    		}
+    			
+    	}
+    	function addLine(input){
+    		$('#consoleoutput').val($('#consoleoutput').val()+"\n" + input);
+    	}
+    	function addIndicator(roomname){
+    		//var e = $('div class="roomindicatorpane"> <img src="design/indicator_light/indicator_off.png"  id="'+roomname+'indicator" alt="Lights on" height="40" width="40"> <p class="roomname" id="'+roomname+'label">' + roomname +'</p> </div>');
+    		var el =  "<div class='roomindicatorpane'>";
+    		    el += "<img src='design/indicator_light/indicator_off.png'  id='"+roomname+"indicator' alt='Lights on' height='40' width='40'>";
+    			el += "<p class='roomname' id='"+roomname+"label'>" + roomname +"</p>";
+    			el += "</div>";
+    		$( '#roomindicatorwrapperid' ).append( el );
+    	}
+    	function lock(roomname){
+    		$("#"+roomname+"indicator").attr('src',"design/indicator_light/indicator_off.png");
+    	}
+    	function unlock(roomname){
+    		$("#"+roomname+"indicator").attr('src',"design/indicator_light/indicator_on.png");
+    	}
+    </script>
+    <script>
+		$(window).load(function() {
+			$('#console').keypress(function(e){
+		    	if(e.keyCode==13){
+		    		var input = $('#console').val();
+		    		doCommand(input);
+		    		$('#console').val("$: ");
+		    	}
+		    });
+			//$('#consoleoutput').val('room/controle/~$');
+			
+			grained('#noiseoverlay', options)
+			grained('#noiseoverlay2', options)
+			$('#consoleoutput').typed({
+        		strings: ["Welcome to Die Hölle der Dr. Hÿnkell.\nFor an overview of available commands enter 'help'.\nGood luck.\n"],
+        		typeSpeed: 0
+     		 });
+			$('#clicker').click(function(){ 
+   				$(function(){
+     				 $('#consoleoutput').typed({
+        				strings: ["First sentence.", "Second sentence."],
+       					typeSpeed: 0
+     				});
+  				});
+   				$('#consoleoutput').val($('#consoleoutput').val()+'\nroom/controle/~$ Welcome to Die Hölle der Dr. Hÿnkell.\nroom/controle/~$ Good luck with surviving.'); 
+			})
+      		$.getJSON( "roomcount", function( json ) {
+      			roomcount = json.roomcount;
+  				console.log( "Room count: " + json.roomcount );
+ 			});
+ 			$.getJSON( "roomstatus", function( roomlist ) {
+	 				for (i = 0; i < roomlist.length; i++) { 
+	 					var r = roomlist[i].room;
+	 					addIndicator(r);
+	 				}
+	 		});
+ 			setInterval(function () {
+	 			$.getJSON( "roomstatus", function( roomlist ) {
+	 				for (i = 0; i < roomlist.length; i++) { 
+	 					var r = roomlist[i].room;
+	 					if(roomlist[i].status === "locked"){
+	 						lock(r);
+	 					}
+	 					else{
+	 						unlock(r);
+	 					}
+	 				}
+	 			});
+	 		},2000);
+		});
+    </script>  
+    <script language="javascript" type="text/javascript">
+
+	</script> 
+
   </head>
-  <body bgcolor=white>
-
-    <table border="0" cellpadding="10">
-      <tr>
-        <td>
-          <img src="images/springsource.png">
-        </td>
-        <td>
-          <h1>Sample "Hello, World" app</h1>
-        </td>
-      </tr>
-    </table>
-
-    <p>This is the home page for the HelloWorld Web application. </p>
-    <p>To prove that they work, you can execute either of the following links:
-    <ul>
-      <li>To a <a href="getcams">getcams</a>.
-      <li>To a <a href="hello">servlet</a>.
-    </ul>
-
+  <body>
+	<div class="pageheader" id="clicker">
+		Die Hölle der Dr. Hÿnkell
+	</div>
+	<div class="spacerlvl1"></div>
+ 	<div class="screenwrapper">
+ 		<div class="screencontainer">
+ 		<textarea id="consoleoutput" type="text" class="consoletext" name="telnum" cols="40" rows="5" value="" readonly="readonly" />
+	    	
+	    </textarea>
+ 		<div id="noiseoverlay" style="width:100%; height:100%; position: absolute; top: 0; left: 0;  background-color: #020501; border: 0px solid;border-radius: 15px; border-color: #32cd32 #32cd32;">	    </div>
+	    </div>	 
+	    <div class="commandlinewrap">
+	    <input type="text" name="firstname" class="consoleinput" id="console" value="$: ">	
+	    <div id="noiseoverlay2" style="width:100%; height:100%; position: absolute; top: 0; left: 0;  background-color: #020501; border: 0px solid;border-radius: 15px; border-color: #32cd32 #32cd32;">	    </div>
+	    </div>		
+	    </div>  
+	</div>
+	<div class="spacerlvl1"></div>
+	<div class="roomindicatorwrapper" id="roomindicatorwrapperid">
+		<div style="width:100%; height:5px;"></div>
+		
+		<div class="roomindicatorpane" >
+    		<img src="design/indicator_light/indicator_off.png" onmouseover="this.src='design/indicator_light/indicator_on.png'" onmouseout="this.src='design/indicator_light/indicator_off.png'"  alt="Lights on" height="40" width="40">
+    		<p class="roomname">Room 1</p>
+    	</div>
+    	<div class="roomindicatorpane">
+    		<img src="design/indicator_light/indicator_off.png" onmouseover="this.src='design/indicator_light/indicator_on.png'" onmouseout="this.src='design/indicator_light/indicator_off.png'"  alt="Lights on" height="40" width="40"></img>
+    		<p class="roomname">Room 2</p>
+    	</div>
+    	<div class="roomindicatorpane">
+    		<img src="design/indicator_light/indicator_off.png" onmouseover="this.src='design/indicator_light/indicator_on.png'" onmouseout="this.src='design/indicator_light/indicator_off.png'"  alt="Lights on" height="40" width="40">
+    		<p class="roomname">Room 3</p>
+    	</div>
+    	<div class="roomindicatorpane">
+    		<img src="design/indicator_light/indicator_off.png" onmouseover="this.src='design/indicator_light/indicator_on.png'" onmouseout="this.src='design/indicator_light/indicator_off.png'"  alt="Lights on" height="40" width="40">
+    		<p class="roomname">Room 4</p>
+    	</div>
+    	<div class="roomindicatorpane">
+    		<img src="design/indicator_light/indicator_off.png" onmouseover="this.src='design/indicator_light/indicator_on.png'" onmouseout="this.src='design/indicator_light/indicator_off.png'"  alt="Lights on" height="40" width="40">
+    		<p class="roomname">Room 5</p>
+    	</div>
+    	<div class="roomindicatorpane">
+    		<img src="design/indicator_light/indicator_off.png" onmouseover="this.src='design/indicator_light/indicator_on.png'" onmouseout="this.src='design/indicator_light/indicator_off.png'"  alt="Lights on" height="40" width="40">
+    		<p class="roomname">Room 6</p>
+    	</div>
+    	<div class="roomindicatorpane">
+    		<img src="design/indicator_light/indicator_off.png" onmouseover="this.src='design/indicator_light/indicator_on.png'" onmouseout="this.src='design/indicator_light/indicator_off.png'"  alt="Lights on" height="40" width="40">
+    		<p class="roomname">Room 7</p>
+    	</div>
+    	
+	</div>
   </body>
 </html>

@@ -19,8 +19,7 @@ public class RoomStatusUpdateHandler implements HttpHandler {
 	
 	@Override
 	public void handle(HttpExchange t) throws IOException {
-		String response = rooms.roomStatusJSON();
-		System.out.println(response);
+		String response = rooms.getRoomStatusJSON();
 		Headers responseHeaders= t.getResponseHeaders();
 		responseHeaders.set("Content-Type","application/json");
         t.sendResponseHeaders(200, response.length());

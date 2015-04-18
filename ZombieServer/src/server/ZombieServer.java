@@ -14,8 +14,8 @@ public class ZombieServer {
 	
 	public ZombieServer(int port) throws IOException{
 		
-		Thread t = new Thread(new LockThread(roomlist));
-		t.start();
+		//Thread t = new Thread(new LockThread(roomlist));
+		//t.start();
 		
 		server = HttpServer.create(new InetSocketAddress(8082), 300);
 		server.createContext("/", new ZombieFileHandler());
@@ -26,6 +26,7 @@ public class ZombieServer {
 
 		server.setExecutor(null);
 		server.start();
+		System.out.println("ZombieServer started.");
 	}
 	
 	
