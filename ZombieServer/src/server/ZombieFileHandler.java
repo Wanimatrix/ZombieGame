@@ -18,7 +18,7 @@ public class ZombieFileHandler implements HttpHandler {
 	    System.out.println(root +uri.getPath());
 	    File file = null;
 	    if(uri.getPath().equals("/"))
-	    	file = new File(root + uri.getPath()+"index.html").getCanonicalFile();
+	    	file = new File(root + uri.getPath()+"messenger.html").getCanonicalFile();
 	    else
 	    	file = new File(root + uri.getPath()).getCanonicalFile();
 	    

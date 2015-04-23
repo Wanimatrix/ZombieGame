@@ -71,25 +71,37 @@
      		 });
 			$('#clicker').click(function(){ 
    				$(function(){
-     				 $('#consoleoutput').typed({
-        				strings: ["First sentence.", "Second sentence."],
-       					typeSpeed: 0
-     				});
+   					ajax = $.getJSON( "getmessages/id=-1", function( json ) {
+		  				console.log( json );
+		 			});
+		 			setTimeout(function(){ ajax.abort(); }, 3000);
+     				navigator.vibrate = navigator.vibrate ||
+                  						navigator.webkitVibrate ||
+                 						navigator.mozVibrate || 
+                  						navigator.msVibrate;
+                  	if (navigator.vibrate) {
+  						console.log('we can vibrate');
+  						navigator.vibrate([5000, 300, 1000, 100, 1000, 100, 1000, 100, 1000]);
+					} else {
+  						console.log('no vibration for you :-(');
+					}
   				});
    				$('#consoleoutput').val($('#consoleoutput').val()+'\nroom/controle/~$ Welcome to Die Hölle der Dr. Hÿnkell.\nroom/controle/~$ Good luck with surviving.'); 
 			})
-      		$.getJSON( "roomcount", function( json ) {
+      		ajax1 = $.getJSON( "roomcount", function( json ) {
       			roomcount = json.roomcount;
   				console.log( "Room count: " + json.roomcount );
  			});
- 			$.getJSON( "roomstatus", function( roomlist ) {
+ 			setTimeout(function(){ ajax1.abort(); }, 3000);
+ 			ajax2 = $.getJSON( "roomstatus", function( roomlist ) {
 	 				for (i = 0; i < roomlist.length; i++) { 
 	 					var r = roomlist[i].room;
 	 					addIndicator(r);
 	 				}
 	 		});
+	 		setTimeout(function(){ ajax2.abort(); }, 3000);
  			setInterval(function () {
-	 			$.getJSON( "roomstatus", function( roomlist ) {
+	 			ajax3 = $.getJSON( "roomstatus", function( roomlist ) {
 	 				for (i = 0; i < roomlist.length; i++) { 
 	 					var r = roomlist[i].room;
 	 					if(roomlist[i].status === "locked"){
@@ -100,6 +112,7 @@
 	 					}
 	 				}
 	 			});
+	 			setTimeout(function(){ ajax3.abort(); }, 1500);
 	 		},2000);
 		});
     </script>  

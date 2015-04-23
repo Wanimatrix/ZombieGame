@@ -1,4 +1,5 @@
 package server;
+import gamestateobjects.MessageService;
 import gamestateobjects.RoomList;
 
 import java.io.IOException;
@@ -10,8 +11,9 @@ import com.sun.net.httpserver.*;
 public class ZombieServer {
 
 	private final HttpServer server;
+	private final MessageService mservice = new MessageService();
 	private final RoomList roomlist = new RoomList();
-	
+
 	public ZombieServer(int port) throws IOException{
 		
 		//Thread t = new Thread(new LockThread(roomlist));
@@ -23,7 +25,8 @@ public class ZombieServer {
 		server.createContext("/getcams", new ZombieCamListRequestHandler(roomlist));
 		server.createContext("/roomstatus", new RoomStatusUpdateHandler(roomlist));
 		server.createContext("/roomcount", new RoomCountRequestHandler(roomlist));
-
+		server.createContext("/getmessages", new MessageRequestHandler(mservice));
+		
 		server.setExecutor(null);
 		server.start();
 		System.out.println("ZombieServer started.");
