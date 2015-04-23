@@ -1,6 +1,7 @@
 package server;
 import gamestateobjects.MessageService;
 import gamestateobjects.RoomList;
+import gamestateobjects.enigmas.AEnigma;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -14,7 +15,7 @@ public class ZombieServer {
 	private final MessageService mservice = new MessageService();
 	private final RoomList roomlist = new RoomList();
 
-	public ZombieServer(int port) throws IOException{
+	public ZombieServer(int port, AEnigma ... enigmas) throws IOException{
 		
 		//Thread t = new Thread(new LockThread(roomlist));
 		//t.start();
@@ -26,6 +27,10 @@ public class ZombieServer {
 		server.createContext("/roomstatus", new RoomStatusUpdateHandler(roomlist));
 		server.createContext("/roomcount", new RoomCountRequestHandler(roomlist));
 		server.createContext("/getmessages", new MessageRequestHandler(mservice));
+		server.createContext("/resetgame", new GameResetHandler(roomlist));
+		
+		for (AEnigma ae : enigmas)
+			server.createContext(ae.getContext(), ae);
 		
 		server.setExecutor(null);
 		server.start();

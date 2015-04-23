@@ -37,6 +37,11 @@ public class RoomList {
 		updateCamListJSON();
 	}
 	
+	public void lockAllRooms(){
+		for (Room r : roomlist.values())
+			r.lock();
+	}
+	
 	public Collection<Room> getAllRooms(){
 		return roomlist.values();
 	}
