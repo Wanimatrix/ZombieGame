@@ -2,7 +2,11 @@ package be.csmmi.zombiegame.rendering;
 
 import java.io.IOException;
 
+import org.opencv.android.Utils;
+import org.opencv.core.Mat;
+
 import be.csmmi.zombiegame.app.AppConfig;
+import be.csmmi.zombiegame.app.GameManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
@@ -21,12 +25,14 @@ public class MjpegViewThread extends Thread {
 	private GLSurfaceView view;
 	private MjpegInputStream source;
 	private CameraManager camManager;
+	private GameManager gm;
      
-    public MjpegViewThread(Surface surface, GLSurfaceView view, MjpegInputStream source, CameraManager camManager) { 
+    public MjpegViewThread(Surface surface, GLSurfaceView view, MjpegInputStream source, CameraManager camManager, GameManager gm) { 
         this.surface = surface; 
         this.view = view;
         this.source = source;
         this.camManager = camManager;
+        this.gm = gm;
     }
     
     public void stopDrawing() {
@@ -61,14 +67,22 @@ public class MjpegViewThread extends Thread {
                 		if(bmp==null){
                 			bmp = Bitmap.createBitmap(AppConfig.PREVIEW_RESOLUTION[0], AppConfig.PREVIEW_RESOLUTION[1], Bitmap.Config.ARGB_8888);
                 		}
-                		int ret = source.readMjpegFrame(bmp);
-
-                		if(ret == -1)
-                		{
-                			Log.d("MJPEG", "Error while reading frame");
-                			camManager.readCameraStream();
-                			mRun = false;
-                			break;
+                		
+                		Mat status = new Mat();
+                		int gameStatus = gm.getGameStatus(status);
+                		
+                		if(gameStatus == 1) {
+                			Utils.matToBitmap(status, bmp);
+                		} else {
+	                		int ret = source.readMjpegFrame(bmp);
+	
+	                		if(ret == -1)
+	                		{
+	                			Log.d("MJPEG", "Error while reading frame");
+	                			camManager.readCameraStream();
+	                			mRun = false;
+	                			break;
+	                		}
                 		}
                         
                 		synchronized (surface) {
