@@ -7,6 +7,7 @@
     <link rel="stylesheet" type="text/css" href="css/frontpage.css">
     <script>
     	var roomcount = 0;
+        var rooms = 0;
     	var options = {
 		  "animate": true,
 		  "patternWidth": 482.42,
@@ -27,8 +28,46 @@
     			addLine("");
     			addLine("    help:  get a list of available functions.");
     			addLine("    clear: remove all output from the console.");
+                addLine("");
+                addLine("    solve roomname solution: solve enigma of given roomname with given solution.");
+                addLine("        eg.: solve theroomname \'\'The solution\'\'");
     			addLine("");
-    		}
+    		} 
+            else if(input.indexOf("solve") > -1){
+                addLine("");
+                var roomFound = 0;
+                for(var i = 0; i < rooms.length; i++) {
+                    if(input.indexOf(rooms[i]+" ") > -1) {
+                        roomFound = 1;
+
+                        var solution = input.split('"')[1];
+
+                        $.getJSON( "checksolution", function( result ) {
+                            if(result.data == "true") {
+                                
+                                addLine("    Enigma "+rooms[i]+": SOLVED");
+                                var tip = "";
+                                var nextRoom = "";
+                                $.getJSON( "gettip", function( result ) {
+                                    tip = result.data;
+                                });
+                                $.getJSON( "getnextroom", function( result ) {
+                                    nextRoom = result.data;
+                                });
+                                addLine("    Tip: "+tip);
+                                if(nextRoom == "none") addLine("    This was the last room. Only one mistery left to solve!");
+                                else addLine("    Next room: "+nextRoom);
+                                addLine("");
+                            } else {
+                                addLine("    Enigma "+rooms[i]+": SOLUTION WRONG");
+                            }
+                        });
+                        break;
+                    }
+                }
+                if(roomFound == 0) addLine("    This room does not exist.");
+                addLine("");
+            }
     		else{
     			addLine("    error: command unknown.");    			
     		}
@@ -102,6 +141,7 @@
 	 		setTimeout(function(){ ajax2.abort(); }, 3000);
  			setInterval(function () {
 	 			ajax3 = $.getJSON( "roomstatus", function( roomlist ) {
+                    if(rooms == 0) rooms = roomlist;
 	 				for (i = 0; i < roomlist.length; i++) { 
 	 					var r = roomlist[i].room;
 	 					if(roomlist[i].status === "locked"){

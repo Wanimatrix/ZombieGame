@@ -6,6 +6,8 @@ public class AppConfig {
 	
 	public final static int AMOUNT_PREVIEW_BUFFERS = 1;
 	public static boolean TOUCH_EVENT = false;
+
+	public static final long MAX_FLASHLIGHT_TIME = (1000 * 60) * 5;
 	
 	public final static boolean DEBUG_LOGGING = true;
 	public final static boolean DEBUG_TIMING = true;

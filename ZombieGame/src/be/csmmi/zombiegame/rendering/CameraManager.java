@@ -197,7 +197,7 @@ public class CameraManager implements PreviewCallback {
 					try {
 						Thread.sleep(3000);
 						Log.d("LOCKER", "Added request");
-						ServerCommunication.sendMessage("roomstatus", callback);
+						ServerCommunication.sendArrayMessage("roomstatus", callback);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -295,7 +295,7 @@ public class CameraManager implements PreviewCallback {
         };
 		
 		// Add the request to the RequestQueue.
-		ServerCommunication.sendMessage("getcams", callback, errorListener);
+		ServerCommunication.sendArrayMessage("getcams", callback, errorListener);
 		
 		initRoomStatus();
 	}
@@ -513,6 +513,8 @@ public class CameraManager implements PreviewCallback {
 		
 		Mat result = new Mat();
 		int status = gm.getGameStatus(result);
+		if(gm.endGameStarted()) flickerEnabled = true;
+		else flickerEnabled = false;
 		
 		if(status == 0) {
 			Mat colFrameImg = new Mat();
