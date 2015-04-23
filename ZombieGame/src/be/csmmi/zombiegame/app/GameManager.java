@@ -1,9 +1,11 @@
 package be.csmmi.zombiegame.app;
 
-import org.opencv.core.Core;
+import org.json.JSONArray;
 import org.opencv.core.Mat;
 import org.opencv.highgui.Highgui;
 import org.opencv.imgproc.Imgproc;
+
+import com.android.volley.Response;
 
 import android.content.Context;
 import android.util.Log;
@@ -18,6 +20,7 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 	private boolean inControlRoom = true;
 	
 	public GameManager(Context context, int zombieScales) {
+		ServerCommunication.init(context);
 		sensor = new LookatSensor(context);
 		sensor.addListener(this);
 		zombie = new Zombie(context, zombieScales, this, sensor);
@@ -67,6 +70,14 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 		else if(isGameOver()) {
 			Highgui.imread("/sdcard/zbg/lost.png").copyTo(status);
 			Imgproc.cvtColor(status, status, Imgproc.COLOR_RGBA2BGR);
+			ServerCommunication.sendMessage("resetGame", new Response.Listener<JSONArray>() {
+
+				@Override
+				public void onResponse(JSONArray response) {
+					
+				}
+				
+			});
 			return 1;
 		}
 		return 0;

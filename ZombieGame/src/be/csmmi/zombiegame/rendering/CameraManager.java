@@ -55,8 +55,10 @@ import android.util.Pair;
 import android.view.Surface;
 import be.csmmi.zombiegame.app.AppConfig;
 import be.csmmi.zombiegame.app.GameManager;
+import be.csmmi.zombiegame.app.ServerCommunication;
 
 import com.android.volley.RequestQueue;
+import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonArrayRequest;
 import com.android.volley.toolbox.Volley;
@@ -76,7 +78,7 @@ public class CameraManager implements PreviewCallback {
 	private Thread roomStatusThread;
 	private Surface surface;
 	private Surface frontCamSurface;
-	private RequestQueue queue;
+//	private RequestQueue queue;
 	
 	private GameManager gm;
 	
@@ -95,7 +97,7 @@ public class CameraManager implements PreviewCallback {
 		this.view = view;
 	    
 		// Instantiate the RequestQueue.
-		queue = Volley.newRequestQueue(view.getContext());
+//		queue = Volley.newRequestQueue(view.getContext());
 	}
 	
 	public void setSurface(Surface surface) {
@@ -145,7 +147,7 @@ public class CameraManager implements PreviewCallback {
 	}
 	
 	public void initRoomStatus() {
-		final JsonArrayRequest req = new JsonArrayRequest(AppConfig.SERVER_ADDRESS+"/roomstatus",
+		final Response.Listener<JSONArray> callback = 
 	            new com.android.volley.Response.Listener<JSONArray>() {
 	                @Override
 	                public void onResponse(JSONArray response) {
@@ -185,12 +187,7 @@ public class CameraManager implements PreviewCallback {
 	                        }
 	                	} catch(Exception e) {};
 	                }
-	            }, new com.android.volley.Response.ErrorListener() {
-	                @Override
-	                public void onErrorResponse(VolleyError error) {
-	                	
-	                }
-	            });
+	            };
 		
 		roomStatusThread = new Thread(new Runnable() {
 			
@@ -200,7 +197,7 @@ public class CameraManager implements PreviewCallback {
 					try {
 						Thread.sleep(3000);
 						Log.d("LOCKER", "Added request");
-						queue.add(req);
+						ServerCommunication.sendMessage("roomstatus", callback);
 					} catch (InterruptedException e) {
 						e.printStackTrace();
 					}
@@ -212,92 +209,93 @@ public class CameraManager implements PreviewCallback {
 	
 	public void initCameras(final OnCamerasReadyListener listener) {
 		
-		JsonArrayRequest req = new JsonArrayRequest(AppConfig.SERVER_ADDRESS+"/getcams",
-	            new com.android.volley.Response.Listener<JSONArray>() {
-	                @Override
-	                public void onResponse(JSONArray response) {
-	                    Log.d(TAG, response.toString());
-	 
-	                    try {
-	                        // Parsing json array response
-	                        // loop through each json object
-	                        for (int i = 0; i < response.length(); i++) {
-	                            JSONObject roomObj = (JSONObject) response.get(i);
-	                            Room room = new Room((String)roomObj.get("roomname"));
-	                            JSONArray camCluster = roomObj.getJSONArray("camcluster");
-	                            for (int j = 0; j < camCluster.length(); j++) {
-	                            	JSONObject cam = (JSONObject)camCluster.get(j);
-	                            	String name = cam.getString("name");
-	                            	String url = cam.getString("address");
-	                            	room.addCamera(new Cam(name, "http://"+url));
-	                            }
-	                            rooms.add(room);
-	                        }
-	                        
-	                        cameraSwitcher = new Thread() {
-	            				@Override
-	            				public void run() {
-	            					Log.d(TAG, "Switcher started");
-	            					
-	            					do {
-	            						try {
-	            							Thread.sleep(10000);
-	            						} catch (InterruptedException e) {
-	            							Log.d(TAG, "Switcher interrupted");
-	            							if(!stopCamSwitcher) {
-	            								currentCameraIdx = 0;
-	            								continue;
-	            							} else {
-	            								
-	            							}
-	            						}
-	            						while(stopCamSwitcher) {
-	            							Log.d(TAG, "Switcher stopped");
-	            							try {
-	            				    		 Thread.sleep(1000);
-            				    		   } catch (InterruptedException e) {
-            				    		      e.printStackTrace();
-            				    		   }
-	            						}
-	            						
-	            						Log.d(TAG, "Switching...");
-	            						
-	            						currentCameraIdx = (currentCameraIdx + 1) % rooms.get(currentRoomIdx).getCameras().size();
-	            						readCameraStream();
-	            					} while(true);
-	            				}
-	            			};
-	                        
-	                        currentRoomIdx = 0;
-	                        currentCameraIdx = 0;
-	                        
-	                        listener.onCamerasReady();
-	                        if(rooms.get( currentRoomIdx).isLocked()) {
-	                			setupCamera();
-	                		} else {
-	                			readCameraStream();
-	                		}
-	                        
-	                    } catch (JSONException e) {
-	                    	Log.d("JSON", "JSON ERROR!");
-	                        e.printStackTrace();
-	                    }
-	                }
-	            }, new com.android.volley.Response.ErrorListener() {
-	                @Override
-	                public void onErrorResponse(VolleyError error) {
-	                    Log.d(TAG, "Trying to contact the server ...");
-	                    try {
-							Thread.sleep(1000);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-	                    initCameras(listener);
-	                }
-	            });
+	    Response.Listener<JSONArray> callback = new com.android.volley.Response.Listener<JSONArray>() {
+                @Override
+                public void onResponse(JSONArray response) {
+                    Log.d(TAG, response.toString());
+ 
+                    try {
+                        // Parsing json array response
+                    // loop through each json object
+                    for (int i = 0; i < response.length(); i++) {
+                        JSONObject roomObj = (JSONObject) response.get(i);
+                        Room room = new Room((String)roomObj.get("roomname"));
+                        JSONArray camCluster = roomObj.getJSONArray("camcluster");
+                        for (int j = 0; j < camCluster.length(); j++) {
+                        	JSONObject cam = (JSONObject)camCluster.get(j);
+                        	String name = cam.getString("name");
+                        	String url = cam.getString("address");
+                        	room.addCamera(new Cam(name, "http://"+url));
+                        }
+                        rooms.add(room);
+                    }
+                    
+                    cameraSwitcher = new Thread() {
+        				@Override
+        				public void run() {
+        					Log.d(TAG, "Switcher started");
+        					
+        					do {
+        						try {
+        							Thread.sleep(10000);
+        						} catch (InterruptedException e) {
+        							Log.d(TAG, "Switcher interrupted");
+        							if(!stopCamSwitcher) {
+        								currentCameraIdx = 0;
+        								continue;
+        							} else {
+        								
+        							}
+        						}
+        						while(stopCamSwitcher) {
+        							Log.d(TAG, "Switcher stopped");
+        							try {
+        				    		 Thread.sleep(1000);
+    				    		   } catch (InterruptedException e) {
+    				    		      e.printStackTrace();
+    				    		   }
+        						}
+        						
+        						Log.d(TAG, "Switching...");
+        						
+        						currentCameraIdx = (currentCameraIdx + 1) % rooms.get(currentRoomIdx).getCameras().size();
+        						readCameraStream();
+        					} while(true);
+        				}
+        			};
+                    
+                    currentRoomIdx = 0;
+                    currentCameraIdx = 0;
+                    
+                    listener.onCamerasReady();
+                    if(rooms.get( currentRoomIdx).isLocked()) {
+            			setupCamera();
+            		} else {
+            			readCameraStream();
+            		}
+                    
+                } catch (JSONException e) {
+                	Log.d("JSON", "JSON ERROR!");
+                    e.printStackTrace();
+                }
+            }
+        };
+	            
+	   Response.ErrorListener errorListener = new com.android.volley.Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Log.d(TAG, "Trying to contact the server ...");
+                try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+                initCameras(listener);
+            }
+        };
 		
 		// Add the request to the RequestQueue.
-		queue.add(req);
+		ServerCommunication.sendMessage("getcams", callback, errorListener);
 		
 		initRoomStatus();
 	}
