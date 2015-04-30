@@ -29,6 +29,7 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 		@Override
 		public void run() {
 			try {
+				flashLightTimer = 0;
 				while(flashLightTimer < AppConfig.MAX_FLASHLIGHT_TIME) {
 					Thread.sleep(1000);
 					flashLightTimer++;

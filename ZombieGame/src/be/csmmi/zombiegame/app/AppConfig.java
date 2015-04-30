@@ -8,6 +8,7 @@ public class AppConfig {
 	public static boolean TOUCH_EVENT = false;
 
 	public static final long MAX_FLASHLIGHT_TIME = (1000 * 60) * 5;
+	public static final int MAX_SIMULTANEOUS_SOUNDS = 10;
 	
 	public final static boolean DEBUG_LOGGING = true;
 	public final static boolean DEBUG_TIMING = true;
