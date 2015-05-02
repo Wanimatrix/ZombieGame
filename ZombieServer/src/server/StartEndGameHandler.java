@@ -7,18 +7,19 @@ import java.io.IOException;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
-public class GameResetHandler implements HttpHandler{
+public class StartEndGameHandler implements HttpHandler {
 
-	private GameStatus status = null;
-	
-	public GameResetHandler(GameStatus s) {
+	private GameStatus status;
+
+	public StartEndGameHandler(GameStatus s){
 		this.status = s;
 	}
 	
 	@Override
 	public void handle(HttpExchange t) throws IOException {
-		status.resetGame();
-		Sender.sendData(t, "{\"data\": \"true\"}");
+		status.startEndGame();
+		String response = "{\"data\": \""+true+"\"}";
+		Sender.sendData(t, response);
 	}
 
 }

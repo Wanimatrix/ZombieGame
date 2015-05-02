@@ -4,12 +4,10 @@ import gamestateobjects.Message;
 import gamestateobjects.MessageService;
 
 import java.io.IOException;
-import java.io.OutputStream;
 import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 
-import com.sun.net.httpserver.Headers;
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
@@ -34,12 +32,7 @@ public class MessageRequestHandler implements HttpHandler {
 		if(json.length() > 1)
 			json = json.substring(0, json.length() - 1) + "]";
 		System.out.println(json);
-		Headers responseHeaders= t.getResponseHeaders();
-		responseHeaders.set("Content-Type","application/json");
-        t.sendResponseHeaders(200, json.length());
-        OutputStream os = t.getResponseBody();
-        os.write(json.getBytes());
-        os.close();
+		Sender.sendData(t, json);
 	}
 
 }

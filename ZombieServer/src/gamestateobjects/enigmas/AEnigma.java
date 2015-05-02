@@ -3,9 +3,9 @@ package gamestateobjects.enigmas;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 
-import com.sun.net.httpserver.Headers;
+import server.Sender;
+
 import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
@@ -25,32 +25,22 @@ public abstract class AEnigma implements HttpHandler{
 	public void handle(HttpExchange t) throws IOException {
 		String uri = t.getRequestURI().toString();
 		if(uri.contains("/gettip"))
-			sendData(t, "{\"data\": \""+getTip()+"\"}", false);
+			Sender.sendData(t, "{\"data\": \""+getTip()+"\"}");
 		else if(uri.contains("/checksolution")){
 			BufferedReader input = new BufferedReader(new InputStreamReader(t.getRequestBody()));
 			String sol = input.readLine();
 			
 			if(checkSolution(sol))
-				sendData(t, "{\"data\": \"true\"}", false);
+				Sender.sendData(t, "{\"data\": \"true\"}");
 			else
-				sendData(t, "{\"data\": \"false\"}", false);
+				Sender.sendData(t, "{\"data\": \"false\"}");
 		}
 		else if(uri.contains("/getnextroom")){
 			if(hasNextRoom())
-				sendData(t, "{\"data\": \""+getNextRoomName()+"\"}", false);
+				Sender.sendData(t, "{\"data\": \""+getNextRoomName()+"\"}");
 			else
-				sendData(t, "{\"data\": \"none\"}", false);
+				Sender.sendData(t, "{\"data\": \"none\"}");
 		}	
-	}
-	
-	void sendData(HttpExchange t, String data, boolean isJson) throws IOException{
-		Headers responseHeaders = t.getResponseHeaders();
-		if(isJson)
-			responseHeaders.set("Content-Type","application/json");
-        t.sendResponseHeaders(200, data.length());
-        OutputStream os = t.getResponseBody();
-        os.write(data.getBytes());
-        os.close();
 	}
 }
 
