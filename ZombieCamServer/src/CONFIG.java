@@ -3,8 +3,8 @@ public class CONFIG {
 
 	public static final int localport = 8083;
 
-	public static final String localip = "localhost";//"192.168.1.254";
-	public static final String zombieserverip = "localhost";//"192.168.1.254";
+	public static final String localip = "192.168.2.1";//"192.168.1.254";
+	public static final String zombieserverip = "192.168.2.1";//"192.168.1.254";
 
 	//public static final String localip = "192.168.173.1";
 	//public static final String zombieserverip = "192.168.173.1";

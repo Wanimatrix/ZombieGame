@@ -1,5 +1,8 @@
 package be.csmmi.zombiegame.app;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -22,28 +25,36 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 	private boolean inControlRoom = true;
 	private boolean endgame = false;
 	
-	private long flashLightTimer = 0;
+	private long flashLightTimerCount = 0;
 	
 	private Runnable flashLightTimerRunnable = new Runnable() {
 		
 		@Override
 		public void run() {
+			flashLightTimerCount = AppConfig.MAX_FLASHLIGHT_TIME;
 			try {
-				flashLightTimer = 0;
-				while(flashLightTimer < AppConfig.MAX_FLASHLIGHT_TIME) {
+				while(flashLightTimerCount > 0) {
 					Thread.sleep(1000);
-					flashLightTimer++;
+					flashLightTimerCount--;
 				}
-				
 				lost = true;
 			} catch (InterruptedException e) {
 			}
+			
 		}
+
+//		@Override
+//		public void run() {
+//			if(flashLightTimerCount++ >= AppConfig.MAX_FLASHLIGHT_TIME) {
+//				flashLightTimer.cancel();
+//				lost = true;
+//			}
+//		}
 	};
 	private Thread flashLightTimerThread;
+	private boolean flashLightTimerRunning = false;
 	
 	public GameManager(Context context, int zombieScales) {
-		ServerCommunication.init(context);
 		sensor = new LookatSensor(context);
 		sensor.addListener(this);
 		zombie = new Zombie(context, zombieScales, this, sensor);
@@ -53,8 +64,11 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 		return zombie;
 	}
 	
-	public long getFlashLightTimer() {
-		return flashLightTimer;
+	public long getFlashLightPercentage() {
+		double timePassed = (AppConfig.MAX_FLASHLIGHT_TIME-flashLightTimerCount)/(double)AppConfig.MAX_FLASHLIGHT_TIME;
+		long percentage = (long)(timePassed*100);
+//		Log.d(TAG, "FLASH: "+timePassed+", "+flashLightTimer);
+		return percentage;
 	}
 	
 	public boolean isGameOver() {
@@ -90,7 +104,8 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 				inControlRoom = true;
 				zombie.disable();
 			} else {
-				if(inControlRoom) {
+				if(inControlRoom && !flashLightTimerThread.isAlive()) {
+					Log.d(TAG, "Going out of controlroom");
 					flashLightTimerThread = new Thread(flashLightTimerRunnable);
 				}
 				inControlRoom = false;
@@ -105,8 +120,14 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 			@Override
 			public void onResponse(JSONObject response) {
 				try {
-					if(response.get("data") == "false") {
+					Log.d(TAG, "INPROGRESS RESPONSE:"+response.get("data"));
+					if(response.get("data").equals("false")) {
+						Log.d(TAG, "INPROGRESS == FALSE");
 						lost = true;
+						if(sendResetGame) sendResetGame = false; // The server said we are lost, so do not send reset to the server
+					} else {
+						if(!sendResetGame) sendResetGame = true; // We are in the game if we lose the game we need to send a reset
+						lost = false;
 					}
 						
 				} catch (JSONException e) {
@@ -118,10 +139,14 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 		ServerCommunication.sendObjectMessage("endgamestarted", new Response.Listener<JSONObject>() {
 			@Override
 			public void onResponse(JSONObject response) {
+				Log.d(TAG, "ENDGAME RESPONSE:");
 				try {
-					if(response.get("data") == "true") {
+					Log.d(TAG, "ENDGAME RESPONSE:"+response.get("data"));
+					if(response.get("data").equals("true")) {
+						Log.d(TAG, "ENDGAME STARTED");
 						endgame = true;
 					} else {
+						Log.d(TAG, "ENDGAME STOPPED");
 						endgame = false;
 					}
 						
@@ -141,15 +166,17 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 		return 0;
 	}
 	
+	boolean sendResetGame = true;
+	
 	private int gameOver(Mat status, boolean sendToServer) {
 		Highgui.imread("/sdcard/zbg/lost.png").copyTo(status);
 		Imgproc.cvtColor(status, status, Imgproc.COLOR_RGBA2BGR);
-		if(sendToServer) {
+		if(sendResetGame && sendToServer) {
 			ServerCommunication.sendObjectMessage("resetgame", new Response.Listener<JSONObject>() {
 	
 				@Override
 				public void onResponse(JSONObject response) {
-					
+					sendResetGame = false; // Reset is sent and arrived, so do not send it again
 				}
 				
 			});

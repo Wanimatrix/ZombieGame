@@ -4,6 +4,7 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -26,6 +27,7 @@ public class ServerCommunication {
 	public static void sendArrayMessage(String message, Response.Listener<JSONArray> callback, Response.ErrorListener errorListener) {
 		JsonArrayRequest req = new JsonArrayRequest(AppConfig.SERVER_ADDRESS+"/"+message, callback, errorListener);	
 		queue.add(req);
+		Log.d("ServerCOMMUNICATION",AppConfig.SERVER_ADDRESS+"/"+message+" was sent!");
 	}
 	
 	public static void sendObjectMessage(String message, Response.Listener<JSONObject> callback) {

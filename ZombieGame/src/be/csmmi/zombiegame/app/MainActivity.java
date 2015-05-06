@@ -45,6 +45,7 @@ public class MainActivity extends CardboardActivity implements OnSharedPreferenc
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		ServerCommunication.init(MainActivity.this);
 		setContentView(R.layout.activity_main);
 		v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
 	}

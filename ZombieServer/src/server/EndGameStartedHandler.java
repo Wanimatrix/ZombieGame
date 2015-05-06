@@ -17,7 +17,7 @@ public class EndGameStartedHandler implements HttpHandler {
 	
 	@Override
 	public void handle(HttpExchange t) throws IOException {
-		String response = "{\"data\": \""+status.isInProgress()+"\"}";
+		String response = "{\"data\": \""+status.hasEndgameStarted()+"\"}";
 		Sender.sendData(t, response);
 	}
 

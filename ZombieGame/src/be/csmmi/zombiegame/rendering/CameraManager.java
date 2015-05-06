@@ -622,6 +622,8 @@ public class CameraManager implements PreviewCallback {
 			Log.d(TAG, "Channels: "+grayFrameImg.channels());
 			Mat black = Mat.zeros(grayFrameImg.size(), grayFrameImg.type());
 			Core.merge(Arrays.asList(black,grayFrameImg,black), result);
+			Core.putText(result, "["+gm.getFlashLightPercentage()+"%]", new Point(AppConfig.PREVIEW_RESOLUTION[1]-100,40), 
+					Core.FONT_HERSHEY_PLAIN, 3, new Scalar(255,255,255));
 		    
 		    torchCounter = (torchCounter + 1) % 15;
 		}
