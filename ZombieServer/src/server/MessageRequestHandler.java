@@ -22,8 +22,8 @@ public class MessageRequestHandler implements HttpHandler {
 	@Override
 	public void handle(HttpExchange t) throws IOException {
 		int last_received = Integer.parseInt(t.getRequestURI().toString().split("=")[1]);
-		if(random.nextBoolean())
-		mservice.publishMessage(new BigInteger(130, random).toString(32), new BigInteger(130, random).toString(32));
+		if(random.nextBoolean() && random.nextBoolean() )
+		mservice.publishMessage(new BigInteger(40, random).toString(32), new BigInteger(130, random).toString(32));
 		ArrayList<Message> list = mservice.getAllMessageSince(last_received);
 		
 		String json = "[";
@@ -31,6 +31,8 @@ public class MessageRequestHandler implements HttpHandler {
 			json += m.toJSON() + ",";
 		if(json.length() > 1)
 			json = json.substring(0, json.length() - 1) + "]";
+		if(!json.endsWith("]"))
+			json += "]";	
 		System.out.println(json);
 		Sender.sendData(t, json);
 	}

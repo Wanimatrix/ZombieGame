@@ -4,9 +4,11 @@
     <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
     <script src="js/typed.js"></script>
     <script src="js/grained.min.js"></script>
+    <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
     <link rel="stylesheet" type="text/css" href="css/frontpage.css">
     <script>
     	var messages = [];
+    	var current_m;
     	var last_seen_id = -1;
     	var options = {
 		  "animate": true,
@@ -19,20 +21,49 @@
 		}
     </script>
     <script>
+    	function back(){
+	    	if(current_m.id > 0){
+	    		setmessage(messages[current_m.id-1]);
+	    	}
+    	}
+    	function forward(){
+    	alert(messages[parseInt(current_m.id)+1]);
+    		if(current_m.id < last_seen_id){
+	    		setmessage(messages[parseInt(current_m.id)+1]);
+	    	}
+    	}
+    	function setmessage(m){
+    		$('#sendername').text("From: " + m.sender);
+    		$('#consoleoutput').text(m.content); 
+    		current_m = m;
+    	}
     	function incomingMessage(m){
     	
     		if(m.id > last_seen_id){
-    			alert(m.id + " " + m.sender + " "+m.content);
-    			messages.push(m);
-	 			var new_id = newmessages[i].id;
+    		
+  				navigator.vibrate([200,100,200,100,700]);
+  				setTimeout(function () {
+  					alert("New message from "+m.sender+ ". \nClick OK to read.");
+  					setmessage(m);     		 	
+  				}, 1500);
+    			
+    			//alert(m.id + " " + m.sender + " "+m.content);
+    			   			
+	 			var new_id = m.id;
 	 			if(new_id > last_seen_id){
 	 				last_seen_id = new_id;
+	 				messages[m.id] = m;
 	 			}
     		}
     	}
     </script>
     <script>
 		$(window).load(function() {
+		
+			navigator.vibrate = navigator.vibrate ||
+                  						navigator.webkitVibrate ||
+                 						navigator.mozVibrate || 
+                  						navigator.msVibrate;
 			$('#console').keypress(function(e){
 		    	if(e.keyCode==13){
 		    		var input = $('#console').val();
@@ -40,24 +71,19 @@
 		    		$('#console').val("$: ");
 		    	}
 		    });
-			//$('#consoleoutput').val('room/controle/~$');
 			
 			grained('#noiseoverlay', options)
-			grained('#noiseoverlay2', options)
 			$('#consoleoutput').typed({
-        		strings: ["NIGGA I IZ FINNA KILL U.\nZUCKE ZIE ZOMBIE DICK NIGGA.\nC U IN HELL.\n"],
+        		strings: ["New messages appear here.\nUse the arrows to browse through messages.\n"],
         		typeSpeed: 0
      		 });
 			$('#clicker').click(function(){ 
    				$(function(){
-   					ajax = $.getJSON( "getmessages/id=-1", function( json ) {
+   					ajax = $.getJSON( "getmessages/id="+last_seen_id.toString(), function( json ) {
 		  				console.log( json );
 		 			});
 		 			setTimeout(function(){ ajax.abort(); }, 3000);
-     				navigator.vibrate = navigator.vibrate ||
-                  						navigator.webkitVibrate ||
-                 						navigator.mozVibrate || 
-                  						navigator.msVibrate;
+     				
                   	if (navigator.vibrate) {
   						console.log('we can vibrate');
   						navigator.vibrate([5000, 300, 1000, 100, 1000, 100, 1000, 100, 1000]);
@@ -65,15 +91,12 @@
   						console.log('no vibration for you :-(');
 					}
   				});
-   				$('#consoleoutput').val($('#consoleoutput').val()+'\nroom/controle/~$ Welcome to Die Hölle der Dr. Hÿnkell.\nroom/controle/~$ Good luck with surviving.'); 
 			})
       		
  			setInterval(function () {
- 				var uri = "getmessages/id=" + last_seen_id;
+ 				var uri = "getmessages/id=" + last_seen_id.toString();
 	 			ajax3 = $.getJSON( uri, function( newmessages ) {
 	 				for (i = 0; i < newmessages.length; i++) { 
-	 					alert(newmessages[i].sender);
-	 					
 	 					incomingMessage(newmessages[i]);
 	 				}
 	 			});
@@ -91,8 +114,8 @@
 		Posteingang
 	</div>
 	<div class="spacerlvl1"></div>
-	<div class="pageheader" style="width: 100%;  height:2em; line-height: 2em; vertical-align: middle; font-size: 2em;">
-		Dr. Hynkëll
+	<div class="pageheader" id="sendername" style="width: 100%;  height:2em; line-height: 2em; vertical-align: middle; font-size: 2em;">
+		From: Info
 	</div>
  	<div class="screenwrapper" style="height: 70%; width: 100%;">
  		<div class="screencontainer">
@@ -105,7 +128,8 @@
 	</div>
 	<div class="spacerlvl1"></div>
 	<div class="pageheader" style="width: 100%;  height:2em; line-height: 2em; vertical-align: middle; font-size: 2em;">
-		Back
+		<i class="fa fa-arrow-left fa-2x" onclick="back()" ></i> 
+		<i class="fa fa-arrow-right fa-2x" onclick="forward()"></i>
 	</div>
   </body>
 </html>
