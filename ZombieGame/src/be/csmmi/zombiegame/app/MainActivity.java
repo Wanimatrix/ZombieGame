@@ -85,14 +85,19 @@ public class MainActivity extends CardboardActivity implements OnSharedPreferenc
 		
 	}
 	
+	long cardboardTriggerTimestamp = 0;
+	
 	@Override
 	public void onCardboardTrigger() {
 		Log.d(TAG, "Switching rooms...");
 		
-		CameraView v = (CameraView) this.findViewById(R.id.arView);
-		v.getRenderer().getArRenderer().getCameraManager().switchRoom();
-		
-		this.v.vibrate(50);
+		long newTimestamp = System.nanoTime();
+		if(cardboardTriggerTimestamp == 0 || (newTimestamp-cardboardTriggerTimestamp)/1000000.0f > 1000) {
+			cardboardTriggerTimestamp = newTimestamp;
+			CameraView v = (CameraView) this.findViewById(R.id.arView);
+			v.getRenderer().getArRenderer().getCameraManager().switchRoom();
+			this.v.vibrate(50);
+		}
 		
 		super.onCardboardTrigger();
 	}

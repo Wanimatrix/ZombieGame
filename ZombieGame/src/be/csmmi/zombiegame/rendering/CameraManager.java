@@ -271,6 +271,7 @@ public class CameraManager implements PreviewCallback {
                     if(rooms.get( currentRoomIdx).isLocked()) {
             			setupCamera();
             		} else {
+            			gm.gotoUnlockedRoom();
             			readCameraStream();
             		}
                     
@@ -418,6 +419,7 @@ public class CameraManager implements PreviewCallback {
 	
 	private void setupCamera() {
 		stopCamSwitcher = true;
+		gm.gotoLockedRoom();
 		if(thread != null)
 			thread.stopDrawing();
 		
@@ -473,6 +475,7 @@ public class CameraManager implements PreviewCallback {
 	public void pauseCamera() {
 		if(AppConfig.DEBUG_LOGGING) Log.d(TAG, "Stopping camera...");
 		
+		gm.gotoUnlockedRoom();
 		heartBeat.interrupt();
 		
 		if (camera != null) {
@@ -487,174 +490,201 @@ public class CameraManager implements PreviewCallback {
 	 **************************
 	 */
 	
-	Bitmap bmp = null;
-	Bitmap bmpZombie = null;
-	Mat torchMask = null;
-	List<Mat> torchMasks = null;
-	int torchCounter = 0;
-	double torchRadius = 240;
-	Random rand = new Random();
 	
-	int counter = 0;
-	int stayCounter = 0;
 	
-	long time = -1;
-	
-	boolean flickerEnabled = false;
-	boolean flicker = false;
-	Random flickerRand = new Random();
-	
+	private OnPreviewTask onpreview = new OnPreviewTask();
 	
 	@Override
 	public void onPreviewFrame(byte[] frameData, Camera camera) {
-		Log.d(TAG, "Request render!");
+		if(onpreview == null || onpreview.getStatus() == AsyncTask.Status.FINISHED || onpreview.getStatus() == AsyncTask.Status.PENDING) {
+			onpreview = new OnPreviewTask();
+			onpreview.camera = camera;
+			onpreview.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR, frameData);
+		} else {
+			camera.addCallbackBuffer(frameData);
+		}
+	}
+	
+	private Object canvasLock = new Object();
+	
+	class OnPreviewTask extends AsyncTask<byte[], Void, Void> {
 		
-		Size size = camera.getParameters().getPreviewSize();
+		private Camera camera;
 		
-		Mat result = new Mat();
-		int status = gm.getGameStatus(result);
-		if(gm.endGameStarted()) flickerEnabled = true;
-		else flickerEnabled = false;
+		Bitmap bmp = null;
+		Bitmap bmpZombie = null;
+		Mat torchMask = null;
+		List<Mat> torchMasks = null;
+		int torchCounter = 0;
+		double torchRadius = 240;
+		Random rand = new Random();
 		
-		if(status == 0) {
-			Mat colFrameImg = new Mat();
-			Mat yuv = new Mat( (int)(size.height*1.5), size.width, CvType.CV_8UC1 );
-			yuv.put( 0, 0, frameData );
-			Imgproc.cvtColor( yuv, colFrameImg, Imgproc.COLOR_YUV2BGRA_NV21, 4);
+		int counter = 0;
+		int stayCounter = 0;
+		
+		long time = -1;
+		
+		boolean flickerEnabled = false;
+		boolean flicker = false;
+		Random flickerRand = new Random();
+
+		@Override
+		protected Void doInBackground(byte[]... params) {
+			Log.d(TAG, "Request render!");
 			
+			byte[] frameData = params[0];
 			
-			if(!flicker && flickerEnabled) {
-				if(flickerRand.nextFloat() > 0.6) flicker = true;
-			} else if(flicker) {
-				flicker = false;
-			}
+			Size size = camera.getParameters().getPreviewSize();
 			
+			Mat result = new Mat();
+			int status = gm.getGameStatus(result);
+			if(gm.endGameStarted()) flickerEnabled = true;
+			else flickerEnabled = false;
 			
-			Mat grayFrameImg = new Mat();
-			if(!flicker) 
-				Imgproc.cvtColor(colFrameImg, grayFrameImg, Imgproc.COLOR_BGRA2GRAY);
-			else {
-				Mat white = Mat.ones(colFrameImg.size(), CvType.CV_8UC1);
-				Core.multiply(white, new Scalar(255), grayFrameImg);
-			}
-			
-			// Edit frame!
-			if(torchMasks == null) {
+			if(status == 0) {
+				Mat colFrameImg = new Mat();
+				Mat yuv = new Mat( (int)(size.height*1.5), size.width, CvType.CV_8UC1 );
+				yuv.put( 0, 0, frameData );
+				Imgproc.cvtColor( yuv, colFrameImg, Imgproc.COLOR_YUV2BGRA_NV21, 4);
 				
-				torchMasks = new ArrayList<Mat>();
-				for (int i = 0; i < 15; i++) {
-					torchMasks.add(Highgui.imread("/sdcard/masks/torchMask_"+i+".png",Highgui.CV_LOAD_IMAGE_GRAYSCALE));
+				
+				if(!flicker && flickerEnabled) {
+					if(flickerRand.nextFloat() > 0.6) flicker = true;
+				} else if(flicker) {
+					flicker = false;
 				}
 				
+				
+				Mat grayFrameImg = new Mat();
+				if(!flicker) 
+					Imgproc.cvtColor(colFrameImg, grayFrameImg, Imgproc.COLOR_BGRA2GRAY);
+				else {
+					Mat white = Mat.ones(colFrameImg.size(), CvType.CV_8UC1);
+					Core.multiply(white, new Scalar(255), grayFrameImg);
+				}
+				
+				// Edit frame!
+				if(torchMasks == null) {
+					
+					torchMasks = new ArrayList<Mat>();
+					for (int i = 0; i < 15; i++) {
+						torchMasks.add(Highgui.imread("/sdcard/masks/torchMask_"+i+".png",Highgui.CV_LOAD_IMAGE_GRAYSCALE));
+					}
+					
+				}
+				
+				if(!flicker) {
+					Mat noised = grayFrameImg.clone();
+					Core.randn(noised,128,30);
+					Core.addWeighted(grayFrameImg, 0.8, noised, 0.2, 0, grayFrameImg);
+				}
+			    
+			    
+			    Mat torchMask = new Mat();
+			    
+			    Mat tmp = new Mat(grayFrameImg.size(), 3);
+			    Core.merge(Arrays.asList(grayFrameImg,grayFrameImg,grayFrameImg),tmp);
+			    	
+			    
+			    if(!flicker && gm.getZombie().isInSight()) {
+			    	
+			    	
+			    	
+		//	    	imgProcView = new FastImageProcessingView(this.view.getContext());
+		//	        pipeline = new FastImageProcessingPipeline();
+		//	        imgProcView.setPipeline(pipeline);
+		//	        view.setContentView(imgProcView);
+		//	        imageIn = new ImageResourceInput(imgProcView, this, R.drawable.wakeboard);
+		//	        generic = new GenericFilter();
+		//	        screen = new ScreenEndpoint(pipeline);
+		//	        imageIn.addTarget(generic);
+		//	        generic.addTarget(screen);
+		//	        pipeline.addRootRenderer(imageIn);
+		//	        pipeline.startRendering();
+			    	
+			    	
+		//		    Bitmap tmp = Bitmap.createBitmap(grayFrameImg.width(), grayFrameImg.height(), Bitmap.Config.ARGB_8888);
+		//			Utils.matToBitmap(grayFrameImg, tmp);
+		//			Bitmap overlay = BitmapFactory.decodeFile("/sdcard/zbg/zombie.png");
+		//			Log.d(TAG, "overlay size: "+overlay.getWidth()+","+overlay.getHeight());
+		//			Utils.bitmapToMat(overlay(tmp, overlay),grayFrameImg);
+		//			Log.d(TAG, "overlay size: "+grayFrameImg.width()+","+grayFrameImg.height());
+			    	
+			    	
+			    	Log.d(TAG, "TMP Sizes/Channels/Type: "+tmp.size()+"; "+tmp.channels()+"; "+tmp.type());
+		//	    	Log.d(TAG, "OverlayAlpha: "+zombieFgAlpha);
+			    	tmp = overlayImage(overlays.get(0).get(gm.getZombie().getZombieScale()), tmp, 1);
+		//	    	zombieFgAlpha = zombieFgAlpha == 1.0f ? 1.0f : zombieFgAlpha+1.0f/5;
+		//	    	if(zombieAlphaCounter < overlays.get(0).size()-1) {
+		//	    		zombieAlphaCounter++;
+		//	    	}
+					
+					
+		//	    } else if(zombieFgAlpha > 0) {
+		//    		tmp = overlayImage(overlays.get(0), tmp, zombieFgAlpha);
+		//    		zombieFgAlpha = zombieFgAlpha == 0.0f ? 0.0f : zombieFgAlpha-1.0f/5;
+			    }
+			    
+			    Log.d(TAG, "TMP Sizes/Channels/Type: "+tmp.size()+"; "+tmp.channels()+"; "+tmp.type());
+		//	    tmp = overlayImage(overlays.get(0), tmp);
+			    Log.d(TAG, "TMP Sizes/Channels/Type: "+tmp.size()+"; "+tmp.channels()+"; "+tmp.type());
+			    
+			    grayFrameImg = tmp;
+			    
+			    Mat white = Mat.ones(torchMasks.get(torchCounter).size(), torchMasks.get(torchCounter).type())
+						.mul(Mat.ones(torchMasks.get(torchCounter).size(), torchMasks.get(torchCounter).type()), 255);
+				Core.merge(Arrays.asList(torchMasks.get(torchCounter),torchMasks.get(torchCounter),torchMasks.get(torchCounter)),torchMask);
+			    
+				Log.d(TAG, "GRAYFRAME Sizes/Channels/Type: "+grayFrameImg.size()+"; "+grayFrameImg.channels()+"; "+grayFrameImg.type());
+				Log.d(TAG, "TORCHMASKS Sizes/Channels/Type: "+torchMask.size()+"; "+torchMask.channels()+"; "+torchMask.type());
+				
+				if(torchMask.total() == 0)
+					grayFrameImg = grayFrameImg.mul(torchMasks.get(torchCounter), 1.0/255);
+				else
+					grayFrameImg = grayFrameImg.mul(torchMask, 1.0/255);
+				
+				Imgproc.cvtColor(grayFrameImg, grayFrameImg, Imgproc.COLOR_BGR2GRAY);
+				Log.d(TAG, "Channels: "+grayFrameImg.channels());
+				Mat black = Mat.zeros(grayFrameImg.size(), grayFrameImg.type());
+				Core.merge(Arrays.asList(black,grayFrameImg,black), result);
+				Core.putText(result, "["+gm.getFlashLightPercentage()+"%]", new Point(AppConfig.PREVIEW_RESOLUTION[1]-20,40), 
+						Core.FONT_HERSHEY_PLAIN, 3, new Scalar(255,255,255));
+			    
+			    torchCounter = (torchCounter + 1) % 15;
 			}
 			
-			if(!flicker) {
-				Mat noised = grayFrameImg.clone();
-				Core.randn(noised,128,30);
-				Core.addWeighted(grayFrameImg, 0.8, noised, 0.2, 0, grayFrameImg);
+			Paint p = new Paint();
+	        
+	        
+			if(bmp==null){
+				bmp = Bitmap.createBitmap(size.width, size.height, Bitmap.Config.ARGB_8888);
 			}
-		    
-		    
-		    Mat torchMask = new Mat();
-		    
-		    Mat tmp = new Mat(grayFrameImg.size(), 3);
-		    Core.merge(Arrays.asList(grayFrameImg,grayFrameImg,grayFrameImg),tmp);
-		    	
-		    
-		    if(!flicker && gm.getZombie().isInSight()) {
-		    	
-		    	
-		    	
-	//	    	imgProcView = new FastImageProcessingView(this.view.getContext());
-	//	        pipeline = new FastImageProcessingPipeline();
-	//	        imgProcView.setPipeline(pipeline);
-	//	        view.setContentView(imgProcView);
-	//	        imageIn = new ImageResourceInput(imgProcView, this, R.drawable.wakeboard);
-	//	        generic = new GenericFilter();
-	//	        screen = new ScreenEndpoint(pipeline);
-	//	        imageIn.addTarget(generic);
-	//	        generic.addTarget(screen);
-	//	        pipeline.addRootRenderer(imageIn);
-	//	        pipeline.startRendering();
-		    	
-		    	
-	//		    Bitmap tmp = Bitmap.createBitmap(grayFrameImg.width(), grayFrameImg.height(), Bitmap.Config.ARGB_8888);
-	//			Utils.matToBitmap(grayFrameImg, tmp);
-	//			Bitmap overlay = BitmapFactory.decodeFile("/sdcard/zbg/zombie.png");
-	//			Log.d(TAG, "overlay size: "+overlay.getWidth()+","+overlay.getHeight());
-	//			Utils.bitmapToMat(overlay(tmp, overlay),grayFrameImg);
-	//			Log.d(TAG, "overlay size: "+grayFrameImg.width()+","+grayFrameImg.height());
-		    	
-		    	
-		    	Log.d(TAG, "TMP Sizes/Channels/Type: "+tmp.size()+"; "+tmp.channels()+"; "+tmp.type());
-	//	    	Log.d(TAG, "OverlayAlpha: "+zombieFgAlpha);
-		    	tmp = overlayImage(overlays.get(0).get(gm.getZombie().getZombieScale()), tmp, 1);
-	//	    	zombieFgAlpha = zombieFgAlpha == 1.0f ? 1.0f : zombieFgAlpha+1.0f/5;
-	//	    	if(zombieAlphaCounter < overlays.get(0).size()-1) {
-	//	    		zombieAlphaCounter++;
-	//	    	}
-				
-				
-	//	    } else if(zombieFgAlpha > 0) {
-	//    		tmp = overlayImage(overlays.get(0), tmp, zombieFgAlpha);
-	//    		zombieFgAlpha = zombieFgAlpha == 0.0f ? 0.0f : zombieFgAlpha-1.0f/5;
-		    }
-		    
-		    Log.d(TAG, "TMP Sizes/Channels/Type: "+tmp.size()+"; "+tmp.channels()+"; "+tmp.type());
-	//	    tmp = overlayImage(overlays.get(0), tmp);
-		    Log.d(TAG, "TMP Sizes/Channels/Type: "+tmp.size()+"; "+tmp.channels()+"; "+tmp.type());
-		    
-		    grayFrameImg = tmp;
-		    
-		    Mat white = Mat.ones(torchMasks.get(torchCounter).size(), torchMasks.get(torchCounter).type())
-					.mul(Mat.ones(torchMasks.get(torchCounter).size(), torchMasks.get(torchCounter).type()), 255);
-			Core.merge(Arrays.asList(torchMasks.get(torchCounter),torchMasks.get(torchCounter),torchMasks.get(torchCounter)),torchMask);
-		    
-			Log.d(TAG, "GRAYFRAME Sizes/Channels/Type: "+grayFrameImg.size()+"; "+grayFrameImg.channels()+"; "+grayFrameImg.type());
-			Log.d(TAG, "TORCHMASKS Sizes/Channels/Type: "+torchMask.size()+"; "+torchMask.channels()+"; "+torchMask.type());
 			
-			if(torchMask.total() == 0)
-				grayFrameImg = grayFrameImg.mul(torchMasks.get(torchCounter), 1.0/255);
-			else
-				grayFrameImg = grayFrameImg.mul(torchMask, 1.0/255);
+			Utils.matToBitmap(result, bmp);
+			Canvas c = null;
 			
-			Imgproc.cvtColor(grayFrameImg, grayFrameImg, Imgproc.COLOR_BGR2GRAY);
-			Log.d(TAG, "Channels: "+grayFrameImg.channels());
-			Mat black = Mat.zeros(grayFrameImg.size(), grayFrameImg.type());
-			Core.merge(Arrays.asList(black,grayFrameImg,black), result);
-			Core.putText(result, "["+gm.getFlashLightPercentage()+"%]", new Point(AppConfig.PREVIEW_RESOLUTION[1]-100,40), 
-					Core.FONT_HERSHEY_PLAIN, 3, new Scalar(255,255,255));
-		    
-		    torchCounter = (torchCounter + 1) % 15;
+			synchronized(canvasLock) {
+				c = frontCamSurface.lockCanvas(null);
+				c.drawBitmap(bmp, new Rect(0, 0, bmp.getWidth(), bmp.getHeight()), new Rect(0, 0, c.getWidth(), c.getHeight()), p);
+				
+		    	if (c != null) {
+		    		frontCamSurface.unlockCanvasAndPost(c); 
+		    		Log.d("MJPEG", "Canvas unlocked!");
+		    		view.requestRender();
+		    	}
+			}
+	    	
+//	    	if (stayCounter > 0) {
+//	    		stayCounter = (stayCounter+1) % 3;
+//	    	} else {
+//	    		counter = (counter + 3) % torchMasks.size();
+//	    		stayCounter++;
+//	    	}
+			
+			camera.addCallbackBuffer(frameData);
+			return null;
 		}
 		
-		Paint p = new Paint();
-        Canvas c = null;
-        
-		if(bmp==null){
-			bmp = Bitmap.createBitmap(size.width, size.height, Bitmap.Config.ARGB_8888);
-		}
-		
-		Utils.matToBitmap(result, bmp);
-		
-		c = frontCamSurface.lockCanvas(null);
-		c.drawBitmap(bmp, new Rect(0, 0, bmp.getWidth(), bmp.getHeight()), new Rect(0, 0, c.getWidth(), c.getHeight()), p);
-		
-    	if (c != null) {
-    		frontCamSurface.unlockCanvasAndPost(c); 
-    		Log.d("MJPEG", "Canvas unlocked!");
-    		view.requestRender();
-    	}
-    	
-//    	if (stayCounter > 0) {
-//    		stayCounter = (stayCounter+1) % 3;
-//    	} else {
-//    		counter = (counter + 3) % torchMasks.size();
-//    		stayCounter++;
-//    	}
-		
-		camera.addCallbackBuffer(frameData);
-		return;
 	}
 	
 	private Bitmap overlay(Bitmap bmp1, Bitmap bmp2) {

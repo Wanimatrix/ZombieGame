@@ -6,12 +6,19 @@ import android.util.Log;
 public class Zombie implements ZombieInSightListener,  ZombieScaleChangeListener{
 	private final String TAG = Zombie.class.getSimpleName();
 	
+	private Context context;
+	private LookatSensor sensor;
+	private int zombieScales;
+	
 	private ZombieLocationController zombieLocationController;
 	private ZombieScaleController zombieScaleController;
 	private ZombieScaleChangeListener externalScaleChangeListener;
 	private boolean inSight = false;
 	
 	public Zombie(Context context, int zombieScales, ZombieScaleChangeListener scaleChangeListener, LookatSensor sensor) {
+		this.context = context;
+		this.sensor = sensor;
+		this.zombieScales = zombieScales;
 		zombieLocationController = new ZombieLocationController(context, this, sensor);
 		zombieScaleController = new ZombieScaleController(zombieScales, this);
 		externalScaleChangeListener = scaleChangeListener;
@@ -84,5 +91,11 @@ public class Zombie implements ZombieInSightListener,  ZombieScaleChangeListener
 		Log.d(TAG, "Zombie disabled!");
 		zombieScaleController.setEnabled(false);
 		zombieLocationController.setEnabled(false);
+	}
+	
+	public void reset() {
+		this.disable();
+		zombieLocationController = new ZombieLocationController(context, this, sensor);
+		zombieScaleController = new ZombieScaleController(zombieScales, this);
 	}
 }

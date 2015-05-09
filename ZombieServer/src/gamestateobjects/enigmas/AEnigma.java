@@ -1,5 +1,7 @@
 package gamestateobjects.enigmas;
 
+import gamestateobjects.RoomList;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,9 +12,16 @@ import com.sun.net.httpserver.HttpExchange;
 import com.sun.net.httpserver.HttpHandler;
 
 public abstract class AEnigma implements HttpHandler{
+	
+	private RoomList roomlist;
+	
+	public AEnigma(RoomList roomlist) {
+		this.roomlist = roomlist;
+	}
 
 	abstract boolean checkSolution(String s);
-		
+
+	public abstract String getRoomName();
 	public abstract String getContext();
 	
 	abstract String getTip();
@@ -30,9 +39,10 @@ public abstract class AEnigma implements HttpHandler{
 			BufferedReader input = new BufferedReader(new InputStreamReader(t.getRequestBody()));
 			String sol = input.readLine();
 			
-			if(checkSolution(sol))
+			if(checkSolution(sol)) {
+				roomlist.getRoom(getRoomName()).unlock();
 				Sender.sendData(t, "{\"data\": \"true\"}");
-			else
+			} else
 				Sender.sendData(t, "{\"data\": \"false\"}");
 		}
 		else if(uri.contains("/getnextroom")){

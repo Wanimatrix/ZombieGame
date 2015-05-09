@@ -1,6 +1,12 @@
 package gamestateobjects.enigmas;
 
+import gamestateobjects.RoomList;
+
 public class Enigma1 extends AEnigma{
+
+	public Enigma1(RoomList roomlist) {
+		super(roomlist);
+	}
 
 	@Override
 	public boolean checkSolution(String s) {
@@ -9,7 +15,7 @@ public class Enigma1 extends AEnigma{
 
 	@Override
 	public String getContext() {
-		return "/room1";
+		return "/"+getRoomName();
 	}
 
 	@Override
@@ -25,5 +31,10 @@ public class Enigma1 extends AEnigma{
 	@Override
 	String getNextRoomName() {
 		return "room2";
+	}
+
+	@Override
+	public String getRoomName() {
+		return "room1";
 	}
 }

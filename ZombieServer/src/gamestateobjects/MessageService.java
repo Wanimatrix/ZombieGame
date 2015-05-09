@@ -21,4 +21,9 @@ public class MessageService {
 					
 		return list;
 	}
+	
+	public void reset() {
+		mlist.clear();
+		nxtID = 0;
+	}
 }

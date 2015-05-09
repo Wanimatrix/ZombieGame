@@ -11,6 +11,8 @@ public class GameStatus {
 	
 	private Timer t;
 	private int secondsLeft = 0;
+	private int period = 1000;
+	private int maxSeconds = 60*20; // 20 minutes
 	
 	public GameStatus(RoomList r){
 		this.rooms = r;
@@ -18,17 +20,7 @@ public class GameStatus {
 	
 	public void startGame(){
 		this.inprogress = true;
-		
-	    int period = 1000;
-	    t = new Timer();
-	    secondsLeft = 60*20; //20 minutes
-	    t.scheduleAtFixedRate(new TimerTask() {
-
-	        public void run() {
-	        	if (secondsLeft-- == 1)
-	                t.cancel();
-	        }
-	    }, period, period);
+		startTimer();
 	}
 	
 	public void startEndGame(){
@@ -38,8 +30,21 @@ public class GameStatus {
 	public void resetGame(){
 		this.inprogress = false;
 		this.endgamestarted = false;
-		secondsLeft = 60*20;
+		if(t != null) t.cancel();
 		this.rooms.lockAllRooms();
+	}
+	
+	private void startTimer() {
+		TimerTask theTimertask = new TimerTask() {
+
+	        public void run() {
+	        	if (secondsLeft-- == 1)
+	                t.cancel();
+	        }
+	    };
+	    t = new Timer();
+	    secondsLeft = maxSeconds;
+	    t.scheduleAtFixedRate(theTimertask, period, period);
 	}
 	
 	public boolean isInProgress(){
