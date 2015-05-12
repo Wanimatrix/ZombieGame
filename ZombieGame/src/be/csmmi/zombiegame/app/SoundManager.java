@@ -1,8 +1,11 @@
 package be.csmmi.zombiegame.app;
 
+import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 
+import be.csmmi.zombiegame.R;
 import android.content.Context;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
@@ -14,21 +17,36 @@ public class SoundManager {
 	private static final String TAG = SoundManager.class.getSimpleName();
 	
 //	private MediaPlayer bgMusic = null;
-	private Map<String,Integer> soundFxIds = new HashMap<String, Integer>();
-	private Map<String,Integer> streamIds = new HashMap<String, Integer>();
-	private SoundPool soundFxPool = null;
+	public static final int MINIMAL_WAIT = 500;
+	
+//	private Map<String,Integer> soundFxIds = new HashMap<String, Integer>();
+//	private Map<String,Integer> streamIds = new HashMap<String, Integer>();
+	private MediaPlayer mediaPlayer;
 	private Context context;
+	
+	private String[] scares = new String[]{"scare1","scare2","scare3"};
+	private String[] atmo = new String[]{"atmosphere1","atmosphere2"};
+	
+	public enum RANDOM_SFX {
+		SCARES, ATMOSPHERE;
+	}
 	
 	public SoundManager(Context context) {
 		this.context = context;
+		mediaPlayer = new MediaPlayer();
 		
-		soundFxPool = new SoundPool(AppConfig.MAX_SIMULTANEOUS_SOUNDS, AudioManager.STREAM_MUSIC, 0);
+//		addSound("atmo1", R.raw.atmosphere1);
+//		addSound("atmo2", R.raw.atmosphere2);
+//		addSound("scare1", R.raw.scare1);
+//		addSound("scare2", R.raw.scare2);
+//		addSound("scare3", R.raw.scare3);
+//		addSound("heartbeat", R.raw.heartbeat);
 	}
 	
 //	public void setBgMusic(int newBgMusicResId, OnCompletionListener listener) {
 //		if(bgMusic != null && bgMusic.isPlaying()) bgMusic.stop();
 //		
-//		bgMusic = MediaPlayer.create(context, newBgMusicResId);
+		
 //		bgMusic.setLooping(true);
 //		bgMusic.setVolume(1, 1);
 //		if(listener != null) bgMusic.setOnCompletionListener(listener);
@@ -51,35 +69,82 @@ public class SoundManager {
 //		}
 //	}
 	
-	public void addSound(String name, int resourceId) {
-		soundFxIds.put(name, soundFxPool.load(context, resourceId, 1));
-		Log.d(TAG, "SoundFX "+name+" was added to the SoundManager.");
-	} 
+//	public void addSound(String name, int resourceId) {
+//		soundFxIds.put(name, soundFxPool.load(context, resourceId, 1));
+//		Log.d(TAG, "SoundFX "+name+" was added to the SoundManager.");
+//	} 
 	
-	public void playSoundFx(String name, float volume, int loop) {
-		if(!doesSoundFxExist(name)) throw new IllegalArgumentException("SoundFX with name "+name+" was never added to the SoundManager");
-		int streamId = soundFxPool.play(soundFxIds.get(name), volume, volume, 0, loop, 1);
-		streamIds.put(name, streamId);
-		Log.d(TAG, "SoundFX "+name+" started playing.");
-	}
+	private Random rand = new Random();
+	private long lastSoundStarted;
 	
-	public void stopSoundFx(String name) {
-		if(!doesSoundFxExist(name)) throw new IllegalArgumentException("SoundFX with name "+name+" was never added to the SoundManager");
-		if(!isSoundFxPlaying(name)) { 
-			Log.d(TAG, "SoundFX was not playing.");
-			return;
+	public String playRandomSoundFx(RANDOM_SFX sfxType, float volume) {
+		String[] soundIds = null;
+		switch (sfxType) {
+		case SCARES:
+			soundIds = scares;
+			break;
+		case ATMOSPHERE:
+			soundIds = atmo;
+			break;
 		}
-		soundFxPool.stop(streamIds.get(name));
-		streamIds.remove(name);
-		Log.d(TAG, "SoundFX "+name+" stopped playing.");
+		float randomNumber = rand.nextFloat();
+		int index = (int) Math.floor(randomNumber*soundIds.length);
+		playSoundFx(soundIds[index], 0.8f, false);
+		return soundIds[index];
 	}
 	
-	public boolean isSoundFxPlaying(String name) {
-		return streamIds.get(name) != null;
+	public void playSoundFx(String name, float volume, boolean loop) {
+		if((System.nanoTime()-lastSoundStarted)/1000000.0 < MINIMAL_WAIT) return;
+		try {
+			mediaPlayer.reset();
+			mediaPlayer.setDataSource("/sdcard/arbg/sounds/"+name+".mp3");
+			mediaPlayer.setVolume(volume, volume);
+			mediaPlayer.setLooping(loop);
+			mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+				
+				@Override
+				public void onPrepared(MediaPlayer mp) {
+					mp.start();
+				}
+			});
+			mediaPlayer.prepareAsync();
+			
+		} catch (Exception e) {
+			Log.e(TAG, "ERROR ", e);
+		}
+		
+//		if(!doesSoundFxExist(name)) throw new IllegalArgumentException("SoundFX with name "+name+" was never added to the SoundManager");
+//		stopAllSoundFxs();
+//		int streamId = soundFxPool.play(soundFxIds.get(name), volume, volume, 0, loop, 1);
+//		streamIds.put(name, streamId);
+//		lastSoundStarted = System.nanoTime();
+//		Log.d(TAG, "SoundFX "+name+" started playing.");
 	}
 	
-	private boolean doesSoundFxExist(String name) {
-		return soundFxIds.get(name) != null;
+	public void stopSoundFx() {
+		if(isPlaying()){
+			mediaPlayer.stop();
+		}
 	}
+	
+	public boolean isPlaying() {
+		return mediaPlayer.isPlaying();
+	}
+	
+//	public void stopAllSoundFxs() {
+//		
+//		String[] currentPlayingSounds = streamIds.keySet().toArray(new String[streamIds.size()]);
+//		for (int i = 0; i < currentPlayingSounds.length; i++) {
+//			stopSoundFx(currentPlayingSounds[i]);
+//		}
+//	}
+//	
+//	public boolean isSoundFxPlaying(String name) {
+//		return streamIds.get(name) != null;
+//	}
+//	
+//	private boolean doesSoundFxExist(String name) {
+//		return soundFxIds.get(name) != null;
+//	}
 	
 }

@@ -34,8 +34,10 @@ public class ZombieServer {
 		server.createContext("/roomcount", new RoomCountRequestHandler(roomlist));
 		server.createContext("/getmessages", new MessageRequestHandler(mservice));
 		server.createContext("/startgame", new GameStartHandler(status));
+		server.createContext("/startoutro", new OutroStartHandler(status));
 		server.createContext("/resetgame", new GameResetHandler(status, mservice));
-		server.createContext("/timeleft", new TimeLeftHandler(status));
+		server.createContext("/maxtime", new MaxTimeHandler(status));
+		server.createContext("/timerdone", new TimerDoneHandler(status));
 		server.createContext("/inprogress", new InProgressHandler(status));
 		server.createContext("/endgamestarted", new EndGameStartedHandler(status));
 		server.createContext("/startendgame", new StartEndGameHandler(status));

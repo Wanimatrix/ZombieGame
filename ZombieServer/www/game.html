@@ -227,11 +227,11 @@
                     });
                     setTimeout(function(){ ajax3.abort(); }, 1500);
                 },2000);
-                ajax4 = $.getJSON( "timeleft", function( result ) {
+                ajax4 = $.getJSON( "maxtime", function( result ) {
                     timeleft = parseInt(result.data);
                     console.log("TIME LEFT: "+timeleft);
                 });
-                setInterval(function () {
+                var timerInterval = setInterval(function () {
 
                     if(lastTimeLeftUpdate == 0) {
                         console.log("FIRST TIMESTAMP SET");
@@ -245,6 +245,10 @@
                             lastTimeLeftUpdate = newupdateTime;
                             timeleft = timeleft - Math.floor(millisecAgo / 1000);
                             updateTimer(timeleft);
+                            if(timeleft == 0) {
+                                clearInterval(timerInterval);
+                                $.getJSON( "timerdone", function( result ) {});
+                            }
                         }
                     }
                 },200);

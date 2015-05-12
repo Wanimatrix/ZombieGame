@@ -1,7 +1,10 @@
 package be.csmmi.zombiegame.app;
 
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import javax.lang.model.SourceVersion;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -9,6 +12,8 @@ import org.json.JSONObject;
 import org.opencv.core.Mat;
 import org.opencv.highgui.Highgui;
 import org.opencv.imgproc.Imgproc;
+
+import be.csmmi.zombiegame.R;
 
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
@@ -28,11 +33,12 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 	private boolean inControlRoom = true;
 	private boolean endgame = false;
 	private boolean inLockedRoom = false;
-	private boolean showOutro = false;
-	private long lostTimeStamp = 0;;
+	private long lostTimeStamp = 0;
+	private boolean outroStarted = false;
 	
 	private Mat status = new Mat();
 	private int statusValue;
+	private SoundManager sndMan;
 	
 	private long flashLightTimerCount = 0;
 	
@@ -97,6 +103,7 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 									if(!sendResetGame) sendResetGame = true; // We are in the game if we lose the game we need to send a reset
 									lostTimeStamp = 0;
 									zombie.reset();
+									outroFrameCounter = 0;
 									flashLightTimerThread = null;
 									flashLightTimerCount = AppConfig.MAX_FLASHLIGHT_TIME;
 								}
@@ -109,6 +116,9 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 									return;
 								}
 								else if(isGameOver()) { // GAME OVER
+									if(lostFromServer || lostFromGame) {
+										sndMan.playSoundFx("dead", 1, false);
+									}
 									lostFromServer = false;
 									lostFromGame = false;
 									lost = true;
@@ -127,6 +137,20 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 						}
 					});
 					
+					
+					ServerCommunication.sendObjectMessage("endgamestarted", new Response.Listener<JSONObject>() {
+						public void onResponse(JSONObject response) {
+							try {
+								if(response.get("data").equals("true")) {
+									stopFlashLightTimer();
+									zombie.disable();
+									outroStarted = true;
+								}
+							} catch (JSONException e) {
+								e.printStackTrace();
+							}
+						};
+					});
 					
 					ServerCommunication.sendObjectMessage("endgamestarted", new Response.Listener<JSONObject>() {
 						@Override
@@ -157,7 +181,8 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 	public GameManager(Context context, int zombieScales) {
 		sensor = new LookatSensor(context);
 		sensor.addListener(this);
-		zombie = new Zombie(context, zombieScales, this, sensor);
+		sndMan = new SoundManager(context);
+		zombie = new Zombie(context, zombieScales, this, sensor, sndMan);
 		pollingThread.start();
 		
 	}
@@ -210,8 +235,11 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 		}
 	}
 
+	public boolean scaleChange = false;
+	
 	@Override
 	public void onZombieScaleChange() {
+		scaleChange = true; 
 		if(zombie.hasKilledPlayer()) {
 			Log.d(TAG, "LOST BY ZOMBIE");
 			lostFromGame = true;
@@ -244,8 +272,18 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 	}
 	
 	private boolean inprogress = true;
+	private int outroFrameCounter = 0;
 	
 	public int getGameStatus(final Mat status) {
+		if(isOutroStarted()) {
+			if(outroFrameCounter == 0) sndMan.playSoundFx("outro", 1, false);
+			Mat newOutroframe = Highgui.imread("/sdcard/zbg/outroFrames/frame-"+(outroFrameCounter++));
+			if(newOutroframe == null) {
+				newOutroframe = Highgui.imread("/sdcard/zbg/outroFrames/frame-"+(--outroFrameCounter));
+			}
+			newOutroframe.copyTo(status);
+			return 1;
+		}
 		synchronized (this.status) {
 			this.status.copyTo(status);
 			return statusValue;
@@ -279,6 +317,42 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 			});
 		}
 		return 1;
+	}
+	
+	public void onZombieEntryScreen() {
+		sndMan.playRandomSoundFx(SoundManager.RANDOM_SFX.SCARES, 1);
+		toWait = -1;
+	}
+	
+	public void onZombieOnScreen() {
+		if(scaleChange) {
+			sndMan.playRandomSoundFx(SoundManager.RANDOM_SFX.SCARES, 1);
+			scaleChange = false;
+		}
+	}
+	
+	public boolean isOutroStarted() {
+		return outroStarted;
+	}
+	
+	private Random randomWait = new Random();
+	private int toWait = -1;
+	private long startWait;
+	private String currentSound = null;
+	
+	public void onNoZombieOnScreen() {
+		Log.d(TAG, "NO ZOMBIE ON SCREEN!");
+		if(toWait == -1) {
+			toWait = (int) (randomWait.nextInt(3))*1000;
+			startWait = System.nanoTime();
+		} else if((System.nanoTime()-startWait)/1000000.0 >= toWait) {
+			Log.d(TAG, "ATMOSPHERE SOUND!");
+			sndMan.playRandomSoundFx(SoundManager.RANDOM_SFX.ATMOSPHERE, 1);
+			toWait = (int) (randomWait.nextInt(3)+15)*1000;
+			startWait = System.nanoTime();
+		} else {
+			Log.d(TAG, "ATMOSPHERE SOUND STILL WAITING!");
+		}
 	}
 	
 }

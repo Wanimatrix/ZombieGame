@@ -17,6 +17,7 @@ import android.opengl.Matrix;
 import android.util.Log;
 import android.view.Surface;
 import be.csmmi.zombiegame.app.AppConfig;
+import be.csmmi.zombiegame.app.SoundManager;
 import be.csmmi.zombiegame.rendering.meshes.FullSquadMesh;
 import be.csmmi.zombiegame.utilities.RenderingUtils;
 
