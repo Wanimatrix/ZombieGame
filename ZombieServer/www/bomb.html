@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<script src="js/grained.min.js"></script>
+<script src="js/bootbox.min.js"></script>
+<meta charset="utf-8">
+  <title>jQuery UI Dialog - Modal confirmation</title>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/themes/smoothness/jquery-ui.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.3/jquery.min.js"></script>
+  <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
+  <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/resources/demos/style.css">
+  <script>
+  $(function() {
+    $(function() {
+    $( "#dialog" ).dialog({
+      position: center,
+      autoOpen: false,
+      resizable: false,
+      height:140,
+      modal: true,
+      buttons: {
+        "Suicide": function() {
+          $( this ).dialog( "close" );
+        },
+        "Escape": function() {
+          $( this ).dialog( "close" );
+        }
+      }
+    });
+  });
+ 
+    $( "#bomb" ).click(function() {
+      $( "#dialog" ).dialog( "open" );
+    });
+  });
+  </script>
+
+<style>
+body {
+    background-image: url("design/noisebomb.png");
+    background-repeat: repeat;
+}
+html, body, #wrapper, #container, #contents {
+   height:100%;
+   width: 100%;
+   margin: 0;
+   padding: 0;
+   border: 0;
+}
+#container, #contents, #wrapper td {
+   vertical-align: middle;
+   text-align: center;
+}
+#bomb:hover{
+	cursor: pointer;
+	z-index: 50;
+	}
+#container > * { 
+	position:relative;
+	height:100%;
+   	width: 100%;
+    }
+</style>
+
+<script>
+
+function detonate(){
+}
+	
+
+var options = {
+		  "animate": true,
+		  "patternWidth": 482.42,
+		  "patternHeight": 500,
+		  "grainOpacity": 0.04,
+		  "grainDensity": 1,
+		  "grainWidth": 2,
+		  "grainHeight": 2
+		}
+
+
+</script>
+</head>
+<body id="body" >
+<div id="container">
+	<div class="contents">
+    <table id="wrapper">
+      <tr>
+         <td>
+         <img id="bomb" src="design/bombu2.png" alt="" style="width: 50%; height: 50%"/>
+         </td>
+      </tr>	
+   </table>
+   </div>
+</div>
+<div id="dialog" title="Final Choice">
+</div>
+  
+ 
+<script>
+$(window).load(function() {
+	grained('#container', options);
+});
+</script>
+
+</body>
+</html>
