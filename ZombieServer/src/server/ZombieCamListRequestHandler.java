@@ -1,6 +1,5 @@
 package server;
-import gamestateobjects.RoomList;
-
+import gamestateobjects.CamList;
 import java.io.IOException;
 
 import com.sun.net.httpserver.HttpExchange;
@@ -9,9 +8,9 @@ import com.sun.net.httpserver.HttpHandler;
 
 public class ZombieCamListRequestHandler implements HttpHandler {
 
-	private final RoomList camlist;
+	private final CamList camlist;
 	
-	public ZombieCamListRequestHandler(RoomList camlist) {
+	public ZombieCamListRequestHandler(CamList camlist) {
 		this.camlist = camlist;
 	}
 	

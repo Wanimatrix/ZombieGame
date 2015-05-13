@@ -1,4 +1,5 @@
 package server;
+import gamestateobjects.CamList;
 import gamestateobjects.RoomList;
 
 import java.io.BufferedReader;
@@ -11,9 +12,9 @@ import com.sun.net.httpserver.HttpHandler;
 
 class ZombieCamConnectHandler implements HttpHandler {
 
-	private final RoomList rooms;
+	private final CamList rooms;
 	
-	public ZombieCamConnectHandler(RoomList rooms){
+	public ZombieCamConnectHandler(CamList rooms){
 		this.rooms = rooms;
 	}
 	
