@@ -28,6 +28,7 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 	private boolean lost = false;
 	private boolean lostFromServer = false;
 	private boolean lostFromGame = false;
+	private Object lostLock = new Object();
 	private LookatSensor sensor;
 	private float originalLocation = -1;
 	private boolean inControlRoom = true;
@@ -40,34 +41,35 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 	private int statusValue;
 	private SoundManager sndMan;
 	
-	private long flashLightTimerCount = 0;
+	private long flashLightTimerCount = AppConfig.MAX_FLASHLIGHT_TIME;
+	private long flashTimerStarted;
+	private double flashTimerPrevious = 0;
 	
 	private Runnable flashLightTimerRunnable = new Runnable() {
 		
 		@Override
 		public void run() {
-			flashLightTimerCount = AppConfig.MAX_FLASHLIGHT_TIME;
+			flashTimerStarted = System.nanoTime();
 			try {
 				while(flashLightTimerCount > 0) {
-					Thread.sleep(1000);
-					flashLightTimerCount--;
+					Thread.sleep(200);
+					if((System.nanoTime()-flashTimerStarted)/1000000.0+flashTimerPrevious >= 1000) {
+						flashLightTimerCount--;
+						flashTimerPrevious = (System.nanoTime()-flashTimerStarted)/1000000.0+flashTimerPrevious-1000;
+						flashTimerStarted = System.nanoTime();
+					}
 				}
 				Log.d(TAG, "Lost == TRUE");
-				lostFromGame = true;
+				synchronized (lostLock) {
+					lostFromGame = true;
+				}
 				Log.d(TAG, "LOST BY FLASHLIGHT");
 				Log.d(TAG, "LOST: "+lost);
 			} catch (InterruptedException e) {
+				flashTimerPrevious = (System.nanoTime()-flashTimerStarted)/1000000.0;
 			}
 			
 		}
-
-//		@Override
-//		public void run() {
-//			if(flashLightTimerCount++ >= AppConfig.MAX_FLASHLIGHT_TIME) {
-//				flashLightTimer.cancel();
-//				lost = true;
-//			}
-//		}
 	};
 	private Thread flashLightTimerThread;
 	private boolean flashLightTimerRunning = false;
@@ -84,53 +86,54 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 						@Override
 						public void onResponse(JSONObject response) {
 							try {
-								Log.d(TAG, "LOST: "+lost+"; Lost from server: "+lostFromServer+"; Lost from game: "+lostFromGame);
-		//						Log.d(TAG, "INPROGRESS RESPONSE:"+response.get("data"));
-								if(response.get("data").equals("false") && inprogress) {
-		//							Log.d(TAG, "INPROGRESS == FALSE");
-									Log.d(TAG, "INPROGRESS == FALSE");
-									lostFromServer = true;
-									inprogress = false;
-									Log.d(TAG, "LOST BY SERVER");
-									if(sendResetGame) sendResetGame = false; // The server said we are lost, so do not send reset to the server
-								} else if(!inprogress && response.get("data").equals("true")) {
-									Log.d(TAG, "INPROGRESS == TRUE");
-									inprogress = true;
-									lostFromServer = false;
-								} else if(response.get("data").equals("true") && (lost && !lostFromServer && !lostFromGame)) {
-									Log.d(TAG, "INPROGRESS == TRUE2");
-									lost = false;
-									if(!sendResetGame) sendResetGame = true; // We are in the game if we lose the game we need to send a reset
-									lostTimeStamp = 0;
-									zombie.reset();
-									outroFrameCounter = 0;
-									flashLightTimerThread = null;
-									flashLightTimerCount = AppConfig.MAX_FLASHLIGHT_TIME;
-								}
-								
-								if(isInControlRoom() && !isGameOver()) { // IN CONTROL ROOM
-									synchronized (status) {
-										status = Highgui.imread("/sdcard/zbg/ctrlRoom.png");
-										statusValue = 1;
+								synchronized (lostLock) {
+									Log.d(TAG, "LOST: "+lost+"; Lost from server: "+lostFromServer+"; Lost from game: "+lostFromGame);
+			//						Log.d(TAG, "INPROGRESS RESPONSE:"+response.get("data"));
+									if(response.get("data").equals("false") && inprogress) {
+			//							Log.d(TAG, "INPROGRESS == FALSE");
+										Log.d(TAG, "INPROGRESS == FALSE");
+										lostFromServer = true;
+										inprogress = false;
+										Log.d(TAG, "LOST BY SERVER");
+										if(sendResetGame) sendResetGame = false; // The server said we are lost, so do not send reset to the server
+									} else if(response.get("data").equals("true") && !inprogress) {
+										Log.d(TAG, "INPROGRESS == TRUE");
+										inprogress = true;
+										lostFromServer = false;
+									} else if(response.get("data").equals("true") && (lost && !lostFromServer && !lostFromGame)) {
+										Log.d(TAG, "INPROGRESS == TRUE2");
+										lost = false;
+										if(!sendResetGame) sendResetGame = true; // We are in the game if we lose the game we need to send a reset
+										lostTimeStamp = 0;
+										zombie.reset();
+										outroFrameCounter = 0;
+										flashLightTimerThread = null;
 									}
-									return;
-								}
-								else if(isGameOver()) { // GAME OVER
-									if(lostFromServer || lostFromGame) {
-										sndMan.playSoundFx("dead", 1, false);
-									}
-									lostFromServer = false;
-									lostFromGame = false;
-									lost = true;
-									synchronized (status) {
-										statusValue = gameOver(true);
-									}
-									return;
-								}
-								synchronized (status) {
-									statusValue =  0;
-								}
 									
+									if(isInControlRoom() && !isGameOver()) { // IN CONTROL ROOM
+										synchronized (status) {
+											status = Highgui.imread("/sdcard/zbg/ctrlRoom.png");
+											statusValue = 1;
+										}
+										return;
+									}
+									else if(isGameOver()) { // GAME OVER
+										if(lostFromServer || lostFromGame) {
+											sndMan.playSoundFx("dead", 1, false);
+											lostFromServer = false;
+											lostFromGame = false;
+											lost = true;
+										}
+										
+										synchronized (status) {
+											statusValue = gameOver(true);
+										}
+										return;
+									}
+									synchronized (status) {
+										statusValue =  0;
+									}
+								}
 							} catch (JSONException e) {
 								e.printStackTrace();
 							}
@@ -212,7 +215,9 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 	
 	public boolean isGameOver() {
 		Log.d(TAG, "LOST: "+lost);
-		return lost || lostFromGame || lostFromServer;
+		synchronized (lostLock) {
+			return lost || lostFromGame || lostFromServer;
+		}
 	}
 	
 	public boolean endGameStarted() {
@@ -242,7 +247,9 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 		scaleChange = true; 
 		if(zombie.hasKilledPlayer()) {
 			Log.d(TAG, "LOST BY ZOMBIE");
-			lostFromGame = true;
+			synchronized (lostLock) {
+				lostFromGame = true;
+			}
 		}
 	}
 

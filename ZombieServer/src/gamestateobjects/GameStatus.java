@@ -30,7 +30,7 @@ public class GameStatus {
 	public void resetGame(){
 		this.inprogress = false;
 		this.endgamestarted = false;
-		this.rooms.lockAllRooms();
+//		this.rooms.lockAllRooms();
 	}
 	
 	public boolean isInProgress(){

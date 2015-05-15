@@ -99,6 +99,8 @@ public class CameraManager implements PreviewCallback {
 	
 	public CameraManager(Context context, GLSurfaceView view) {
 		this.view = view;
+		
+		rooms.add(new Room("THE LOCKED ROOM"));
 	    
 		// Instantiate the RequestQueue.
 //		queue = Volley.newRequestQueue(view.getContext());
@@ -150,66 +152,66 @@ public class CameraManager implements PreviewCallback {
 		return new Pair<Mat, Mat>(prep, alphaInv);
 	}
 	
-	public void initRoomStatus() {
-		final Response.Listener<JSONArray> callback = 
-	            new com.android.volley.Response.Listener<JSONArray>() {
-	                @Override
-	                public void onResponse(JSONArray response) {
-	                	try {
-	                        // Parsing json array response
-	                        // loop through each json object
-	                        for (int i = 0; i < response.length(); i++) {
-	                            JSONObject roomObj = (JSONObject) response.get(i);
-	                            String roomName = (String)roomObj.get("room");
-	                            String status = (String)roomObj.get("status");
-	                            for (int j = 0; j < rooms.size(); j++) {
-									if(rooms.get(j).getName().equals(roomName)) {
-										Log.d("LOCKER", "Room "+roomName+": "+status);
-										
-										if(status.equals("locked")) {
-											if(!rooms.get(j).isLocked()) {
-												cameraSwitcher.interrupt();
-												setupCamera();
-											}
-											rooms.get(j).setLocked(true);
-											Log.d("LOCKER", "LOCKED!");
-										}
-										else {
-											if(rooms.get(j).isLocked()) {
-												pauseCamera();
-												readCameraStream();
-											}
-											rooms.get(j).setLocked(false);
-											Log.d("LOCKER", "UNLOCKED!");
-										}
-										
-										
-										
-										break;
-									}
-								}
-	                        }
-	                	} catch(Exception e) {};
-	                }
-	            };
-		
-		roomStatusThread = new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				while(true) {
-					try {
-						Thread.sleep(3000);
-						Log.d("LOCKER", "Added request");
-						ServerCommunication.sendArrayMessage("roomstatus", callback);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		});
-		roomStatusThread.start();
-	}
+//	public void initRoomStatus() {
+//		final Response.Listener<JSONArray> callback = 
+//	            new com.android.volley.Response.Listener<JSONArray>() {
+//	                @Override
+//	                public void onResponse(JSONArray response) {
+//	                	try {
+//	                        // Parsing json array response
+//	                        // loop through each json object
+//	                        for (int i = 0; i < response.length(); i++) {
+//	                            JSONObject roomObj = (JSONObject) response.get(i);
+//	                            String roomName = (String)roomObj.get("room");
+//	                            String status = (String)roomObj.get("status");
+//	                            for (int j = 0; j < rooms.size(); j++) {
+//									if(rooms.get(j).getName().equals(roomName)) {
+//										Log.d("LOCKER", "Room "+roomName+": "+status);
+//										
+//										if(status.equals("locked")) {
+//											if(!rooms.get(j).isLocked()) {
+//												cameraSwitcher.interrupt();
+//												setupCamera();
+//											}
+//											rooms.get(j).setLocked(true);
+//											Log.d("LOCKER", "LOCKED!");
+//										}
+//										else {
+//											if(rooms.get(j).isLocked()) {
+//												pauseCamera();
+//												readCameraStream();
+//											}
+//											rooms.get(j).setLocked(false);
+//											Log.d("LOCKER", "UNLOCKED!");
+//										}
+//										
+//										
+//										
+//										break;
+//									}
+//								}
+//	                        }
+//	                	} catch(Exception e) {};
+//	                }
+//	            };
+//		
+//		roomStatusThread = new Thread(new Runnable() {
+//			
+//			@Override
+//			public void run() {
+//				while(true) {
+//					try {
+//						Thread.sleep(3000);
+//						Log.d("LOCKER", "Added request");
+//						ServerCommunication.sendArrayMessage("roomstatus", callback);
+//					} catch (InterruptedException e) {
+//						e.printStackTrace();
+//					}
+//				}
+//			}
+//		});
+//		roomStatusThread.start();
+//	}
 	
 	public void initCameras(final OnCamerasReadyListener listener) {
 		
@@ -224,8 +226,10 @@ public class CameraManager implements PreviewCallback {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject roomObj = (JSONObject) response.get(i);
                         Room room = new Room((String)roomObj.get("roomname"));
+                        room.setLocked(false);
                         JSONArray camCluster = roomObj.getJSONArray("camcluster");
                         for (int j = 0; j < camCluster.length(); j++) {
+                        	Log.d( "JSON", "Room added");
                         	JSONObject cam = (JSONObject)camCluster.get(j);
                         	String name = cam.getString("name");
                         	String url = cam.getString("address");
@@ -234,39 +238,39 @@ public class CameraManager implements PreviewCallback {
                         rooms.add(room);
                     }
                     
-                    cameraSwitcher = new Thread() {
-        				@Override
-        				public void run() {
-        					Log.d(TAG, "Switcher started");
-        					
-        					do {
-        						try {
-        							Thread.sleep(10000);
-        						} catch (InterruptedException e) {
-        							Log.d(TAG, "Switcher interrupted");
-        							if(!stopCamSwitcher) {
-        								currentCameraIdx = 0;
-        								continue;
-        							} else {
-        								
-        							}
-        						}
-        						while(stopCamSwitcher) {
-        							Log.d(TAG, "Switcher stopped");
-        							try {
-        				    		 Thread.sleep(1000);
-    				    		   } catch (InterruptedException e) {
-    				    		      e.printStackTrace();
-    				    		   }
-        						}
-        						
-        						Log.d(TAG, "Switching...");
-        						
-        						currentCameraIdx = (currentCameraIdx + 1) % rooms.get(currentRoomIdx).getCameras().size();
-        						readCameraStream();
-        					} while(true);
-        				}
-        			};
+//                    cameraSwitcher = new Thread() {
+//        				@Override
+//        				public void run() {
+//        					Log.d(TAG, "Switcher started");
+//        					
+//        					do {
+//        						try {
+//        							Thread.sleep(10000);
+//        						} catch (InterruptedException e) {
+//        							Log.d(TAG, "Switcher interrupted");
+//        							if(!stopCamSwitcher) {
+//        								currentCameraIdx = 0;
+//        								continue;
+//        							} else {
+//        								
+//        							}
+//        						}
+//        						while(stopCamSwitcher) {
+//        							Log.d(TAG, "Switcher stopped");
+//        							try {
+//        				    		 Thread.sleep(1000);
+//    				    		   } catch (InterruptedException e) {
+//    				    		      e.printStackTrace();
+//    				    		   }
+//        						}
+//        						
+//        						Log.d(TAG, "Switching...");
+//        						
+//        						currentCameraIdx = (currentCameraIdx + 1) % rooms.get(currentRoomIdx).getCameras().size();
+//        						readCameraStream();
+//        					} while(true);
+//        				}
+//        			};
                     
                     currentRoomIdx = 0;
                     currentCameraIdx = 0;
@@ -302,7 +306,7 @@ public class CameraManager implements PreviewCallback {
 		// Add the request to the RequestQueue.
 		ServerCommunication.sendArrayMessage("getcams", callback, errorListener);
 		
-		initRoomStatus();
+//		initRoomStatus();
 	}
 	
 	private boolean stopCamSwitcher = false;
@@ -318,7 +322,7 @@ public class CameraManager implements PreviewCallback {
 		}
 		currentRoomIdx = (currentRoomIdx + 1) % rooms.size();
 		Log.d(TAG, "New Room: "+currentRoomIdx);
-		cameraSwitcher.interrupt();
+//		cameraSwitcher.interrupt();
 		readCameraStream();
 	}
 	
@@ -388,8 +392,8 @@ public class CameraManager implements PreviewCallback {
             
             thread.startDrawing();
             thread.surfaceDone();
-            if(rooms.get(currentRoomIdx).getCameras().size() > 1 && !cameraSwitcher.isAlive())
-            	cameraSwitcher.start();
+//            if(rooms.get(currentRoomIdx).getCameras().size() > 1 && !cameraSwitcher.isAlive())
+//            	cameraSwitcher.start();
             stopCamSwitcher = false;
             
         }
@@ -713,13 +717,13 @@ public class CameraManager implements PreviewCallback {
 		Mat output = new Mat(background.size(), CvType.CV_8UC(3));
 		Log.d(TAG, "BG Sizes/Channels/Type: "+background.size()+"; "+background.channels()+"; "+background.type());
 		Log.d(TAG, "alphaInv Sizes/Channels/Type: "+overlayPair.second.size()+"; "+overlayPair.second.channels()+"; "+overlayPair.second.type());
-		Mat fg = overlayPair.first.clone();
+//		Mat fg = overlayPair.first.clone();
 //		Core.multiply(fg, new Scalar(alphaFg,alphaFg,alphaFg), fg);
 //		Mat alhpaInv = overlayPair.second.clone();
 //		Core.multiply(alhpaInv, new Scalar(1-alphaFg,1-alphaFg,1-alphaFg), alhpaInv);
 		Mat bg = background.mul(overlayPair.second, 1.0/255.0);
 //		Core.multiply(bg, new Scalar(1.0f-alphaFg,1.0f-alphaFg,1.0f-alphaFg), bg);
-		Core.add(fg,bg, output);
+		Core.add(overlayPair.first,bg, output);
 		
 		
 		return output;
