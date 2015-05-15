@@ -2,12 +2,12 @@ package be.csmmi.zombiegame.app;
 
 public class AppConfig {
 	
-	public final static String SERVER_ADDRESS = "http://192.168.23.1:8082"; // 23.3
+	public final static String SERVER_ADDRESS = "http://192.168.1.254:8082"; // 23.3
 	
 	public final static int AMOUNT_PREVIEW_BUFFERS = 1;
 	public static boolean TOUCH_EVENT = false;
 
-	public static final long MAX_FLASHLIGHT_TIME = 60*7; // 1 minutes
+	public static final long MAX_FLASHLIGHT_TIME = 60*7; // 7 minutes
 	public static final int MAX_SIMULTANEOUS_SOUNDS = 10;
 	
 	public final static boolean DEBUG_LOGGING = true;

@@ -1,5 +1,6 @@
 package be.csmmi.zombiegame.app;
 
+import java.io.IOException;
 import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -19,7 +20,10 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 
 import android.content.Context;
+import android.graphics.SurfaceTexture;
+import android.media.MediaPlayer;
 import android.util.Log;
+import android.view.Surface;
 
 public class GameManager implements ZombieScaleChangeListener, LookatSensorListener{
 	private static final String TAG = GameManager.class.getSimpleName();
@@ -76,104 +80,135 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 	
 	private Thread pollingThread = new Thread(new Runnable() {
 		
+		private boolean previousInProgressDone = true;
+		private boolean previousOutroStartedDone = true;
+		private boolean previousEndGameStartedDone = true;
+		
 		@Override
 		public void run() {
 			while(true) {
 				try {
-					Thread.sleep(100);
-				
-					ServerCommunication.sendObjectMessage("inprogress", new Response.Listener<JSONObject>() {
-						@Override
-						public void onResponse(JSONObject response) {
-							try {
-								synchronized (lostLock) {
-									Log.d(TAG, "LOST: "+lost+"; Lost from server: "+lostFromServer+"; Lost from game: "+lostFromGame);
-			//						Log.d(TAG, "INPROGRESS RESPONSE:"+response.get("data"));
-									if(response.get("data").equals("false") && inprogress) {
-			//							Log.d(TAG, "INPROGRESS == FALSE");
-										Log.d(TAG, "INPROGRESS == FALSE");
-										lostFromServer = true;
-										inprogress = false;
-										Log.d(TAG, "LOST BY SERVER");
-										if(sendResetGame) sendResetGame = false; // The server said we are lost, so do not send reset to the server
-									} else if(response.get("data").equals("true") && !inprogress) {
-										Log.d(TAG, "INPROGRESS == TRUE");
-										inprogress = true;
-										lostFromServer = false;
-									} else if(response.get("data").equals("true") && (lost && !lostFromServer && !lostFromGame)) {
-										Log.d(TAG, "INPROGRESS == TRUE2");
-										lost = false;
-										if(!sendResetGame) sendResetGame = true; // We are in the game if we lose the game we need to send a reset
-										lostTimeStamp = 0;
-										zombie.reset();
-										outroFrameCounter = 0;
-										flashLightTimerThread = null;
-									}
-									
-									if(isInControlRoom() && !isGameOver()) { // IN CONTROL ROOM
-										synchronized (status) {
-											status = Highgui.imread("/sdcard/zbg/ctrlRoom.png");
-											statusValue = 1;
-										}
-										return;
-									}
-									else if(isGameOver()) { // GAME OVER
-										if(lostFromServer || lostFromGame) {
-											sndMan.playSoundFx("dead", 1, false);
-											lostFromServer = false;
-											lostFromGame = false;
-											lost = true;
+					Thread.sleep(500);
+					
+					if(previousInProgressDone) {
+						previousInProgressDone = false;
+						ServerCommunication.sendObjectMessage("inprogress", new Response.Listener<JSONObject>() {
+							@Override
+							public void onResponse(JSONObject response) {
+								try {
+									synchronized (lostLock) {
+										Log.d(TAG, "LOST: "+lost+"; Lost from server: "+lostFromServer+"; Lost from game: "+lostFromGame);
+				//						Log.d(TAG, "INPROGRESS RESPONSE:"+response.get("data"));
+										if(response.get("data").equals("false") && inprogress) {
+				//							Log.d(TAG, "INPROGRESS == FALSE");
+											Log.d(TAG, "INPROGRESS == FALSE");
+											lostFromServer = true;
+//											inprogress = false;
+											Log.d(TAG, "LOST BY SERVER");
+											if(sendResetGame) sendResetGame = false; // The server said we are lost, so do not send reset to the server
+//										} else if(response.get("data").equals("true") && !inprogress) {
+//											Log.d(TAG, "INPROGRESS == TRUE");
+//											
+//											
+										} else if(response.get("data").equals("true") && (lost && !lostFromServer && !lostFromGame)) {
+											Log.d(TAG, "INPROGRESS == TRUE2");
+											lost = false;
+											if(!sendResetGame) sendResetGame = true; // We are in the game if we lose the game we need to send a reset
+											lostTimeStamp = 0;
+											zombie.reset();
+											outroDone = false;
+											ServerCommunication.sendObjectMessage("outroended", new Response.Listener<JSONObject>() {
+												@Override
+												public void onResponse(JSONObject response) {
+													outroStarted = false;
+												}
+												
+											});
+											turnOnSounds();
+											outroFrameCounter = 0;
+											resetFlashLightTimer();
+											inprogress = true;
 										}
 										
-										synchronized (status) {
-											statusValue = gameOver(true);
+										if(isInControlRoom() && !isGameOver()) { // IN CONTROL ROOM
+											synchronized (status) {
+												status = Highgui.imread("/sdcard/zbg/ctrlRoom.png");
+												statusValue = 1;
+											}
+											return;
 										}
-										return;
+										else if(isGameOver()) { // GAME OVER
+											if(lostFromServer || lostFromGame) {
+												sndMan.playSoundFx("dead", 1, false);
+												lostFromServer = false;
+												lostFromGame = false;
+												lost = true;
+												inprogress = false;
+											}
+											
+											synchronized (status) {
+												statusValue = gameOver(true);
+											}
+											return;
+										}
+										synchronized (status) {
+											statusValue =  0;
+										}
 									}
-									synchronized (status) {
-										statusValue =  0;
+								} catch (JSONException e) {
+									e.printStackTrace();
+								} finally {
+									previousInProgressDone = true;
+								}
+							}
+						});
+					}
+					
+					if(previousOutroStartedDone) {
+						previousOutroStartedDone = false;
+						ServerCommunication.sendObjectMessage("outrostarted", new Response.Listener<JSONObject>() {
+							public void onResponse(JSONObject response) {
+								try {
+									if(response.get("data").equals("true")) {
+										stopFlashLightTimer();
+										zombie.disable();
+										outroStarted = true;
+									} else {
+										outroStarted = false;
 									}
+								} catch (JSONException e) {
+									e.printStackTrace();
+								} finally {
+									previousOutroStartedDone = true;
 								}
-							} catch (JSONException e) {
-								e.printStackTrace();
-							}
-						}
-					});
+							};
+						});
+					}
 					
-					
-					ServerCommunication.sendObjectMessage("endgamestarted", new Response.Listener<JSONObject>() {
-						public void onResponse(JSONObject response) {
-							try {
-								if(response.get("data").equals("true")) {
-									stopFlashLightTimer();
-									zombie.disable();
-									outroStarted = true;
+					if(previousEndGameStartedDone) {
+						previousEndGameStartedDone = false;
+						ServerCommunication.sendObjectMessage("endgamestarted", new Response.Listener<JSONObject>() {
+							@Override
+							public void onResponse(JSONObject response) {
+								Log.d(TAG, "ENDGAME RESPONSE:");
+								try {
+									Log.d(TAG, "ENDGAME RESPONSE:"+response.get("data"));
+									if(response.get("data").equals("true")) {
+										Log.d(TAG, "ENDGAME STARTED");
+										endgame = true;
+									} else {
+										Log.d(TAG, "ENDGAME STOPPED");
+										endgame = false;
+									}
+										
+								} catch (JSONException e) {
+									e.printStackTrace();
+								} finally {
+									previousEndGameStartedDone = true;
 								}
-							} catch (JSONException e) {
-								e.printStackTrace();
 							}
-						};
-					});
-					
-					ServerCommunication.sendObjectMessage("endgamestarted", new Response.Listener<JSONObject>() {
-						@Override
-						public void onResponse(JSONObject response) {
-							Log.d(TAG, "ENDGAME RESPONSE:");
-							try {
-								Log.d(TAG, "ENDGAME RESPONSE:"+response.get("data"));
-								if(response.get("data").equals("true")) {
-									Log.d(TAG, "ENDGAME STARTED");
-									endgame = true;
-								} else {
-									Log.d(TAG, "ENDGAME STOPPED");
-									endgame = false;
-								}
-									
-							} catch (JSONException e) {
-								e.printStackTrace();
-							}
-						}
-					});
+						});
+					}
 				} catch (InterruptedException e1) {
 					e1.printStackTrace();
 				}
@@ -220,6 +255,16 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 		}
 	}
 	
+	private boolean outroDone = false;
+	
+	public void outroDone(){
+		outroDone = true;
+	}
+	
+	public boolean isAfterOutro() {
+		return outroDone;
+	}
+	
 	public boolean endGameStarted() {
 		return endgame;
 	}
@@ -244,32 +289,56 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 	
 	@Override
 	public void onZombieScaleChange() {
-		scaleChange = true; 
 		if(zombie.hasKilledPlayer()) {
 			Log.d(TAG, "LOST BY ZOMBIE");
 			synchronized (lostLock) {
 				lostFromGame = true;
 			}
+		} else {
+			scaleChange = true; 
 		}
 	}
 
+	private Thread zombieEnableThread = null;
+	private Runnable zombieEnableRunnable = new Runnable() {
+		
+		@Override
+		public void run() {
+			try {
+				Thread.sleep(2000);
+				zombie.enable();
+			} catch (InterruptedException e) {
+			}
+		}
+	};
+	
 	@Override
 	public void onLookatSensorChanged(float[] newOrientation) {
+//		Log.d(TAG, "Orientation: "+newOrientation[2]);
 		if(originalLocation == -1) {
 			Log.d(TAG, "ORIGINAL: "+originalLocation);
 			originalLocation = newOrientation[2];
 		} else { 
 			Log.d(TAG, "Diff: "+Math.abs(originalLocation-newOrientation[2])+" < "+((5/2.0f)*(Math.PI/180.0f)));
 			Log.d(TAG, "CONTROLROOM: "+inControlRoom);
-			if(Math.abs(originalLocation-newOrientation[2]) < (10/2.0f)*(Math.PI/180.0f)) {
+			
+			int hysteresisBuffer = 0;
+			if(inControlRoom) {
+				hysteresisBuffer = 5;
+			}
+			
+			if(Math.abs(originalLocation-newOrientation[2]) < (10/2.0f+hysteresisBuffer)*(Math.PI/180.0f)) {
 				if(!inControlRoom) {
+					Log.d("SENSORCHANGECHECK", "INTO CTRLROOM");
+					Log.d("SENSORCHANGECHECK", "Diff: "+Math.abs(originalLocation-newOrientation[2])+" < "+((10/2.0f)*(Math.PI/180.0f)));
 					stopFlashLightTimer();
 					zombie.disable();
 				}
 				inControlRoom = true;
-			} else {
+			} else  {
 				if(inControlRoom && inLockedRoom) {
-					Log.d(TAG, "Going out of controlroom");
+					Log.d("SENSORCHANGECHECK", "OUT OF CTRLROOM");
+					Log.d("SENSORCHANGECHECK", "Diff: "+Math.abs(originalLocation-newOrientation[2])+" < "+((10/2.0f+4)*(Math.PI/180.0f)));
 					startFlashLightTimer();
 					zombie.enable();
 				}
@@ -282,15 +351,6 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 	private int outroFrameCounter = 0;
 	
 	public int getGameStatus(final Mat status) {
-		if(isOutroStarted()) {
-			if(outroFrameCounter == 0) sndMan.playSoundFx("outro", 1, false);
-			Mat newOutroframe = Highgui.imread("/sdcard/zbg/outroFrames/frame-"+(outroFrameCounter++));
-			if(newOutroframe == null) {
-				newOutroframe = Highgui.imread("/sdcard/zbg/outroFrames/frame-"+(--outroFrameCounter));
-			}
-			newOutroframe.copyTo(status);
-			return 1;
-		}
 		synchronized (this.status) {
 			this.status.copyTo(status);
 			return statusValue;
@@ -342,6 +402,14 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 		return outroStarted;
 	}
 	
+	public void turnOffSounds() {
+		sndMan.turnOffSound();
+	}
+	
+	public void turnOnSounds() {
+		sndMan.turnOnSound();
+	}
+	
 	private Random randomWait = new Random();
 	private int toWait = -1;
 	private long startWait;
@@ -360,6 +428,15 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 		} else {
 			Log.d(TAG, "ATMOSPHERE SOUND STILL WAITING!");
 		}
+	}
+	
+	private void resetFlashLightTimer() {
+		if(flashLightTimerThread!= null && flashLightTimerThread.isAlive()) {
+			flashLightTimerThread.interrupt();
+		}
+		flashLightTimerThread = null;
+		flashLightTimerCount = AppConfig.MAX_FLASHLIGHT_TIME;
+		flashTimerPrevious = 0;
 	}
 	
 }

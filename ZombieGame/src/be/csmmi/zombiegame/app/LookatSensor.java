@@ -8,6 +8,7 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.util.Log;
 
 public class LookatSensor implements SensorEventListener{
 	
@@ -40,12 +41,15 @@ public class LookatSensor implements SensorEventListener{
 		return orientation;
 	}
 	
-	public void onSensorChanged(SensorEvent event) {
+	private long lastEventTimeStamp = 0;
+	
+	public synchronized void onSensorChanged(SensorEvent event) {
+		if(lastEventTimeStamp != 0 && event.timestamp < lastEventTimeStamp) return;
 		if (event.sensor.getType() == Sensor.TYPE_ACCELEROMETER)
 			mGravity = event.values;
 		if (event.sensor.getType() == Sensor.TYPE_GAME_ROTATION_VECTOR)
 			mGeomagnetic = event.values;
-		if (mGravity != null && mGeomagnetic != null) {
+		if (event.sensor.getType() == Sensor.TYPE_GAME_ROTATION_VECTOR && mGravity != null && mGeomagnetic != null) {
 			float R[] = new float[9];
 			float I[] = new float[9];
 			boolean success = SensorManager.getRotationMatrix(R, I, mGravity, mGeomagnetic);
@@ -61,6 +65,7 @@ public class LookatSensor implements SensorEventListener{
 //				azimut = orientation[0]; // orientation contains: azimut, pitch and roll
 			}
 		}
+		lastEventTimeStamp = event.timestamp;
 	}
 
 	@Override

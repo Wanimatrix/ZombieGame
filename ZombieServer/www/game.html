@@ -72,7 +72,7 @@
                                         addLine("    Clue: "+tip);
                                         $.getJSON( theRoom+"/getnextroom", function( result ) {
                                             nextRoomToSolve = result.data;
-                                            if(nextRoomToSolve == "none") {
+                                            if(unlockedRooms.length == rooms.length) {
                                                 $.getJSON( "startendgame", function( result ) {
                                                     addLine("    This was the last room. Only one mistery left to solve!");
                                                 });

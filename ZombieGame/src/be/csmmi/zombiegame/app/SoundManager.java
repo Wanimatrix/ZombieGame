@@ -23,6 +23,7 @@ public class SoundManager {
 //	private Map<String,Integer> streamIds = new HashMap<String, Integer>();
 	private MediaPlayer mediaPlayer;
 	private Context context;
+	private boolean noSound;
 	
 	private String[] scares = new String[]{"scare1","scare2","scare3"};
 	private String[] atmo = new String[]{"atmosphere1","atmosphere2"};
@@ -94,10 +95,11 @@ public class SoundManager {
 	}
 	
 	public void playSoundFx(String name, float volume, boolean loop) {
+		if(noSound) return;
 		if((System.nanoTime()-lastSoundStarted)/1000000.0 < MINIMAL_WAIT) return;
 		try {
 			mediaPlayer.reset();
-			mediaPlayer.setDataSource("/sdcard/arbg/sounds/"+name+".mp3");
+			mediaPlayer.setDataSource("/sdcard/zbg/sounds/"+name+".mp3");
 			mediaPlayer.setVolume(volume, volume);
 			mediaPlayer.setLooping(loop);
 			mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
@@ -129,6 +131,15 @@ public class SoundManager {
 	
 	public boolean isPlaying() {
 		return mediaPlayer.isPlaying();
+	}
+	
+	public void turnOffSound(){
+		noSound = true;
+		stopSoundFx();
+	}
+	
+	public void turnOnSound(){
+		noSound = false;
 	}
 	
 //	public void stopAllSoundFxs() {
