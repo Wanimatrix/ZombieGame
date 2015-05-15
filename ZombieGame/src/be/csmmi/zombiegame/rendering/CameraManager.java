@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
+import javax.lang.model.SourceVersion;
+
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
@@ -56,6 +58,7 @@ import android.view.Surface;
 import be.csmmi.zombiegame.app.AppConfig;
 import be.csmmi.zombiegame.app.GameManager;
 import be.csmmi.zombiegame.app.ServerCommunication;
+import be.csmmi.zombiegame.app.SoundManager;
 
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
@@ -91,6 +94,7 @@ public class CameraManager implements PreviewCallback {
 //    private ImageResourceInput imageIn;
 //    private GenericFilter generic;
 //    private ScreenEndpoint screen;
+	
 	
 	
 	public CameraManager(Context context, GLSurfaceView view) {
@@ -506,6 +510,7 @@ public class CameraManager implements PreviewCallback {
 	}
 	
 	private Object canvasLock = new Object();
+	boolean zombieInSight = false;
 	
 	class OnPreviewTask extends AsyncTask<byte[], Void, Void> {
 		
@@ -526,6 +531,7 @@ public class CameraManager implements PreviewCallback {
 		
 		boolean flickerEnabled = false;
 		boolean flicker = false;
+		
 		Random flickerRand = new Random();
 
 		@Override
@@ -585,7 +591,7 @@ public class CameraManager implements PreviewCallback {
 			    Mat tmp = new Mat(grayFrameImg.size(), 3);
 			    Core.merge(Arrays.asList(grayFrameImg,grayFrameImg,grayFrameImg),tmp);
 			    	
-			    
+			    Log.d(TAG, "Zombie in sight: "+zombieInSight);
 			    if(!flicker && gm.getZombie().isInSight()) {
 			    	
 			    	
@@ -614,6 +620,10 @@ public class CameraManager implements PreviewCallback {
 			    	Log.d(TAG, "TMP Sizes/Channels/Type: "+tmp.size()+"; "+tmp.channels()+"; "+tmp.type());
 		//	    	Log.d(TAG, "OverlayAlpha: "+zombieFgAlpha);
 			    	tmp = overlayImage(overlays.get(0).get(gm.getZombie().getZombieScale()), tmp, 1);
+			    	
+			    	if(!zombieInSight) gm.onZombieEntryScreen();
+			    	gm.onZombieOnScreen();
+			    	zombieInSight = true;
 		//	    	zombieFgAlpha = zombieFgAlpha == 1.0f ? 1.0f : zombieFgAlpha+1.0f/5;
 		//	    	if(zombieAlphaCounter < overlays.get(0).size()-1) {
 		//	    		zombieAlphaCounter++;
@@ -623,7 +633,11 @@ public class CameraManager implements PreviewCallback {
 		//	    } else if(zombieFgAlpha > 0) {
 		//    		tmp = overlayImage(overlays.get(0), tmp, zombieFgAlpha);
 		//    		zombieFgAlpha = zombieFgAlpha == 0.0f ? 0.0f : zombieFgAlpha-1.0f/5;
+			    } else {
+			    	zombieInSight = false;
+			    	gm.onNoZombieOnScreen();
 			    }
+			    Log.d(TAG, "Zombie in sight AFTER: "+zombieInSight);
 			    
 			    Log.d(TAG, "TMP Sizes/Channels/Type: "+tmp.size()+"; "+tmp.channels()+"; "+tmp.type());
 		//	    tmp = overlayImage(overlays.get(0), tmp);

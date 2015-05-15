@@ -9,10 +9,10 @@ package be.csmmi.zombiegame;
 
 public final class R {
     public static final class array {
-        public static final int pref_example_list_titles=0x7f080000;
-        public static final int pref_example_list_values=0x7f080001;
-        public static final int pref_sync_frequency_titles=0x7f080002;
-        public static final int pref_sync_frequency_values=0x7f080003;
+        public static final int pref_example_list_titles=0x7f090000;
+        public static final int pref_example_list_values=0x7f090001;
+        public static final int pref_sync_frequency_titles=0x7f090002;
+        public static final int pref_sync_frequency_values=0x7f090003;
     }
     public static final class attr {
         /** <p>May be an integer value, such as "<code>100</code>".
@@ -50,8 +50,8 @@ containing a value of this type.
          would include 7" and 10" devices in landscape (~960dp and ~1280dp respectively).
     
          */
-        public static final int activity_horizontal_margin=0x7f060000;
-        public static final int activity_vertical_margin=0x7f060001;
+        public static final int activity_horizontal_margin=0x7f070000;
+        public static final int activity_vertical_margin=0x7f070001;
     }
     public static final class drawable {
         public static final int ic_launcher=0x7f020000;
@@ -62,47 +62,55 @@ containing a value of this type.
         public static final int lookup_soft_elegance_2=0x7f020005;
     }
     public static final class id {
-        public static final int action_settings=0x7f070006;
-        public static final int any=0x7f070001;
-        public static final int arView=0x7f070005;
-        public static final int back=0x7f070002;
-        public static final int debugText=0x7f070000;
-        public static final int front=0x7f070003;
-        public static final int ui_layout=0x7f070004;
+        public static final int action_settings=0x7f080006;
+        public static final int any=0x7f080001;
+        public static final int arView=0x7f080005;
+        public static final int back=0x7f080002;
+        public static final int debugText=0x7f080000;
+        public static final int front=0x7f080003;
+        public static final int ui_layout=0x7f080004;
     }
     public static final class layout {
         public static final int activity_main=0x7f030000;
     }
     public static final class menu {
-        public static final int main=0x7f090000;
+        public static final int main=0x7f0a0000;
+    }
+    public static final class raw {
+        public static final int atmosphere1=0x7f040000;
+        public static final int atmosphere2=0x7f040001;
+        public static final int heartbeat=0x7f040002;
+        public static final int scare1=0x7f040003;
+        public static final int scare2=0x7f040004;
+        public static final int scare3=0x7f040005;
     }
     public static final class string {
-        public static final int action_settings=0x7f040002;
-        public static final int app_name=0x7f040000;
-        public static final int hello_world=0x7f040001;
-        public static final int pref_default_display_name=0x7f040009;
-        public static final int pref_description_social_recommendations=0x7f040007;
+        public static final int action_settings=0x7f050002;
+        public static final int app_name=0x7f050000;
+        public static final int hello_world=0x7f050001;
+        public static final int pref_default_display_name=0x7f050009;
+        public static final int pref_description_social_recommendations=0x7f050007;
         /**  Example settings for Data & Sync 
          */
-        public static final int pref_header_data_sync=0x7f04000b;
+        public static final int pref_header_data_sync=0x7f05000b;
         /**  Strings related to Settings 
  Example General settings 
          */
-        public static final int pref_header_general=0x7f040005;
+        public static final int pref_header_general=0x7f050005;
         /**  Example settings for Notifications 
          */
-        public static final int pref_header_notifications=0x7f04000e;
-        public static final int pref_ringtone_silent=0x7f040011;
-        public static final int pref_title_add_friends_to_messages=0x7f04000a;
-        public static final int pref_title_display_name=0x7f040008;
-        public static final int pref_title_new_message_notifications=0x7f04000f;
-        public static final int pref_title_ringtone=0x7f040010;
-        public static final int pref_title_social_recommendations=0x7f040006;
-        public static final int pref_title_sync_frequency=0x7f04000c;
-        public static final int pref_title_system_sync_settings=0x7f04000d;
-        public static final int pref_title_vibrate=0x7f040012;
-        public static final int title_activity_main=0x7f040003;
-        public static final int title_activity_settings=0x7f040004;
+        public static final int pref_header_notifications=0x7f05000e;
+        public static final int pref_ringtone_silent=0x7f050011;
+        public static final int pref_title_add_friends_to_messages=0x7f05000a;
+        public static final int pref_title_display_name=0x7f050008;
+        public static final int pref_title_new_message_notifications=0x7f05000f;
+        public static final int pref_title_ringtone=0x7f050010;
+        public static final int pref_title_social_recommendations=0x7f050006;
+        public static final int pref_title_sync_frequency=0x7f05000c;
+        public static final int pref_title_system_sync_settings=0x7f05000d;
+        public static final int pref_title_vibrate=0x7f050012;
+        public static final int title_activity_main=0x7f050003;
+        public static final int title_activity_settings=0x7f050004;
     }
     public static final class style {
         /** 
@@ -146,13 +154,13 @@ containing a value of this type.
     
  API 14 theme customizations can go here. 
          */
-        public static final int AppBaseTheme=0x7f050000;
+        public static final int AppBaseTheme=0x7f060000;
         /**  Application theme. 
  All customizations that are NOT specific to a particular API-level can go here. 
  Application theme. 
  All customizations that are NOT specific to a particular API-level can go here. 
          */
-        public static final int AppTheme=0x7f050001;
+        public static final int AppTheme=0x7f060001;
     }
     public static final class styleable {
         /** Attributes that can be used with a CameraBridgeViewBase.

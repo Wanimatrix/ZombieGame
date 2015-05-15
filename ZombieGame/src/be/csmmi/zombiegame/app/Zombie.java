@@ -1,5 +1,7 @@
 package be.csmmi.zombiegame.app;
 
+import java.util.Random;
+
 import android.content.Context;
 import android.util.Log;
 
@@ -14,14 +16,16 @@ public class Zombie implements ZombieInSightListener,  ZombieScaleChangeListener
 	private ZombieScaleController zombieScaleController;
 	private ZombieScaleChangeListener externalScaleChangeListener;
 	private boolean inSight = false;
+	private SoundManager sndMan;
 	
-	public Zombie(Context context, int zombieScales, ZombieScaleChangeListener scaleChangeListener, LookatSensor sensor) {
+	public Zombie(Context context, int zombieScales, ZombieScaleChangeListener scaleChangeListener, LookatSensor sensor, SoundManager sndMan) {
 		this.context = context;
 		this.sensor = sensor;
 		this.zombieScales = zombieScales;
 		zombieLocationController = new ZombieLocationController(context, this, sensor);
 		zombieScaleController = new ZombieScaleController(zombieScales, this);
 		externalScaleChangeListener = scaleChangeListener;
+		this.sndMan = sndMan;
 	}
 	
 	public boolean isInSight() {
@@ -40,6 +44,7 @@ public class Zombie implements ZombieInSightListener,  ZombieScaleChangeListener
 	public void onZombieInSight() {
 		Log.d(TAG, "Zombie in sight!");
 		inSight = true;
+		
 		new Thread(new Runnable() {
 
 			@Override
