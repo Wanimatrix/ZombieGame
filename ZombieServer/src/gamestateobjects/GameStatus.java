@@ -30,7 +30,8 @@ public class GameStatus {
 	public void resetGame(){
 		this.inprogress = false;
 		this.endgamestarted = false;
-		this.rooms.lockAllRooms();
+		this.startOutro = false;
+//		this.rooms.lockAllRooms();
 	}
 	
 	public boolean isInProgress(){
@@ -41,8 +42,12 @@ public class GameStatus {
 		return endgamestarted;
 	}
 	
-	public boolean startOutro() {
-		return startOutro;
+	public void startOutro() {
+		startOutro = true;
+	}
+	
+	public void stopOutro() {
+		startOutro = false;
 	}
 	
 	public int getMaxTime(){

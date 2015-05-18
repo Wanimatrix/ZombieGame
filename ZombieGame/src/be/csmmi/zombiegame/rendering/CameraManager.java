@@ -50,6 +50,12 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.media.AudioManager;
+import android.media.MediaPlayer;
+import android.media.MediaPlayer.OnBufferingUpdateListener;
+import android.media.MediaPlayer.OnCompletionListener;
+import android.media.MediaPlayer.OnPreparedListener;
+import android.media.MediaPlayer.OnVideoSizeChangedListener;
 import android.opengl.GLSurfaceView;
 import android.os.AsyncTask;
 import android.util.Log;
@@ -72,7 +78,7 @@ public class CameraManager implements PreviewCallback {
 	private Camera camera;
 	private List<Room> rooms = new ArrayList<Room>();
 	Thread cameraSwitcher;
-	private int currentRoomIdx = -1;
+	private int currentRoomIdx = 0;
 	private int currentCameraIdx = -1;
 	
 	private GLSurfaceView view;
@@ -99,6 +105,8 @@ public class CameraManager implements PreviewCallback {
 	
 	public CameraManager(Context context, GLSurfaceView view) {
 		this.view = view;
+		
+		rooms.add(new Room("THE LOCKED ROOM"));
 	    
 		// Instantiate the RequestQueue.
 //		queue = Volley.newRequestQueue(view.getContext());
@@ -123,6 +131,12 @@ public class CameraManager implements PreviewCallback {
 //		overlays.add(zombieEyesOverlays);
 		
 //		overlays.add(prepOverlay("/sdcard/zbg/zombieNewOnlyEyes.png"));
+	}
+	
+	private SurfaceTexture outroSurfaceTexture = null;
+	
+	public void setOutroSurfaceTexture(SurfaceTexture outroSurfaceTexture) {
+		this.outroSurfaceTexture = outroSurfaceTexture;
 	}
 	
 	private Pair<Mat,Mat> prepOverlay(String overlayFilename) {
@@ -150,66 +164,66 @@ public class CameraManager implements PreviewCallback {
 		return new Pair<Mat, Mat>(prep, alphaInv);
 	}
 	
-	public void initRoomStatus() {
-		final Response.Listener<JSONArray> callback = 
-	            new com.android.volley.Response.Listener<JSONArray>() {
-	                @Override
-	                public void onResponse(JSONArray response) {
-	                	try {
-	                        // Parsing json array response
-	                        // loop through each json object
-	                        for (int i = 0; i < response.length(); i++) {
-	                            JSONObject roomObj = (JSONObject) response.get(i);
-	                            String roomName = (String)roomObj.get("room");
-	                            String status = (String)roomObj.get("status");
-	                            for (int j = 0; j < rooms.size(); j++) {
-									if(rooms.get(j).getName().equals(roomName)) {
-										Log.d("LOCKER", "Room "+roomName+": "+status);
-										
-										if(status.equals("locked")) {
-											if(!rooms.get(j).isLocked()) {
-												cameraSwitcher.interrupt();
-												setupCamera();
-											}
-											rooms.get(j).setLocked(true);
-											Log.d("LOCKER", "LOCKED!");
-										}
-										else {
-											if(rooms.get(j).isLocked()) {
-												pauseCamera();
-												readCameraStream();
-											}
-											rooms.get(j).setLocked(false);
-											Log.d("LOCKER", "UNLOCKED!");
-										}
-										
-										
-										
-										break;
-									}
-								}
-	                        }
-	                	} catch(Exception e) {};
-	                }
-	            };
-		
-		roomStatusThread = new Thread(new Runnable() {
-			
-			@Override
-			public void run() {
-				while(true) {
-					try {
-						Thread.sleep(3000);
-						Log.d("LOCKER", "Added request");
-						ServerCommunication.sendArrayMessage("roomstatus", callback);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-				}
-			}
-		});
-		roomStatusThread.start();
-	}
+//	public void initRoomStatus() {
+//		final Response.Listener<JSONArray> callback = 
+//	            new com.android.volley.Response.Listener<JSONArray>() {
+//	                @Override
+//	                public void onResponse(JSONArray response) {
+//	                	try {
+//	                        // Parsing json array response
+//	                        // loop through each json object
+//	                        for (int i = 0; i < response.length(); i++) {
+//	                            JSONObject roomObj = (JSONObject) response.get(i);
+//	                            String roomName = (String)roomObj.get("room");
+//	                            String status = (String)roomObj.get("status");
+//	                            for (int j = 0; j < rooms.size(); j++) {
+//									if(rooms.get(j).getName().equals(roomName)) {
+//										Log.d("LOCKER", "Room "+roomName+": "+status);
+//										
+//										if(status.equals("locked")) {
+//											if(!rooms.get(j).isLocked()) {
+//												cameraSwitcher.interrupt();
+//												setupCamera();
+//											}
+//											rooms.get(j).setLocked(true);
+//											Log.d("LOCKER", "LOCKED!");
+//										}
+//										else {
+//											if(rooms.get(j).isLocked()) {
+//												pauseCamera();
+//												readCameraStream();
+//											}
+//											rooms.get(j).setLocked(false);
+//											Log.d("LOCKER", "UNLOCKED!");
+//										}
+//										
+//										
+//										
+//										break;
+//									}
+//								}
+//	                        }
+//	                	} catch(Exception e) {};
+//	                }
+//	            };
+//		
+//		roomStatusThread = new Thread(new Runnable() {
+//			
+//			@Override
+//			public void run() {
+//				while(true) {
+//					try {
+//						Thread.sleep(3000);
+//						Log.d("LOCKER", "Added request");
+//						ServerCommunication.sendArrayMessage("roomstatus", callback);
+//					} catch (InterruptedException e) {
+//						e.printStackTrace();
+//					}
+//				}
+//			}
+//		});
+//		roomStatusThread.start();
+//	}
 	
 	public void initCameras(final OnCamerasReadyListener listener) {
 		
@@ -224,8 +238,10 @@ public class CameraManager implements PreviewCallback {
                     for (int i = 0; i < response.length(); i++) {
                         JSONObject roomObj = (JSONObject) response.get(i);
                         Room room = new Room((String)roomObj.get("roomname"));
+                        room.setLocked(false);
                         JSONArray camCluster = roomObj.getJSONArray("camcluster");
                         for (int j = 0; j < camCluster.length(); j++) {
+                        	Log.d( "JSON", "Room added");
                         	JSONObject cam = (JSONObject)camCluster.get(j);
                         	String name = cam.getString("name");
                         	String url = cam.getString("address");
@@ -234,39 +250,39 @@ public class CameraManager implements PreviewCallback {
                         rooms.add(room);
                     }
                     
-                    cameraSwitcher = new Thread() {
-        				@Override
-        				public void run() {
-        					Log.d(TAG, "Switcher started");
-        					
-        					do {
-        						try {
-        							Thread.sleep(10000);
-        						} catch (InterruptedException e) {
-        							Log.d(TAG, "Switcher interrupted");
-        							if(!stopCamSwitcher) {
-        								currentCameraIdx = 0;
-        								continue;
-        							} else {
-        								
-        							}
-        						}
-        						while(stopCamSwitcher) {
-        							Log.d(TAG, "Switcher stopped");
-        							try {
-        				    		 Thread.sleep(1000);
-    				    		   } catch (InterruptedException e) {
-    				    		      e.printStackTrace();
-    				    		   }
-        						}
-        						
-        						Log.d(TAG, "Switching...");
-        						
-        						currentCameraIdx = (currentCameraIdx + 1) % rooms.get(currentRoomIdx).getCameras().size();
-        						readCameraStream();
-        					} while(true);
-        				}
-        			};
+//                    cameraSwitcher = new Thread() {
+//        				@Override
+//        				public void run() {
+//        					Log.d(TAG, "Switcher started");
+//        					
+//        					do {
+//        						try {
+//        							Thread.sleep(10000);
+//        						} catch (InterruptedException e) {
+//        							Log.d(TAG, "Switcher interrupted");
+//        							if(!stopCamSwitcher) {
+//        								currentCameraIdx = 0;
+//        								continue;
+//        							} else {
+//        								
+//        							}
+//        						}
+//        						while(stopCamSwitcher) {
+//        							Log.d(TAG, "Switcher stopped");
+//        							try {
+//        				    		 Thread.sleep(1000);
+//    				    		   } catch (InterruptedException e) {
+//    				    		      e.printStackTrace();
+//    				    		   }
+//        						}
+//        						
+//        						Log.d(TAG, "Switching...");
+//        						
+//        						currentCameraIdx = (currentCameraIdx + 1) % rooms.get(currentRoomIdx).getCameras().size();
+//        						readCameraStream();
+//        					} while(true);
+//        				}
+//        			};
                     
                     currentRoomIdx = 0;
                     currentCameraIdx = 0;
@@ -302,14 +318,16 @@ public class CameraManager implements PreviewCallback {
 		// Add the request to the RequestQueue.
 		ServerCommunication.sendArrayMessage("getcams", callback, errorListener);
 		
-		initRoomStatus();
+//		initRoomStatus();
 	}
 	
 	private boolean stopCamSwitcher = false;
+	private DoRead currentCameraStream = null;
 	
 	public void switchRoom() {
 		if(rooms.get( (currentRoomIdx + 1) % rooms.size()).isLocked()) {
 			Log.d(TAG, "Front view camera...");
+			if(currentCameraStream != null) currentCameraStream.cancel(true);
 			setupCamera();
 			currentRoomIdx = (currentRoomIdx + 1) % rooms.size();
 			return;
@@ -318,13 +336,14 @@ public class CameraManager implements PreviewCallback {
 		}
 		currentRoomIdx = (currentRoomIdx + 1) % rooms.size();
 		Log.d(TAG, "New Room: "+currentRoomIdx);
-		cameraSwitcher.interrupt();
+//		cameraSwitcher.interrupt();
 		readCameraStream();
 	}
 	
 	public void readCameraStream() {
 		stopCamSwitcher = true;
-		new DoRead().execute(rooms.get(currentRoomIdx).getCameras().get(currentCameraIdx).getUrl());
+		currentCameraStream = new DoRead();
+		currentCameraStream.execute(rooms.get(currentRoomIdx).getCameras().get(currentCameraIdx).getUrl());
 	}
 	
 	public class DoRead extends AsyncTask<String, Void, MjpegInputStream> {
@@ -388,8 +407,8 @@ public class CameraManager implements PreviewCallback {
             
             thread.startDrawing();
             thread.surfaceDone();
-            if(rooms.get(currentRoomIdx).getCameras().size() > 1 && !cameraSwitcher.isAlive())
-            	cameraSwitcher.start();
+//            if(rooms.get(currentRoomIdx).getCameras().size() > 1 && !cameraSwitcher.isAlive())
+//            	cameraSwitcher.start();
             stopCamSwitcher = false;
             
         }
@@ -457,6 +476,13 @@ public class CameraManager implements PreviewCallback {
 		if(camera == null) {
 			camera = Camera.open();
 		}
+		st.setOnFrameAvailableListener(new SurfaceTexture.OnFrameAvailableListener() {
+			
+			@Override
+			public void onFrameAvailable(SurfaceTexture surfaceTexture) {
+				view.requestRender();
+			}
+		});
 		frontCamSurface = new Surface(st);
 //		try {
 //			camera.setPreviewTexture(st);
@@ -511,8 +537,10 @@ public class CameraManager implements PreviewCallback {
 	
 	private Object canvasLock = new Object();
 	boolean zombieInSight = false;
+	MediaPlayer mp = new MediaPlayer();
+	boolean outroStarted = false;
 	
-	class OnPreviewTask extends AsyncTask<byte[], Void, Void> {
+	class OnPreviewTask extends AsyncTask<byte[], Void, Void> implements OnBufferingUpdateListener, OnCompletionListener, OnPreparedListener, OnVideoSizeChangedListener {
 		
 		private Camera camera;
 		
@@ -533,18 +561,34 @@ public class CameraManager implements PreviewCallback {
 		boolean flicker = false;
 		
 		Random flickerRand = new Random();
-
+		
 		@Override
 		protected Void doInBackground(byte[]... params) {
 			Log.d(TAG, "Request render!");
 			
 			byte[] frameData = params[0];
-			
 			Size size = camera.getParameters().getPreviewSize();
+			
+			if(gm.isOutroStarted() && !outroStarted) {
+				startOutro();
+				camera.addCallbackBuffer(frameData);
+				return null;
+			} else if(outroStarted) {
+				Log.d(TAG, "Outro showing!");
+				if(!gm.isOutroStarted()) {
+					stopOutro();
+					camera.addCallbackBuffer(frameData);
+					return null;
+				} else {
+					view.requestRender();
+					camera.addCallbackBuffer(frameData);
+					return null;
+				}
+			}
 			
 			Mat result = new Mat();
 			int status = gm.getGameStatus(result);
-			if(gm.endGameStarted()) flickerEnabled = true;
+			if(gm.endGameStarted() && !gm.isAfterOutro()) flickerEnabled = true;
 			else flickerEnabled = false;
 			
 			if(status == 0) {
@@ -579,7 +623,7 @@ public class CameraManager implements PreviewCallback {
 					
 				}
 				
-				if(!flicker) {
+				if(!flicker && !gm.isAfterOutro()) {
 					Mat noised = grayFrameImg.clone();
 					Core.randn(noised,128,30);
 					Core.addWeighted(grayFrameImg, 0.8, noised, 0.2, 0, grayFrameImg);
@@ -592,7 +636,7 @@ public class CameraManager implements PreviewCallback {
 			    Core.merge(Arrays.asList(grayFrameImg,grayFrameImg,grayFrameImg),tmp);
 			    	
 			    Log.d(TAG, "Zombie in sight: "+zombieInSight);
-			    if(!flicker && gm.getZombie().isInSight()) {
+			    if(!flicker && !gm.isAfterOutro() && gm.getZombie().isInSight()) {
 			    	
 			    	
 			    	
@@ -657,18 +701,22 @@ public class CameraManager implements PreviewCallback {
 				else
 					grayFrameImg = grayFrameImg.mul(torchMask, 1.0/255);
 				
-				Imgproc.cvtColor(grayFrameImg, grayFrameImg, Imgproc.COLOR_BGR2GRAY);
-				Log.d(TAG, "Channels: "+grayFrameImg.channels());
-				Mat black = Mat.zeros(grayFrameImg.size(), grayFrameImg.type());
-				Core.merge(Arrays.asList(black,grayFrameImg,black), result);
-				Core.putText(result, "["+gm.getFlashLightPercentage()+"%]", new Point(AppConfig.PREVIEW_RESOLUTION[1]-20,40), 
-						Core.FONT_HERSHEY_PLAIN, 3, new Scalar(255,255,255));
+				
+				if(!gm.isAfterOutro()) {
+					Imgproc.cvtColor(grayFrameImg, grayFrameImg, Imgproc.COLOR_BGR2GRAY);
+					Log.d(TAG, "Channels: "+grayFrameImg.channels());
+					Mat black = Mat.zeros(grayFrameImg.size(), grayFrameImg.type());
+					Core.merge(Arrays.asList(black,grayFrameImg,black), result);
+					Core.putText(result, "["+gm.getFlashLightPercentage()+"%]", new Point(AppConfig.PREVIEW_RESOLUTION[1]-20,40), 
+							Core.FONT_HERSHEY_PLAIN, 3, new Scalar(255,255,255));
+				} else {
+					result = grayFrameImg;
+				}
 			    
 			    torchCounter = (torchCounter + 1) % 15;
 			}
 			
 			Paint p = new Paint();
-	        
 	        
 			if(bmp==null){
 				bmp = Bitmap.createBitmap(size.width, size.height, Bitmap.Config.ARGB_8888);
@@ -698,6 +746,30 @@ public class CameraManager implements PreviewCallback {
 			camera.addCallbackBuffer(frameData);
 			return null;
 		}
+
+		@Override
+		public void onVideoSizeChanged(MediaPlayer mp, int width, int height) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onPrepared(MediaPlayer mp) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onCompletion(MediaPlayer mp) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onBufferingUpdate(MediaPlayer mp, int percent) {
+			// TODO Auto-generated method stub
+			
+		}
 		
 	}
 	
@@ -713,15 +785,80 @@ public class CameraManager implements PreviewCallback {
 		Mat output = new Mat(background.size(), CvType.CV_8UC(3));
 		Log.d(TAG, "BG Sizes/Channels/Type: "+background.size()+"; "+background.channels()+"; "+background.type());
 		Log.d(TAG, "alphaInv Sizes/Channels/Type: "+overlayPair.second.size()+"; "+overlayPair.second.channels()+"; "+overlayPair.second.type());
-		Mat fg = overlayPair.first.clone();
+//		Mat fg = overlayPair.first.clone();
 //		Core.multiply(fg, new Scalar(alphaFg,alphaFg,alphaFg), fg);
 //		Mat alhpaInv = overlayPair.second.clone();
 //		Core.multiply(alhpaInv, new Scalar(1-alphaFg,1-alphaFg,1-alphaFg), alhpaInv);
 		Mat bg = background.mul(overlayPair.second, 1.0/255.0);
 //		Core.multiply(bg, new Scalar(1.0f-alphaFg,1.0f-alphaFg,1.0f-alphaFg), bg);
-		Core.add(fg,bg, output);
+		Core.add(overlayPair.first,bg, output);
 		
 		
 		return output;
+	}
+	
+	private MediaPlayer outroPlayer = new MediaPlayer();
+	
+	public void stopOutro() {
+		outroPlayer.stop();
+		outroPlayer.reset();
+		if(!gm.isAfterOutro()) gm.turnOnSounds();
+		outroStarted = false;
+	}
+	
+	public void startOutro() {
+		if(outroPlayer.isPlaying()) {
+			outroPlayer.reset();
+		}
+		try {
+			outroPlayer.setDataSource("/sdcard/zbg/intro.mp4");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		
+		Surface surface = new Surface(outroSurfaceTexture);
+		outroPlayer.setSurface(surface);
+		outroPlayer.setScreenOnWhilePlaying(true);
+		outroPlayer.setOnCompletionListener(new OnCompletionListener() {
+			
+			@Override
+			public void onCompletion(MediaPlayer mp) {
+				ServerCommunication.sendObjectMessage("outroended", new Response.Listener<JSONObject>() {
+					@Override
+					public void onResponse(JSONObject response) {
+						outroPlayer.reset();
+//						gm.turnOnSounds();
+						gm.outroDone();
+						outroStarted = false;
+					}
+				});
+				
+			}
+		});
+        surface.release();
+
+        try {
+        	outroPlayer.prepare();
+        } catch (IOException t) {
+            Log.e(TAG, "media player prepare failed");
+        }
+        
+        gm.turnOffSounds();
+        
+        outroPlayer.start();
+        
+        outroStarted = true;
+	}
+	
+	public boolean hasOutroStarted() {
+		return outroStarted;
+	}
+	
+	public boolean isOnFrontCamView() {
+		return rooms.get(currentRoomIdx).isLocked();
+	}
+	
+	public boolean isOnCameraView() {
+		return !rooms.get(currentRoomIdx).isLocked();
 	}
 }

@@ -30,6 +30,7 @@ public class ArRenderer implements Renderer, OnCamerasReadyListener {
 	private int[] tex;
 	private SurfaceTexture st;
 	private SurfaceTexture st2;
+	private SurfaceTexture st3;
 	private Buffer pTexCoordVBG;
 	private Buffer pVertexVBG;
 	private Context context;
@@ -148,17 +149,16 @@ public class ArRenderer implements Renderer, OnCamerasReadyListener {
 	
 	@Override
 	public void onDrawFrame(GL10 unused) {
-//		synchronized(this) {
-//            if (updateSurface) {
-//                st.updateTexImage();
-////                st.getTransformMatrix(mSTMatrix);
-//                updateSurface = false;
-//            }
-//        }
 		Log.d("MJPEG", "Drawing...");
 		
-		st.updateTexImage();
-		st2.updateTexImage();
+		if(camManager.hasOutroStarted()) {
+			Log.d("MJPEGOUTRO",  "OUTRO TEX UPDATE");
+			st3.updateTexImage();
+		} else if(camManager.isOnFrontCamView()) {
+			st2.updateTexImage();
+		} else if(camManager.isOnCameraView()) {
+			st.updateTexImage();
+		}
 		
 		GLES20.glViewport(0, 0, this.texW, this.texH);
 		
@@ -244,7 +244,10 @@ public class ArRenderer implements Renderer, OnCamerasReadyListener {
 //		st.setOnFrameAvailableListener(camManager);
 		st = new SurfaceTexture(tex[0]);
 		st.setDefaultBufferSize(1920, 1080);
+		st3 = new SurfaceTexture(tex[0]);
+		st3.setDefaultBufferSize(1920, 1080);
 		
+		camManager.setOutroSurfaceTexture(st3);
 		camManager.startCamera(st2);
 		
 		if(AppConfig.DEBUG_LOGGING) Log.d(TAG, "Camera texture setup done...");

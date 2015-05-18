@@ -52,11 +52,13 @@ public class ZombieLocationController implements LookatSensorListener {
 		public void run() {
 			long started = System.nanoTime();
 			try {
-				
+				while((System.nanoTime()-started)/1000000.0 < timeToWaitForNewZombie) {
+					Thread.sleep(200);
+				}
 				Log.d(TAG, "Started sleeping ...");
-				Thread.sleep(timeToWaitForNewZombie);
+//				Thread.sleep(timeToWaitForNewZombie);
 				Log.d(TAG, "sleeping done ...");
-				timeToWaitForNewZombie = TIME_FOR_NEW_LOCATION;
+				timeToWaitForNewZombie = TIME_FOR_NEW_LOCATION - (int)((System.nanoTime()-started)/1000000.0-timeToWaitForNewZombie);
 				synchronized(locationLock) {
 					randomAzimuth = (float) (zombieRand.nextFloat()*Math.PI);
 					Log.d(TAG, "Zombie has new azimuth: "+randomAzimuth);
@@ -78,16 +80,20 @@ public class ZombieLocationController implements LookatSensorListener {
 	};
 	
 	public boolean lookingAtZombie() {
+		int hysteresisBuffer = 0;
+		if(lookingAtZombie) {
+			hysteresisBuffer = 5;
+		}
+		
 		float[] orientation = sensor.getOrientation();
 		float currentAzimuth = orientation[0];
-		
-		Log.d(TAG, "Orientation: ("+currentAzimuth+","+orientation[1]+","+orientation[2]+"); "+randomAzimuth);
-		
-		if(Math.abs(currentAzimuth-randomAzimuth) < (45/2.0f)*(Math.PI/180.0f) && Math.abs(-orientation[2]-Math.PI/2) < Math.PI/4) {
+		if(Math.abs(currentAzimuth-randomAzimuth) < (45/2.0f+hysteresisBuffer)*(Math.PI/180.0f) 
+				&& Math.abs(-orientation[2]-Math.PI/2) < (45/2.0+hysteresisBuffer)*(Math.PI/180.0)) {
 			Log.d(TAG, "ZOMBIE!");
 			return true;
+		} else {
+			return false;
 		}
-		return false;
 	}
 	
 	boolean waiting = false;
@@ -120,7 +126,8 @@ public class ZombieLocationController implements LookatSensorListener {
 
 	@Override
 	public void onLookatSensorChanged(float[] newOrientation) {
-		if(this.lookingAtZombie() != lookingAtZombie) {
+		
+		if(lookingAtZombie() != lookingAtZombie) {
 			if(lookingAtZombie == false) {
 				inSightListener.onZombieInSight();
 				lookingAtZombie = true;

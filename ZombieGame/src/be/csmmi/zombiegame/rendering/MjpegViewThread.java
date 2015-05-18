@@ -26,6 +26,7 @@ public class MjpegViewThread extends Thread {
 	private MjpegInputStream source;
 	private CameraManager camManager;
 	private GameManager gm;
+	private boolean outroStarted = false;
      
     public MjpegViewThread(Surface surface, GLSurfaceView view, MjpegInputStream source, CameraManager camManager, GameManager gm) { 
         this.surface = surface; 
@@ -68,11 +69,27 @@ public class MjpegViewThread extends Thread {
                 			bmp = Bitmap.createBitmap(AppConfig.PREVIEW_RESOLUTION[0], AppConfig.PREVIEW_RESOLUTION[1], Bitmap.Config.ARGB_8888);
                 		}
                 		
+                		gm.onNoZombieOnScreen();
+                		
                 		Mat status = new Mat();
                 		int gameStatus = gm.getGameStatus(status);
                 		
-                		if(gameStatus == 1) {
+                		if(gm.isOutroStarted() && !camManager.hasOutroStarted()) {
+                			camManager.startOutro();
+                			Log.d("MJPEGOUTRO", "OUTRO STARTED");
+                			continue;
+                		} else if(!gm.isOutroStarted() && camManager.hasOutroStarted()) {
+                			camManager.stopOutro();
+                			outroStarted = false;
+                			continue;
+                		} else if(camManager.hasOutroStarted()) {
+                			Log.d("MJPEGOUTRO", "RENDER REQUESTED");
+                			view.requestRender();
+                			continue;
+                		} else if(gameStatus == 1) {
                 			Utils.matToBitmap(status, bmp);
+                			Bitmap tmp = Bitmap.createBitmap(AppConfig.PREVIEW_RESOLUTION[0], AppConfig.PREVIEW_RESOLUTION[1], Bitmap.Config.ARGB_8888);
+                			int ret = source.readMjpegFrame(tmp);
                 		} else {
 	                		int ret = source.readMjpegFrame(bmp);
 	

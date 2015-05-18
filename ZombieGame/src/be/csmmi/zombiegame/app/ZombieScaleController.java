@@ -20,10 +20,10 @@ public class ZombieScaleController {
 		public void run() {
 			long started = System.nanoTime();
 			try {
-				Log.d(TAG, "Zombie Started sleeping for "+timeToWait+"ms");
-				Thread.sleep(timeToWait);
-				Log.d(TAG, "Zombie sleeping done ...");
-				timeToWait = 3000;
+				while((System.nanoTime()-started)/1000000.0 < timeToWait) {
+					Thread.sleep(200);
+				}
+				timeToWait = 3000 - (int)((System.nanoTime()-started)/1000000.0-timeToWait);
 				synchronized(scaleLock) {
 					zombieScale = zombieScale+1;
 				}
@@ -59,20 +59,23 @@ public class ZombieScaleController {
 	
 	public int getZombieScale() {
 		synchronized(scaleLock) {
-			return zombieScale;
+			if(zombieScale > amountOfScales-1)
+				return amountOfScales-1;
+			else return zombieScale;
 		}
 		
 	}
 	
 	public boolean isFinalScale() {
 		synchronized(scaleLock) {
-			return zombieScale == amountOfScales-1;
+			return zombieScale > amountOfScales-1;
 		}
 	}
 	
 	boolean waiting = false;
 	Object waitingLock = new Object();
 	public void startWaitForScaleChange() {
+		Log.d(TAG, "Start scale change waiting....");
 		if(!enabled) return;
 //		if(waitForNextScale != null)
 //			Log.d(TAG, "Zombie isNotWaiting: "+(waitForNextScale == null || !waitForNextScale.isAlive())+" isFinalScale: "+isFinalScale());
