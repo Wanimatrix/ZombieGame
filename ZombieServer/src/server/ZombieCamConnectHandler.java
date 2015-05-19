@@ -1,6 +1,5 @@
 package server;
 import gamestateobjects.CamList;
-import gamestateobjects.RoomList;
 
 import java.io.BufferedReader;
 import java.io.IOException;

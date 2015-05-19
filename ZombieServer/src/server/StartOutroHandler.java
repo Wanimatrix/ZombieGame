@@ -19,6 +19,7 @@ public class StartOutroHandler implements HttpHandler {
 	public void handle(HttpExchange t) throws IOException {
 		status.startOutro();
 		String response = "{\"data\": \"true\"}";
+		System.out.println("outrostarted");
 		Sender.sendData(t, response);
 	}
 

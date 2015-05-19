@@ -11,29 +11,7 @@
   <script src="//code.jquery.com/ui/1.11.4/jquery-ui.js"></script>
   <link rel="stylesheet" href="//code.jquery.com/ui/1.11.4/resources/demos/style.css">
   <script>
-  $(function() {
-    $(function() {
-    $( "#dialog" ).dialog({
-      position: center,
-      autoOpen: false,
-      resizable: false,
-      height:140,
-      modal: true,
-      buttons: {
-        "Suicide": function() {
-          $( this ).dialog( "close" );
-        },
-        "Escape": function() {
-          $( this ).dialog( "close" );
-        }
-      }
-    });
-  });
- 
-    $( "#bomb" ).click(function() {
-      $( "#dialog" ).dialog( "open" );
-    });
-  });
+  
   </script>
 
 <style>
@@ -54,7 +32,7 @@ html, body, #wrapper, #container, #contents {
 }
 #bomb:hover{
 	cursor: pointer;
-	z-index: 50;
+	z-index: 500;
 	}
 #container > * { 
 	position:relative;
@@ -66,6 +44,7 @@ html, body, #wrapper, #container, #contents {
 <script>
 
 function detonate(){
+	$( "#dialog" ).dialog( "open" );
 }
 	
 
@@ -88,7 +67,7 @@ var options = {
     <table id="wrapper">
       <tr>
          <td>
-         <img id="bomb" src="design/bombu2.png" alt="" style="width: 50%; height: 50%"/>
+         <img id="bomb" src="design/hide.png" alt="" style="width: 50%; height: 50%"/>
          </td>
       </tr>	
    </table>
@@ -101,6 +80,48 @@ var options = {
 <script>
 $(window).load(function() {
 	grained('#container', options);
+	
+    $( "#dialog" ).dialog({
+      autoOpen: false,
+      resizable: false,
+      height:140,
+      modal: true,
+      buttons: {
+        "Suicide": function() {
+       	  setInterval(function () {$( "#bomb" ).attr("src","design/winl.png")}, 100);
+          setTimeout(function(){setInterval(function () {$( "#bomb" ).attr("src","design/wind.png")}, 100)},50);
+          $( this ).dialog( "close" );
+          $( "#bomb" ).css("cursor", "none");
+        },
+        "Escape": function() {
+          setInterval(function () {$( "#bomb" ).attr("src","design/losel.png")}, 100);
+          setTimeout(function(){setInterval(function () {$( "#bomb" ).attr("src","design/losed.png")}, 100)},50);
+          $( this ).dialog( "close" );
+          $( "#bomb" ).css("cursor", "none");
+        }
+      }
+    });
+  
+  	var interv = setInterval(function () {
+    	ajax1 = $.getJSON( "endgamestarted", function( res ) {
+        		if(res.data == "true"){
+        			$( "#bomb" ).attr("src","design/bombu2.png");
+        		}
+            });
+            setTimeout(function(){ ajax1.abort(); }, 1500);
+        },2000);
+                
+  	$( "#bomb" ).click(function() {
+  	   clearInterval(interv);
+  	   ajax2 = $.getJSON( "startoutro", function( res ) { });
+       setTimeout(function(){ 
+	       	ajax2.abort(); 
+	       	$('#dialog').dialog('open');
+	    	return false;
+       }, 5000);
+        
+    });
+ 
 });
 </script>
 
