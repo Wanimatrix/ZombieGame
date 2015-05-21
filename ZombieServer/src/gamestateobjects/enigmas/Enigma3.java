@@ -3,15 +3,16 @@ package gamestateobjects.enigmas;
 import gamestateobjects.MessageService;
 import gamestateobjects.RoomList;
 
-public class Enigma1 extends AEnigma{
+public class Enigma3 extends AEnigma{
 
-	public Enigma1(RoomList roomlist, MessageService inbox) {
+	public Enigma3(RoomList roomlist, MessageService inbox) {
 		super(roomlist, inbox);
 	}
 
+
 	@Override
 	public boolean checkSolution(String s) {
-		return s.equalsIgnoreCase("there's");
+		return s.equalsIgnoreCase("except for");
 	}
 
 	@Override
@@ -21,7 +22,7 @@ public class Enigma1 extends AEnigma{
 
 	@Override
 	public String getTip() {
-		return "There's";
+		return ", except for";
 	}
 
 	@Override
@@ -31,22 +32,23 @@ public class Enigma1 extends AEnigma{
 
 	@Override
 	String getNextRoomName() {
-		return "room2";
+		return "room4";
 	}
 
 	@Override
 	public String getRoomName() {
-		return "room1";
+		return "room3";
 	}
+
 
 	@Override
 	String getSMS() {
 		// TODO Auto-generated method stub
-		return "Hello I am Jane. I Help You. Yes.";
+		return "Hello Ich bin Jane nicht. Ich bin da sister. We family. Yes.";
 	}
 
 	@Override
 	String getSMSSender() {
-		return "Jane D.";
+		return "Jano D.";
 	}
 }

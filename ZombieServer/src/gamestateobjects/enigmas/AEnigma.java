@@ -1,5 +1,6 @@
 package gamestateobjects.enigmas;
 
+import gamestateobjects.MessageService;
 import gamestateobjects.RoomList;
 
 import java.io.BufferedReader;
@@ -14,9 +15,11 @@ import com.sun.net.httpserver.HttpHandler;
 public abstract class AEnigma implements HttpHandler{
 	
 	private RoomList roomlist;
+	private MessageService inbox;
 	
-	public AEnigma(RoomList roomlist) {
+	public AEnigma(RoomList roomlist, MessageService inbox) {
 		this.roomlist = roomlist;
+		this.inbox = inbox;
 	}
 
 	abstract boolean checkSolution(String s);
@@ -30,6 +33,9 @@ public abstract class AEnigma implements HttpHandler{
 	
 	abstract String getNextRoomName();
 	
+	abstract String getSMS();
+	abstract String getSMSSender();
+	
 	@Override
 	public void handle(HttpExchange t) throws IOException {
 		String uri = t.getRequestURI().toString();
@@ -41,6 +47,7 @@ public abstract class AEnigma implements HttpHandler{
 			
 			if(checkSolution(sol)) {
 				roomlist.getRoom(getRoomName()).unlock();
+				this.inbox.publishMessage(getSMSSender(), getSMS());
 				Sender.sendData(t, "{\"data\": \"true\"}");
 			} else
 				Sender.sendData(t, "{\"data\": \"false\"}");

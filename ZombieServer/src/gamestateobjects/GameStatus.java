@@ -31,7 +31,7 @@ public class GameStatus {
 		this.inprogress = false;
 		this.endgamestarted = false;
 		this.startOutro = false;
-//		this.rooms.lockAllRooms();
+		this.rooms.lockAllRooms();
 	}
 	
 	public boolean isInProgress(){

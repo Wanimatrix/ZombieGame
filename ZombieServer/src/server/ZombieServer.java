@@ -4,8 +4,10 @@ import gamestateobjects.GameStatus;
 import gamestateobjects.MessageService;
 import gamestateobjects.RoomList;
 import gamestateobjects.enigmas.AEnigma;
-import gamestateobjects.enigmas.CopyOfEnigma1;
 import gamestateobjects.enigmas.Enigma1;
+import gamestateobjects.enigmas.Enigma2;
+import gamestateobjects.enigmas.Enigma3;
+import gamestateobjects.enigmas.Enigma4;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
@@ -27,10 +29,10 @@ public class ZombieServer {
 		//t.start();
 		roomlist.addRoom("room1");
 		roomlist.addRoom("room2");
-		//roomlist.addRoom("room3");
-		//roomlist.addRoom("room4");
+		roomlist.addRoom("room3");
+		roomlist.addRoom("room4");
 		
-		AEnigma[] enigmas = {new Enigma1(roomlist), new CopyOfEnigma1(roomlist)};
+		AEnigma[] enigmas = {new Enigma1(roomlist, mservice), new Enigma2(roomlist, mservice), new Enigma3(roomlist, mservice), new Enigma4(roomlist, mservice)};
 		
 		status = new GameStatus(roomlist);
 		server = HttpServer.create(new InetSocketAddress(8082), 300);

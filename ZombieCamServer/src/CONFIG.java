@@ -13,6 +13,6 @@ public class CONFIG {
 	
 	public static final String cameraname = "cam1";
 
-	public static final String room = "room3";
+	public static final String room = "hall 2";
 	public static final int webcamId = 0;
 }
