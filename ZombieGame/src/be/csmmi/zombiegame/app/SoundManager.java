@@ -22,6 +22,7 @@ public class SoundManager {
 //	private Map<String,Integer> soundFxIds = new HashMap<String, Integer>();
 //	private Map<String,Integer> streamIds = new HashMap<String, Integer>();
 	private MediaPlayer mediaPlayer;
+	private MediaPlayer bgMediaPlayer;
 	private Context context;
 	private boolean noSound;
 	
@@ -35,6 +36,7 @@ public class SoundManager {
 	public SoundManager(Context context) {
 		this.context = context;
 		mediaPlayer = new MediaPlayer();
+		bgMediaPlayer = new MediaPlayer();
 		
 //		addSound("atmo1", R.raw.atmosphere1);
 //		addSound("atmo2", R.raw.atmosphere2);
@@ -78,7 +80,7 @@ public class SoundManager {
 	private Random rand = new Random();
 	private long lastSoundStarted;
 	
-	public String playRandomSoundFx(RANDOM_SFX sfxType, float volume) {
+	public String playRandomSoundFx(RANDOM_SFX sfxType, float volume, boolean playAsBackground) {
 		String[] soundIds = null;
 		switch (sfxType) {
 		case SCARES:
@@ -90,14 +92,38 @@ public class SoundManager {
 		}
 		float randomNumber = rand.nextFloat();
 		int index = (int) Math.floor(randomNumber*soundIds.length);
-		playSoundFx(soundIds[index], 0.8f, false);
+		if(playAsBackground) playBackgroundMusic(soundIds[index], 0.8f, false);
+		else playSoundFx(soundIds[index], 0.8f, false);
 		return soundIds[index];
+	}
+	
+	public void playBackgroundMusic(String name, float volume, boolean loop) {
+		if(bgMediaPlayer.isPlaying()) return;
+		try {
+			Log.d(TAG, "Starting BG sound: "+name);
+			bgMediaPlayer.reset();
+			bgMediaPlayer.setDataSource("/sdcard/zbg/sounds/"+name+".mp3");
+			bgMediaPlayer.setVolume(volume, volume);
+			bgMediaPlayer.setLooping(loop);
+			bgMediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+				
+				@Override
+				public void onPrepared(MediaPlayer mp) {
+					mp.start();
+				}
+			});
+			bgMediaPlayer.prepareAsync();
+			
+		} catch (Exception e) {
+			Log.e(TAG, "ERROR ", e);
+		}
 	}
 	
 	public void playSoundFx(String name, float volume, boolean loop) {
 		if(noSound) return;
 		if((System.nanoTime()-lastSoundStarted)/1000000.0 < MINIMAL_WAIT) return;
 		try {
+			Log.d(TAG, "Starting sound: "+name);
 			mediaPlayer.reset();
 			mediaPlayer.setDataSource("/sdcard/zbg/sounds/"+name+".mp3");
 			mediaPlayer.setVolume(volume, volume);
@@ -136,6 +162,11 @@ public class SoundManager {
 	public void turnOffSound(){
 		noSound = true;
 		stopSoundFx();
+	}
+	
+	public void stopBgSound(){
+		Log.d(TAG, "STOPPED BGMUSIC");
+		if(bgMediaPlayer.isPlaying()) bgMediaPlayer.stop();
 	}
 	
 	public void turnOnSound(){

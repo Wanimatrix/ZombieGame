@@ -195,6 +195,10 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 									Log.d(TAG, "ENDGAME RESPONSE:"+response.get("data"));
 									if(response.get("data").equals("true")) {
 										Log.d(TAG, "ENDGAME STARTED");
+										if(!endgame) {
+											sndMan.stopBgSound();
+											sndMan.playBackgroundMusic("hynkell21", 0.7f, true);
+										}
 										endgame = true;
 									} else {
 										Log.d(TAG, "ENDGAME STOPPED");
@@ -258,6 +262,8 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 	private boolean outroDone = false;
 	
 	public void outroDone(){
+		sndMan.stopBgSound();
+		sndMan.playBackgroundMusic("outroloop", 0.7f, true);
 		outroDone = true;
 	}
 	
@@ -360,6 +366,7 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 	boolean sendResetGame = true;
 	
 	private int gameOver(boolean sendToServer) {
+		sndMan.stopBgSound();
 		if(lostTimeStamp == 0) lostTimeStamp = System.nanoTime();
 		if((System.nanoTime()-lostTimeStamp)/1000000.0f < 2000) status = Highgui.imread("/sdcard/zbg/zombieLost.png");
 		else status = Highgui.imread("/sdcard/zbg/lost.png");
@@ -387,13 +394,13 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 	}
 	
 	public void onZombieEntryScreen() {
-		sndMan.playRandomSoundFx(SoundManager.RANDOM_SFX.SCARES, 1);
+		sndMan.playRandomSoundFx(SoundManager.RANDOM_SFX.SCARES, 1, false);
 		toWait = -1;
 	}
 	
 	public void onZombieOnScreen() {
 		if(scaleChange) {
-			sndMan.playRandomSoundFx(SoundManager.RANDOM_SFX.SCARES, 1);
+			sndMan.playRandomSoundFx(SoundManager.RANDOM_SFX.SCARES, 1, false);
 			scaleChange = false;
 		}
 	}
@@ -403,6 +410,8 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 	}
 	
 	public void turnOffSounds() {
+		Log.d(SoundManager.class.getSimpleName(), "TURN OFF SOUNDS");
+		sndMan.stopBgSound();
 		sndMan.turnOffSound();
 	}
 	
@@ -417,13 +426,14 @@ public class GameManager implements ZombieScaleChangeListener, LookatSensorListe
 	
 	public void onNoZombieOnScreen() {
 		Log.d(TAG, "NO ZOMBIE ON SCREEN!");
+		if(endgame && outroDone) return;
 		if(toWait == -1) {
 			toWait = (int) (randomWait.nextInt(3))*1000;
 			startWait = System.nanoTime();
 		} else if((System.nanoTime()-startWait)/1000000.0 >= toWait) {
 			Log.d(TAG, "ATMOSPHERE SOUND!");
-			sndMan.playRandomSoundFx(SoundManager.RANDOM_SFX.ATMOSPHERE, 1);
-			toWait = (int) (randomWait.nextInt(3)+15)*1000;
+			sndMan.playRandomSoundFx(SoundManager.RANDOM_SFX.ATMOSPHERE, 1, true);
+			toWait = (int) (randomWait.nextInt(10)+15)*1000;
 			startWait = System.nanoTime();
 		} else {
 			Log.d(TAG, "ATMOSPHERE SOUND STILL WAITING!");
