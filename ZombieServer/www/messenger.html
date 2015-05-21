@@ -38,7 +38,7 @@
     		current_m = m;
     	}
     	function incomingMessage(m){
-    	
+    		m.content = atob(m.content);
     		if(m.id > last_seen_id){
     		
   				navigator.vibrate([200,100,200,100,700]);

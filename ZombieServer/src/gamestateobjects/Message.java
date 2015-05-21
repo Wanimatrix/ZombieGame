@@ -1,5 +1,7 @@
 package gamestateobjects;
 
+import java.util.Base64;
+
 public class Message {
 
 	private String sender;
@@ -17,7 +19,8 @@ public class Message {
 	}
 	
 	public String getContent() {
-		return content;
+		String converted = Base64.getEncoder(). encodeToString(content.getBytes());
+		return converted;
 	}
 	
 	public int getId() {
