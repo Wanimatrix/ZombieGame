@@ -807,6 +807,7 @@ public class CameraManager implements PreviewCallback {
 	}
 	
 	public void startOutro() {
+		gm.turnOffSounds();
 		if(outroPlayer.isPlaying()) {
 			outroPlayer.reset();
 		}
@@ -842,8 +843,6 @@ public class CameraManager implements PreviewCallback {
         } catch (IOException t) {
             Log.e(TAG, "media player prepare failed");
         }
-        
-        gm.turnOffSounds();
         
         outroPlayer.start();
         

@@ -9,7 +9,7 @@ public class ZombieScaleController {
 	private Object scaleLock = new Object();
 	private int amountOfScales = 0;
 	private Thread waitForNextScale = null;
-	private int timeToWait = 3000;
+	private int timeToWait = 12000;
 	private ZombieScaleChangeListener scaleChangeListener;
 	
 	private boolean enabled = false;
@@ -23,7 +23,7 @@ public class ZombieScaleController {
 				while((System.nanoTime()-started)/1000000.0 < timeToWait) {
 					Thread.sleep(200);
 				}
-				timeToWait = 3000 - (int)((System.nanoTime()-started)/1000000.0-timeToWait);
+				timeToWait = 12000 - (int)((System.nanoTime()-started)/1000000.0-timeToWait);
 				synchronized(scaleLock) {
 					zombieScale = zombieScale+1;
 				}

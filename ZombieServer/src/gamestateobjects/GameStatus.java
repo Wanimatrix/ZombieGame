@@ -13,7 +13,7 @@ public class GameStatus {
 	private Thread timer;
 	private long startTime = 0;
 	private int period = 1000;
-	private int maxSeconds = 60*20; // 20 minutes
+	private int maxSeconds = 60*60*4; // 20 minutes
 	
 	public GameStatus(RoomList r){
 		this.rooms = r;
