@@ -44,11 +44,18 @@ public class Enigma3 extends AEnigma{
 	@Override
 	String getSMS() {
 		// TODO Auto-generated method stub
-		return "Hello Ich bin Jane nicht. Ich bin da sister. We family. Yes.";
+		return "BROADCAST 4 OF 6: "
+				+ "The doctor said that my green eyes aren’t pretty enough. "
+				+ "He is going to get rid of them and give me pretty blue eyes instead. "
+				+ "He said that I will be the first Übermensch and that my mommy would be proud of me. "
+				+ "I saw other people wandering by my room. "
+				+ "But they didn’t look like people anymore. "
+				+ "Dr. Hÿnkell said that they were failed experiments and that they weren’t strong enough to be an Übermensch, just like my mommy. "
+				+ "I hear him approaching. Time to get my pretty blue eyes.";
 	}
 
 	@Override
 	String getSMSSender() {
-		return "Jano D.";
+		return "Jane D.";
 	}
 }

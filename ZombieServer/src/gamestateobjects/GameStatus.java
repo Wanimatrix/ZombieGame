@@ -1,7 +1,5 @@
 package gamestateobjects;
 
-import java.util.Timer;
-import java.util.TimerTask;
 
 public class GameStatus {
 
@@ -10,9 +8,6 @@ public class GameStatus {
 	private boolean startOutro = false;
 	private RoomList rooms;
 	
-	private Thread timer;
-	private long startTime = 0;
-	private int period = 1000;
 	private int maxSeconds = 60*60*4; // 20 minutes
 	
 	public GameStatus(RoomList r){

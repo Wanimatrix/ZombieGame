@@ -6,10 +6,8 @@ import java.util.HashMap;
 public class CamList {
 
 	private HashMap<String, Room> roomlist = new HashMap<String, Room>();
-	private HashMap<String, Room> camlist = new HashMap<String, Room>();
 
 	private String camListJSON = "[]";
-	private int roomCount = 0;
 	
 	
 	
@@ -17,7 +15,6 @@ public class CamList {
 		if(roomlist.get(name) == null){
 			roomlist.put(name, new Room(name));
 			updateCamListJSON();
-			roomCount++;
 		}
 	}
 	

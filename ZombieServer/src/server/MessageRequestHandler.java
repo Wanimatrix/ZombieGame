@@ -4,7 +4,6 @@ import gamestateobjects.Message;
 import gamestateobjects.MessageService;
 
 import java.io.IOException;
-import java.math.BigInteger;
 import java.security.SecureRandom;
 import java.util.ArrayList;
 

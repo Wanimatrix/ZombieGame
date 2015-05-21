@@ -7,14 +7,11 @@ public class RoomList {
 
 	private HashMap<String, Room> roomlist = new HashMap<String, Room>();
 
-	private int roomCount = 0;
-	
-	
+
 	
 	public void addRoom(String name){
 		if(roomlist.get(name) == null){
 			roomlist.put(name, new Room(name));
-			roomCount++;
 		}
 	}
 	

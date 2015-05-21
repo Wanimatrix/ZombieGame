@@ -43,12 +43,17 @@ public class Enigma4 extends AEnigma{
 
 	@Override
 	String getSMS() {
-		// TODO Auto-generated method stub
-		return "PfanzerGewehr!!!!!!! KRIEGGG!!!! DIEE!!!!";
+		return "BROADCAST 5 OF 6: "
+				+ "He took away my green eyes. "
+				+ "The doctor said it will take a while to find blue eyes that will fit. "
+				+ "I can’t see anymore. It hurts. "
+				+ "He gave me back my teddybear... He got mad because I didn't stop crying. "
+				+ "But mister teddybear feels different. There are spots without hair. "
+				+ "It moves sometimes too and I can hear it making sounds.";
 	}
 
 	@Override
 	String getSMSSender() {
-		return "Dr. Hynkell";
+		return "Jane D.";
 	}
 }

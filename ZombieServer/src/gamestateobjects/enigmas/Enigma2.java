@@ -43,8 +43,12 @@ public class Enigma2 extends AEnigma{
 
 	@Override
 	String getSMS() {
-		// TODO Auto-generated method stub
-		return "Hello I am Jane again. I Help You again. Yes.";
+		return "BROADCAST 3 OF 6: "
+				+ "Yesterday he took me to a white room and strapped me to a bed. "
+				+ "He put a needle in my arm and said that this was going to make me stronger. "
+				+ "It hurts. I asked him where my teddybear was, but he didn’t answer. "
+				+ "I asked him why he took my mother away. "
+				+ "He brushed my hair while he explained that my mommy wasn’t strong enough to be an Übermensch.";
 	}
 
 	@Override
