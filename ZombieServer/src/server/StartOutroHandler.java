@@ -4,7 +4,6 @@ import gamestateobjects.GameStatus;
 import gamestateobjects.MessageService;
 
 import java.io.IOException;
-import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -45,7 +44,7 @@ public class StartOutroHandler implements HttpHandler {
 						+ "Please come help me and please find my mommy."
 						+ "July 6th 1942.");
 			}
-		}, new Random().nextInt(9000)+5000);
+		}, 68*1000);
 	}
 
 }
